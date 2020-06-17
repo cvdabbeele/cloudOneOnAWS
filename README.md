@@ -40,28 +40,23 @@ The Cloud Formation Template to build the EKS cluster will crash if those resour
 Click on the AWS Cloud9 tab in the Cloud9 menu bar -> Preferences -> scroll down and expand "AWS Settings" -> Credentials -> uncheck "AWS managed temporary credentials"  
 ![](images/DisableAWSManagedTemporaryCredentials.png)
 
-4. Configure AWS cli in your cloud9 environment  
-aws configure  (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)   
-
-
-5. Create credentials for CodeCommit  
+4. Create credentials for CodeCommit  
 see:
 https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np
 
-6. Get a trial account for Trend Micro Cloud One   Security Control (aka Deep Security Smart Check).  
+5. Get a trial account for Trend Micro Cloud One Container Security (aka Deep Security Smart Check).  
 This will provide pre-runtime scanning of containers.
 see: https://github.com/deep-security/smartcheck-helm
 
-7. (optionally) Get a trial account for Trend Micro Cloud One Application Control.  
+6. (optionally) Get a trial account for Trend Micro Cloud One Application Security.  
 This will provide runtime protection to the containers.
 
-## 1. Define variables for Smart Check and EKS
+## 1. Define variables for AWS, Cloud One Container Security and (optionally) for Cloud One Application Security
 Open a Cloud9 environment and clone this repo
 
 Copy `00_define_vars.sh.sample` to 00_define_vars.sh
 
-    Minimise other access
-    Enter your own configuration variables in the config file
+Enter your own configuration variables in the config file
 
 
 ## 2. Deploy the environment
@@ -79,25 +74,18 @@ This will do the following:
 
 4. Setup demo pipelines
 
-## 3. (WIP) to automate this
+5. Deploy 3 demo applications
 
-Once the eks-pipeline-CodeServiceRole has been created, give it permissions to push images to ECR  
-- AWS -> IAM -> Roles -> search for: eks-pipeline-CodeBuildServiceRole -> select Role -> Permissions tab -> Attach policies -> search for:
-arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess -> Attach policy
+## 3. This script will deploy 3 demo applications
 
+At the same level as the project directory (cloudOneOnAws), an "apps" directory will be created.
+Hereunder, 3 apps will be installed (c1appsecmoneyx, troopers and mydvwa)
+This will trigger an AWS codeCommit process to build and scan those applications by SmartCheck
+By default, the apps will not be deployed because they have too many vulnerabilities.
+As a demo you can increase the thresholds in the buildspec.yml files and do a git push
+The apps will now be rebuild, scanned again, but because of the high thresholds they will be allowed to be deployed
 
-## 4. (WIP) Configure source repo
-
-As part of the cloudformation template a CodeCommit sourcecode repo has been created. Use the following command to check in the sample docker file and the buildspec file to the repo to initiate the pipeline.
-Change the region below to match the region you deployed the cloudformation to.
-```
-$ cd DevSecOps-Sample-v2
-$ git init
-$ git add .
-$ git commit -m "Initial Commit"
-$ git remote add codecommit https://git-codecommit.<your-aws-region>.amazonaws.com/v1/repos/DevSecOps-Sample
-$ git push -u codecommit master
-```
+If you have setup Cloud One Application Security, you can now attach the running (and vulnerable) containers and demonstrate "runtime protection"
 
 
 ## To delete all deployments, run the following command:
@@ -107,6 +95,6 @@ $ ./down.sh
 ```
 This will tear-down the EKS cluster, the EC2 instances and Cloudformation Stacks.  The Cloud9 EC2 instance will stop, but remain available for later.
 
-## Limitations
+## Requirements
 - This project needs 1 available VPC. By default an AWS account has a limit of 5 VPCs per region.  
 - Every time this project runs, it creates an S3 bucket per pipeline/app (3 pipelines per run), to store its artefacts. By default an AWS account has a limit of 100 buckets.  See the last section of the "down" script to cleanup.
