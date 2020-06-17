@@ -48,6 +48,9 @@ printf '%s\n' "--------------------------"
 printf '%s\n' "Setting up Project ${AWS_PROJECT} "
 printf '%s\n' "--------------------------"
 
+printf '%s\n'  "installing jq"
+sudo apt-get install jq -y
+
 #env | grep -i AWS
 # configure AWS cli
 printf '%s\n' "Configuring AWS CLI"
