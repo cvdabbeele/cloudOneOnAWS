@@ -6,6 +6,9 @@ printf '%s' "Importing variables... "
 #TBD: verify ALL variables
 . ./00_define_vars.sh
 
+printf '%s\n'  "installing jq"
+sudo apt-get install jq -y
+
 export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
 
   #tr -d "-" | tr -d "_"| awk '{ print tolower($1) }'
@@ -47,9 +50,6 @@ printf '%s\n' "OK"
 printf '%s\n' "--------------------------"
 printf '%s\n' "Setting up Project ${AWS_PROJECT} "
 printf '%s\n' "--------------------------"
-
-printf '%s\n'  "installing jq"
-sudo apt-get install jq -y
 
 #env | grep -i AWS
 # configure AWS cli
