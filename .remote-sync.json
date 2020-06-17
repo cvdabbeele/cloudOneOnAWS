@@ -1,0 +1,19 @@
+{
+  "logger": {
+    "title": "Remote Sync"
+  },
+  "uploadOnSave": true,
+  "useAtomicWrites": false,
+  "deleteLocal": false,
+  "hostname": "34.248.186.167",
+  "port": "22",
+  "target": "/home/ubuntu/environment/cloudOneOnAws",
+  "ignore": [
+    ".remote-sync.json",
+    ".git/**"
+  ],
+  "username": "ubuntu",
+  "watch": [],
+  "transport": "scp",
+  "keyfile": "/Users/chris_vandenabbeele/.ssh/id_rsa"
+}
