@@ -2,7 +2,6 @@
 This is a collaborated effort with mawinkler and nicgoth   
 This sets up an AWS CodePipeline, builds a few containers and applies Trend Micro Cloud One Container Security (C1CS) and Trend Micro Cloud One Application Security (C1AS)to it
 Additionally this creates the required EKS cluster, CodeCommit repository, CodePipeline pipeline, ECR registry etc..
-The .template files contain Jinja2 variables which are rendered before deployment.  e.g. the variabled in eks-cluster.yml.template are rendered and eks-cluster.yml is created.  eks-cluster.yml is then used for the  deployment.
 
 # High level overview of steps (detailed steps in next section)
 1. open Cloud9
