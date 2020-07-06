@@ -41,7 +41,7 @@ If you want to demo the Runtime Protection as well, then you need to setup a Clo
   - use default settings for the rest
 
 2. Create an AWS Role to allow the EKS worker nodes (EC2 instances) to connect to ECR  
- - AWS Services -> IAM -> Roles -> Create Role (e.g. Cloud9EC2AdminAccess)
+ - AWS Services -> IAM -> Roles -> Create Role
  - Select type of trusted entity: AWS Services
  - Choose a use case: EC2 -> Next: Permissions
  - Assign permission policy : "AmazonEC2ContainerRegistryFullAccess" -> Next: Tags
@@ -50,12 +50,12 @@ If you want to demo the Runtime Protection as well, then you need to setup a Clo
 3. Start the Cloud9 environment
 
 4. In Cloud9, disable the `AWS-managed temporary credentials`  
-Click on the AWS Cloud9 tab in the Cloud9 menu bar -> Preferences -> scroll down and expand "AWS Settings" -> Credentials -> uncheck "AWS managed temporary credentials"  
+Click on the AWS Cloud9 tab in the Cloud9 menu bar (if you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible) -> Preferences -> scroll down and expand "AWS Settings" -> Credentials -> uncheck "AWS managed temporary credentials"  
 ![](images/DisableAWSManagedTemporaryCredentials.png)
 
 5. Create credentials for CodeCommit  
 CodeCommit requires AWS Key Management Service. If you are using an existing IAM user, make sure there are no policies attached to the user that expressly deny the AWS KMS actions required by CodeCommit. For more information, see AWS KMS and encryption. <br />
-In the AWS console, go to Services and choose IAM, then go to Users, and then click on the IAM user you want to configure for CodeCommit access.<br />
+- In the AWS console, go to Services and choose IAM, then go to Users, and then click on the IAM user you want to configure for CodeCommit access.<br />
 - On the Permissions tab, choose Add Permissions.
 - In Grant permissions, choose Attach existing policies directly.<br />
 - From the list of policies, select AWSCodeCommitPowerUser or another managed policy for CodeCommit access.<br />

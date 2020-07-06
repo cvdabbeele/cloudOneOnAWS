@@ -26,10 +26,13 @@ Open the following browser tabs:
 - type `kubectl get services -n smartcheck` and copy the URL of the proxy service as indicated in the screenshot below ![](images/GetDSSCURL.png) <br />
 - Then open a browser to that url
 (e.g. https://afa8c13bf2497469ba8411dfa1cfebec-1286344911.eu-central-1.elb.amazonaws.com )
-- show scanfindings in DSSC
-- **Story:** <br />
+- show scanfindings in DSSC <br />
+**Story:** <br />
 For an urgent Marketing event, the "business" wants us to put this application online ASAP.  Our code is fine, the vulnerabilities are in the external libraries that we have used and we don't know how to quickly fix them.  As a work-around, we will deploy the app with vulnerabilities and rely on runtime protection (CloudOne Application Control)
+```
+cd ~/environment/
 - vi buildspec.yaml
+```
     bump up thresholds for vulnerabilities as indicated in the screenshot below ![](images/IncreaseThresholds.png)  <br />
 
 -  git add, commit, push
