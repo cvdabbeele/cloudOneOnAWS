@@ -26,7 +26,7 @@ The Cloud Formation Template to build the EKS cluster will crash if those resour
   - tag it to your liking (tags are good)
   - use default settings for the rest
 
-2. Create an AWS Role to allow the EKS EC2 instances to connect to ECR  
+2. Create an AWS Role to allow the EKS worker nodes (EC2 instances) to connect to ECR  
  - AWS Services -> IAM -> Roles -> Create Role (e.g. Cloud9EC2AdminAccess)
  - Select type of trusted entity: AWS Services
  - Choose a use case: EC2 -> Next: Permissions
