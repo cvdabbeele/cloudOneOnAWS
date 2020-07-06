@@ -50,7 +50,7 @@ If you want to demo the Runtime Protection as well, then you need to setup a Clo
 3. Start the Cloud9 environment
 
 4. In Cloud9, disable the `AWS-managed temporary credentials`  
-Click on the AWS Cloud9 tab in the Cloud9 menu bar (if you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible) -> Preferences -> scroll down and expand "AWS Settings" -> Credentials -> uncheck "AWS managed temporary credentials"  
+Click on the AWS Cloud9 tab in the Cloud9 menu bar (if you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible) -> Preferences -> scroll down and expand "AWS Settings" -> Credentials -> uncheck "AWS managed temporary credentials"    
 ![](images/DisableAWSManagedTemporaryCredentials.png)
 
 5. Create credentials for CodeCommit  
