@@ -4,15 +4,29 @@
 
 In this demo scenario we will be using the MoneyX demo application
 
-Login to your CloudOne account and go to   set C1AS all policies in REPORT
-  MoneyX -> vi buildspec.yaml -> make sure to have a "Failed" pipeline
-  Open the following browser tabs:
-    Cloud9, codePipeline, DSSC, MoneyX, C1AS, CloudFormation, GIT
-demo
-  slide on pipeline
-  slide on adding 2 sets of Security Controls (pre-runtime checks + runtime security)
-  show failed pipeline  -> details -> issue vulns> threshold -
-    show scanfindings in DSSC
+Login to your CloudOne account and go to Cloud One Application Security.  Find the group that you created for the MoneyX application (c1-app-sec-moneyx).  Open Polcies" and set all policies to REPORT <br />
+
+In AWS, under CodePipeline -> Pipelines -> make sure you have a failed pipeline for the <projectname>c1appsecmoneyxPipeline  <br />
+
+Open the following browser tabs:
+- Cloud9,
+- codePipeline,
+- DSSC,
+- MoneyX,
+- C1AS,
+- CloudFormation,
+- GIT
+
+## Demo Scenario
+- show the 3 AWS CodeCommit repositories
+- show the AWS pipelines -> click on the failed c1appsecmoneyx pipeline and scroll all the way down.  Show why this pipeline failed (see screenshot below) ![](images/VulnerabilitiesExceededThreshold.png)
+ <br />
+- in Cloud9 type `eksctl get clusters` and show the cluster
+- type `kubectl get pods --namespace smartcheck` and show the pods used by smartcheck.  Also show the deployments `kubectl get deployments -n smartcheck`
+- type `kubectl get services -n smartcheck` and copy the URL of the proxy service as indicated in the screenshot below ![](images/GetDSSCURL.png)
+.  Then open a browser to that url
+(e.g. https://afa8c13bf2497469ba8411dfa1cfebec-1286344911.eu-central-1.elb.amazonaws.com )
+show scanfindings in DSSC
     try to fix, but the issues are in "external" libraries -> we depend on the community to fix them
     Business manager wants the App online for a big Marketing Campaign
     -> deploy app with vulns and rely on runtime protection
