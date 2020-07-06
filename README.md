@@ -33,26 +33,35 @@ The Cloud Formation Template to build the EKS cluster will crash if those resour
  - Assign permission policy : "AmazonEC2ContainerRegistryFullAccess" -> Next: Tags
  - -> Next Role name: e.g. project_name_EC2_access_to_ECR    
 
-2. Start the Cloud9 environment
+3. Start the Cloud9 environment
 
-3. In Cloud9, disable the `AWS-managed temporary credentials`  
+4. In Cloud9, disable the `AWS-managed temporary credentials`  
 Click on the AWS Cloud9 tab in the Cloud9 menu bar -> Preferences -> scroll down and expand "AWS Settings" -> Credentials -> uncheck "AWS managed temporary credentials"  
 ![](images/DisableAWSManagedTemporaryCredentials.png)
 
-4. Create credentials for CodeCommit  
-see:
+5. Create credentials for CodeCommit  
+CodeCommit requires AWS Key Management Service. If you are using an existing IAM user, make sure there are no policies attached to the user that expressly deny the AWS KMS actions required by CodeCommit. For more information, see AWS KMS and encryption.
+In the AWS console, go to Services and choose IAM, then go to Users, and then click on the IAM user you want to configure for CodeCommit access.
+  On the Permissions tab, choose Add Permissions.
+  In Grant permissions, choose Attach existing policies directly.
+  From the list of policies, select AWSCodeCommitPowerUser or another managed policy for CodeCommit access.
+  Click "Next: Review" to review the list of policies to attach to the IAM user.
+  If the list is correct, choose Add permissions.
+
+see also:
 https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np
 
-5. Get a trial account for Trend Micro Cloud One Container Security (aka Deep Security Smart Check).  
+6. Get a trial account for Trend Micro Cloud One Container Security (aka Deep Security Smart Check).  
 This will provide pre-runtime scanning of containers.
 see: https://github.com/deep-security/smartcheck-helm
 
-6. (optionally) Get a trial account for Trend Micro Cloud One Application Security.  
+7. (optionally) Get a trial account for Trend Micro Cloud One Application Security.  
 This will provide runtime protection to the containers.
 
 ## 1. Define variables for AWS, Cloud One Container Security and (optionally) for Cloud One Application Security
-Open a Cloud9 environment and clone this repo
+Open a Cloud9 environment and clone this repo:
 
+git clone https://github.com/cvdabbeele/cloudOneOnAWS.git
 Copy `00_define_vars.sh.sample` to 00_define_vars.sh
 
 Enter your own configuration variables in the config file
@@ -74,6 +83,8 @@ This will do the following:
 4. Setup demo pipelines
 
 5. Deploy 3 demo applications
+
+If you encounter any errors, please check the "common issues" section at the bottom
 
 ## 3. This script will deploy 3 demo applications
 
@@ -97,3 +108,15 @@ This will tear-down the EKS cluster, the EC2 instances and Cloudformation Stacks
 ## Requirements
 - This project needs 1 available VPC. By default an AWS account has a limit of 5 VPCs per region.  
 - Every time this project runs, it creates an S3 bucket per pipeline/app (3 pipelines per run), to store its artefacts. By default an AWS account has a limit of 100 buckets.  See the last section of the "down" script to cleanup.
+
+## Common issues (WIP)
+### Error: Kubernetes cluster unreachable
+`The connection to the server localhost:8080 was refused - did you specify the right host or port?`
+
+Verify your AWS_PROJECT variable. It may only contain **lowercase and trailing numbers**, but :
+- no uppercase
+- no " - "
+- no " _ "
+- nor any special characters
+
+This variable is used for several purposes and each of them have their own restrictions,..which add up to "only a-z lowercase and numbers"  It may also not begin with a number.

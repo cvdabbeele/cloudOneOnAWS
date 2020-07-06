@@ -8,7 +8,7 @@ printf '%s' "Defining variables... "
 export AWS_REGION='eu-central-1'
 export AWS_ACCESS_KEY_ID="AKIAXxxxxxxxxxxxxxxx"
 export AWS_SECRET_ACCESS_KEY="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-export AWS_PROJECT='cloudone'    #may only contain lowercase, no numbers, no "-", no "_",...
+export AWS_PROJECT='cloudone'    #may only contain lowercase and trailing numbers, but no "-", no "_", nor any special characters.
 export AWS_EKS_NODES='2'
 
 # Cloud One Container Security (aka Deep Security Smart Check) settings (for pre-runtime scanning)
