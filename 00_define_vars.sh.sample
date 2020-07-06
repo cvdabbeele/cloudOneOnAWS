@@ -22,7 +22,7 @@ export DSSC_REGUSER='administrator'
 export DSSC_REGPASSWORD='trendmicro'  #DO CHANGE THIS
 
 # Cloud One Application Security settings (for runtime protection)
-export TREND_AP_KEY='your_trend_key_for_cloudOne_Application_Security
+export TREND_AP_KEY='your_trend_key_for_cloudOne_Application_Security'
 export TREND_AP_SECRET='your_trend_secret_for_cloudOne_Application_Security'
 
 
