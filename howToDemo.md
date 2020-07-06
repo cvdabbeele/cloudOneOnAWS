@@ -23,7 +23,8 @@ Open the following browser tabs:
  <br />
 - in Cloud9 type `eksctl get clusters` and show the cluster
 - type `kubectl get pods --namespace smartcheck` and show the pods used by smartcheck.  Also show the deployments `kubectl get deployments -n smartcheck`
-- type `kubectl get services -n smartcheck` and copy the URL of the proxy service as indicated in the screenshot below ![](images/GetDSSCURL.png)
+- type `kubectl get services -n smartcheck` and copy the URL of the proxy service as indicated in the screenshot below 
+![](images/GetDSSCURL.png)
 .  Then open a browser to that url
 (e.g. https://afa8c13bf2497469ba8411dfa1cfebec-1286344911.eu-central-1.elb.amazonaws.com )
 show scanfindings in DSSC
