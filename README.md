@@ -54,13 +54,13 @@ Click on the AWS Cloud9 tab in the Cloud9 menu bar -> Preferences -> scroll down
 ![](images/DisableAWSManagedTemporaryCredentials.png)
 
 5. Create credentials for CodeCommit  
-CodeCommit requires AWS Key Management Service. If you are using an existing IAM user, make sure there are no policies attached to the user that expressly deny the AWS KMS actions required by CodeCommit. For more information, see AWS KMS and encryption.
-In the AWS console, go to Services and choose IAM, then go to Users, and then click on the IAM user you want to configure for CodeCommit access.
-  On the Permissions tab, choose Add Permissions.
-  In Grant permissions, choose Attach existing policies directly.
-  From the list of policies, select AWSCodeCommitPowerUser or another managed policy for CodeCommit access.
-  Click "Next: Review" to review the list of policies to attach to the IAM user.
-  If the list is correct, choose Add permissions.
+CodeCommit requires AWS Key Management Service. If you are using an existing IAM user, make sure there are no policies attached to the user that expressly deny the AWS KMS actions required by CodeCommit. For more information, see AWS KMS and encryption. <br />
+In the AWS console, go to Services and choose IAM, then go to Users, and then click on the IAM user you want to configure for CodeCommit access.<br />
+- On the Permissions tab, choose Add Permissions.
+- In Grant permissions, choose Attach existing policies directly.<br />
+- From the list of policies, select AWSCodeCommitPowerUser or another managed policy for CodeCommit access.<br />
+- Click "Next: Review" to review the list of policies to attach to the IAM user.<br />
+- If the list is correct, choose Add permissions.
 
 see also:
 https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np
