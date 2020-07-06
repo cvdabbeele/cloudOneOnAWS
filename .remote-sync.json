@@ -5,9 +5,9 @@
   "uploadOnSave": true,
   "useAtomicWrites": false,
   "deleteLocal": false,
-  "hostname": "52.57.30.174",
+  "hostname": "3.127.211.221",
   "port": "22",
-  "target": "/home/ubuntu/environment/cloudOneOnAws",
+  "target": "/home/ubuntu/environment/cloudOneOnAWS",
   "ignore": [
     ".remote-sync.json",
     ".git/**"

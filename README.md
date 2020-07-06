@@ -1,23 +1,37 @@
 # Overview
 This is a collaborated effort with mawinkler and nicgoth   
-This sets up an AWS CodePipeline, builds a few containers and applies Trend Micro Cloud One Container Security (C1CS) and Trend Micro Cloud One Application Security (C1AS)to it
-Additionally this creates the required EKS cluster, CodeCommit repository, CodePipeline pipeline, ECR registry etc..
+This sets up:
+- an AWS codeCommit registry
+- codePipeline
+- deploys Trend Micro Cloud One Container Security (C1CS)
+- and integrates it in the pipeline.  
+
+Then it will:
+- deploy 3 containers and
+- scan them for vulnerabilities, malware, sensitive content etc..
+- and then push them to the ECR registry
+
+This README.md describes how to deploy the demo environment
+
+Checkout the **howToDemo.md** for demo scenarios
 
 # High level overview of steps (detailed steps in next section)
 1. open Cloud9
 2. clone this repo
-3. enter your configuration settings in `00_define_vars.sh.sample` and save it as `.sh`
+3. enter your configuration settings in `00_define_vars.sh.sample` and save it as `.sh` (make sure it is executable)
 4. run ./up.sh to deploy the environment (pipeline, scanner,...)
-5. build a sample container and see how it get scanned by Cloud One Container Security (C1CS).  If it has vulnerabilities it will not be pushed to the ECR Registry.
-6. lower the security thresholds in the C1CS scanner and rebuild the (vulnerable) container.  It will now be pushed to the ECR registry and deployed on EKS. Run a few exploits against it.  Depending on the settings in Cloud One Application Security (C1AS), they will be blocked.
+5. build a sample container and see how it get scanned by Cloud One Container Security (C1CS).  If it has more  vulnerabilities, malware or sensitive content than defined in the threshold, then it will not be pushed to the ECR Registry.
+6. increase the security thresholds in buildspec.yaml file (=allow more risk) and rebuild the (vulnerable) container.  It will now be pushed to the ECR registry and deployed on EKS.
+7. Run a few exploits against it.  Depending on the settings in Cloud One Application Security (C1AS), they will be blocked.  (for a detailed demo scenario, see **howToDemo.md** )
 6. run ./down.sh to tear everything down
 
-# Detailed instructions
+# Detailed setup instructions
 
 ## Requirements
-The AWS region that you work in, on your account, must be able to create a VPC and a Public IP. (there is a soft limit of 5 VPCs per AWS account per AWS region)  
-The Cloud Formation Template to build the EKS cluster will crash if those resources cannot be created
-
+The AWS region that you work in, on your account, must be able to create a VPC and a Public IP. (there is a soft limit of 5 VPCs per AWS account per AWS region)  <br />
+The Cloud Formation Template to build the EKS cluster will crash if those resources cannot be created, <br />
+If you don't have a license key for Deep Security Smartcheck yet, you can get one here: https://www.trendmicro.com/product_trials/download/index/us/168 <br />
+If you want to demo the Runtime Protection as well, then you need to setup a CloudOne Application Security Account ( https://cloudone.trendmicro.com/_workload_iframe//SignUp.screen ) and create a new "group" for the MoneyX application.  This will give you a key and a secret that you can use for TREND_AP_KEY and TREND_AP_SECRET<br />
 
 ## Preparation  
 1. Setup a AWS Cloud9 development environment
@@ -88,26 +102,29 @@ If you encounter any errors, please check the "common issues" section at the bot
 
 ## 3. This script will deploy 3 demo applications
 
-At the same level as the project directory (cloudOneOnAws), an "apps" directory will be created.
-Hereunder, 3 apps will be installed (c1appsecmoneyx, troopers and mydvwa)
+At the same level as the project directory (cloudOneOnAWS), an "apps" directory will be created.
+Hereunder, 3 apps will be installed (c1appsecmoneyx, troopers and mydvwa) <br />
 This will trigger an AWS codeCommit process to build and scan those applications by SmartCheck
-By default, the apps will not be deployed because they have too many vulnerabilities.
-As a demo you can increase the thresholds in the buildspec.yml files and do a git push
-The apps will now be rebuild, scanned again, but because of the high thresholds they will be allowed to be deployed
+
+By default:
+- the troopers app will be deployed because it is clean
+- the c1-app-sec-moneyx and the mydvwa apps will not be deployed because they have too many vulnerabilities
+
+As a demo you can increase the thresholds in the buildspec.yml file of the cloudone01c1appsecmoneyx app, and do a git push
+The app will now be rebuild, scanned again and will be deployed (with vulnerabilities)
 
 If you have setup Cloud One Application Security, you can now attach the running (and vulnerable) containers and demonstrate "runtime protection"
 
 
-## To delete all deployments, run the following command:
-
+## Suspend / Tear down
 ```
 $ ./down.sh
 ```
-This will tear-down the EKS cluster, the EC2 instances and Cloudformation Stacks.  The Cloud9 EC2 instance will stop, but remain available for later.
+Unfortunately it is (currently) not possible to set the number of EKS nodes to 0.  So we cannot *suspend* the environment.
 
-## Requirements
-- This project needs 1 available VPC. By default an AWS account has a limit of 5 VPCs per region.  
-- Every time this project runs, it creates an S3 bucket per pipeline/app (3 pipelines per run), to store its artefacts. By default an AWS account has a limit of 100 buckets.  See the last section of the "down" script to cleanup.
+To avoid exessive costs when not using the demo environment, tear-down the environment.  This ./down.sh script will delete the EKS cluster, the EC2 instances and Cloudformation Stacks.  The Cloud9 EC2 instance will stop, but remain available for later.
+
+To re-use the demo environment later, just start Cloud9 and run **./up.sh**
 
 ## Common issues (WIP)
 ### Error: Kubernetes cluster unreachable
