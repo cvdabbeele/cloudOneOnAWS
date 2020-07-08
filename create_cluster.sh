@@ -6,8 +6,8 @@ printf '%s \n'  "-----------------------"
 # Check required variables
 varsok=true
 
-if  [ -z "$AWS_REGION" ]; then echo AWSC_REGION must be set && varsok=false; fi
-if  [ -z "$AWS_PROJECT" ]; then echo AWSC_PROJECT must be set && varsok=false; fi
+if  [ -z "$AWS_REGION" ]; then echo AWS_REGION must be set && varsok=false; fi
+if  [ -z "$AWS_PROJECT" ]; then echo AWS_PROJECT must be set && varsok=false; fi
 #if  [ -z "$AWS_CODECOMMIT_REPO" ]; then echo AWS_CODECOMMIT_REPO must be set && varsok=false; fi
 if  [ -z "$AWS_EKS_NODES" ]; then echo AWS_EKS_NODES must be set && varsok=false; fi
 #if  [ -z "$AWS_EKS_CLUSTERNAME" ]; then echo AWS_EKS_CLUSTERNAME must be set && varsok=false; fi
@@ -41,7 +41,7 @@ managedNodeGroups:
   - name: nodegroup
     desiredCapacity: ${AWS_EKS_NODES}
     iam:
-      withAddonPolicies: 
+      withAddonPolicies:
         albIngress: true
 EOF
     start_time="$(date -u +%s)"

@@ -9,9 +9,13 @@ printf '%s\n' "----------------------"
 . 00_define_vars.sh
 
 varsok=true
-if  [ -z "${AWS_REGION}" ]; then echo AWS_REGION must be set && varsok=false; fi
+#if  [ -z "${AWS_REGION}" ]; then echo AWS_REGION must be set && varsok=false; fi
 if  [ -z "${AWS_PROJECT}" ]; then echo AWS_PROJECT must be set && varsok=false; fi
 if  [ "$varsok" = false ]; then exit ; fi
+
+printf '%s\n' "Getting region from AWS configure"
+export AWS_REGION=`aws configure get region`
+echo AWS_REGION= $AWS_REGION
 
 #delete deployed apps
 printf "%s\n" "Removing Deployments on EKS cluster"
