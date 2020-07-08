@@ -113,11 +113,13 @@ This will do the following:
 3. Add the internal Repository plus a demo Repository to Smart Check
 ![](images/AddRepos.png)
 <br /><br />
+
 4. Setup demo pipelines
 ![](images/CreatingPipelines.png)
+
 <br /><br />
 5. Deploy 3 demo applications
-![](images/CreatingPipelines.png)
+![](images/AddingDemoApps.png)
 <br /><br />
 If you encounter any **errors**, please check the "common issues" section at the bottom
 
@@ -142,7 +144,7 @@ $ ./down.sh
 ```
 Unfortunately it is (currently) not possible to *suspend* the environment.  <br />
 - (One cannot set the number of EKS nodes to 0 and if we top an EKS worker node (EC2) then EKS spins up a new one because we have set a minimum level).  
- 
+
 To avoid exessive costs when not using the demo environment, tear-down the environment.  The ./down.sh script will delete the EKS cluster, the EC2 instances, Cloudformation Stacks, Roles, VPCs, Subnets, S3buckets,....  The Cloud9 EC2 instance will stop, but remain available for later.  
 
 To start the enviroment again, simply reconnect to the Cloud9 environment and run **./up.sh**  This will redeploy everything from scratch
