@@ -55,8 +55,7 @@ explore the buildspec.yaml and the Dockerfile
           Tab: Template ->search appSec
           registration keys for AppSec
 
-
-exploit running app:
+### Exploit the running app:
 -> received payments
 http://a091a4276fe2d48009ecee19c6c64981-609291530.eu-central-1.elb.amazonaws.com:8080/payment/list-received/ or 1=1
 - check security events in CloudOne Application Security

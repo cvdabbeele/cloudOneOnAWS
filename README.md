@@ -42,35 +42,34 @@ The User account that you will use:
 - **CloudOne Application Security Account** If you want to demo the Runtime Protection as well, then you need this account.  You can register for a trial here: https://cloudone.trendmicro.com/_workload_iframe//SignUp.screen  You will need to create a "group" for the MoneyX application.  This will give you a **key** and a **secret** that you can use for TREND_AP_KEY and TREND_AP_SECRET<br />
 
 ## Preparation  
-0. Setup an AWS Cloud9 development environment
+1. Setup an AWS Cloud9 development environment
   - use `t2.micro`
   - use `Ubuntu Server 18.04 LTS`
   - tag it to your liking (tags are good)
   - use default settings for the rest
 
-0. <not needed?>
+<!--0. <not needed?>
 Create an AWS Role to allow the EKS worker nodes (EC2 instances) to connect to ECR  
  - AWS Services -> IAM -> Roles -> Create Role
  - Select type of trusted entity: AWS Services
  - Choose a use case: EC2 -> Next: Permissions
  - Assign permission policy : "AmazonEC2ContainerRegistryFullAccess" -> Next: Tags
  - -> Next Role name: e.g. project_name_EC2_access_to_ECR  
-
-0. Grant the Cloud9 environment Administrator Access <br />
+  -->
+<!-- 0. Grant the Cloud9 environment Administrator Access <br />
 - Click the following deep to create the Role for Cloud9:
 https://console.aws.amazon.com/iam/home#/roles$new?step=review&commonUseCase=EC2%2BEC2&selectedUseCase=EC2&policies=arn:aws:iam::aws:policy%2FAdministratorAccess 
 - Name it Cloud9EC2AdminAccess
 - Attach the IAM role Cloud9EC2AdminAccess to the ec2 instance of your Cloud9:
   * In the AWS Console, go to Services -> EC2 -> select the EC2 instance used for this Cloud9 -> Actions -> Instance Settings -> Attach/Replace IAM Role
-* Within Cloud9 Preferences --> AWS Settings --> Credentials --> AWS managed temporary credentials --> Disable
+* Within Cloud9 Preferences -> AWS Settings -> Credentials -> AWS managed temporary credentials -> Disable
+-->
 
-3. Start the Cloud9 environment
-
-4. In Cloud9, disable the `AWS-managed temporary credentials`  
+2. In Cloud9, disable the `AWS-managed temporary credentials`  
 Click on the AWS Cloud9 tab in the Cloud9 menu bar (if you don't see the menu bar as indicated in the screfenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible) -> Preferences -> scroll down and expand "AWS Settings" -> Credentials -> uncheck "AWS managed temporary credentials"    
 ![](images/DisableAWSManagedTemporaryCredentials.png)
 
-5. Create credentials for CodeCommit  
+3. Create credentials for CodeCommit  
 CodeCommit requires AWS Key Management Service. If you are using an existing IAM user, make sure there are no policies attached to the user that expressly deny the AWS KMS actions required by CodeCommit. For more information, see AWS KMS and encryption. <br />
 - In the AWS console, go to Services and choose IAM, then go to Users, and then click on the IAM user you want to configure for CodeCommit access.<br />
 - On the Permissions tab, choose Add Permissions.
@@ -82,11 +81,11 @@ CodeCommit requires AWS Key Management Service. If you are using an existing IAM
 see also:
 https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np
 
-6. Get a trial account for Trend Micro Cloud One Container Security (aka Deep Security Smart Check).  
+4. Get a trial account for Trend Micro Cloud One Container Security (aka Deep Security Smart Check).  
 This will provide pre-runtime scanning of containers.
 see: https://github.com/deep-security/smartcheck-helm
 
-7. (optionally) Get a trial account for Trend Micro Cloud One Application Security.  
+5. (optionally) Get a trial account for Trend Micro Cloud One Application Security.  
 This will provide runtime protection to the containers.
 
 ## 1. Define variables for AWS, Cloud One Container Security and (optionally) for Cloud One Application Security
@@ -143,7 +142,7 @@ $ ./down.sh
 ```
 Unfortunately it is (currently) not possible to *suspend* the environment.  <br />
 - (One cannot set the number of EKS nodes to 0 and if we top an EKS worker node (EC2) then EKS spins up a new one because we have set a minimum level).  
-
+ 
 To avoid exessive costs when not using the demo environment, tear-down the environment.  The ./down.sh script will delete the EKS cluster, the EC2 instances, Cloudformation Stacks, Roles, VPCs, Subnets, S3buckets,....  The Cloud9 EC2 instance will stop, but remain available for later.  
 
 To start the enviroment again, simply reconnect to the Cloud9 environment and run **./up.sh**  This will redeploy everything from scratch
