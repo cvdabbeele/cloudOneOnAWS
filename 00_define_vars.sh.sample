@@ -1,7 +1,7 @@
 #enter your configuration variables in this file
 #save it without the .sample extension
 #make sure it is executable
-
+ 
 printf '%s' "Defining variables... "
 
 #  AWS settings
