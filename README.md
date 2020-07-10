@@ -73,7 +73,7 @@ https://console.aws.amazon.com/iam/home#/roles$new?step=review&commonUseCase=EC2
 Click on the AWS Cloud9 tab in the Cloud9 menu bar (if you don't see the menu bar as indicated in the screfenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible) -> Preferences -> scroll down and expand "AWS Settings" -> Credentials -> uncheck "AWS managed temporary credentials"    
 ![](images/DisableAWSManagedTemporaryCredentials.png)
 
-3. configure AWS cli
+<!--3. configure AWS cli
 ```
 $ aws configure
 AWS Access Key ID [****************GT7G]:   type your AWS Access Key here
@@ -93,12 +93,12 @@ CodeCommit requires AWS Key Management Service. If you are using an existing IAM
 
 see also:
 https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np
-
-5. Get a trial account for Trend Micro Cloud One Container Security (aka Deep Security Smart Check).  
+-->
+3. Get a trial account for Trend Micro Cloud One Container Security (aka Deep Security Smart Check).  
 This will provide pre-runtime scanning of containers.
 see: https://github.com/deep-security/smartcheck-helm
 
-6. (optionally) Get a trial account for Trend Micro Cloud One Application Security.  
+4. (optionally) Get a trial account for Trend Micro Cloud One Application Security.  
 This will provide runtime protection to the containers.
 
 ## 1. Define variables for AWS, Cloud One Container Security and (optionally) for Cloud One Application Security
