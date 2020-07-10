@@ -47,6 +47,7 @@ The AWS Region that you will use must have
 
 ## Preparation  
 1. Setup an AWS Cloud9 development environment
+  - select `Create a new EC2 instance for environment (direct access)`
   - use `t2.micro`
   - use `Ubuntu Server 18.04 LTS`
   - tag it to your liking (tags are good)
@@ -104,11 +105,18 @@ This will provide runtime protection to the containers.
 ## 1. Define variables for AWS, Cloud One Container Security and (optionally) for Cloud One Application Security
 Open a Cloud9 environment and clone this repo:
 
+```
 git clone https://github.com/cvdabbeele/cloudOneOnAWS.git
+```
 Copy `00_define_vars.sh.sample` to 00_define_vars.sh
-
+```
+cp 00_define_vars.sh.sample 00_define_vars.sh
+```
+edit the 00_define_vars.sh file (e.g. by using vi)
 Enter your own configuration variables in the config file
-
+```
+vi 00_define_vars.sh.sample
+```
 
 ## 2. Deploy the environment
 
