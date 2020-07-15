@@ -76,7 +76,9 @@ Go to Received Payments.  You see no received payments.
 
 Go to the URL window at the top of the browser and add to the end of the url:  " or 1=1" (without the quotes)
 e.g.
+```
 http://a091a4276fe2d48009ecee19c6c64981-609291530.eu-central-1.elb.amazonaws.com:8080/payment/list-received/ or 1=1
+```
 
 You should now see ALL payments... which is bad
 
@@ -84,7 +86,12 @@ Go to https://cloudone.trendmicro.com/application#/events show that there is a s
 
 Check security events in CloudOne Application Security
 
-Set the Policies to MITIGATE (at minimum do this for the SQL injection Policy)
+Set the SQL Injection policy to MITIGATE
+
+**important:** <br />
+Open the SQL Injection Policy and enable all subsections as indicated in the screenshot below.
+![](images/SQLPolicyConfiguration.png)  <br />
+
 
 Run the SQL injection again  (just refresh the browser page) You should get our super fancy blocking page as indicated in the screenshot below
 ![](images/Blocked.png)  <br />

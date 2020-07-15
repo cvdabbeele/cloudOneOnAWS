@@ -112,7 +112,7 @@ Copy `00_define_vars.sh.sample` to 00_define_vars.sh
 ```
 cp 00_define_vars.sh.sample 00_define_vars.sh
 ```
-edit the 00_define_vars.sh file (e.g. by using vi)
+edit the 00_define_vars.sh file (e.g. by using vi)  <br />
 Enter your own configuration variables in the config file
 ```
 vi 00_define_vars.sh.sample
@@ -127,6 +127,8 @@ This will do the following:
 
 1. Create an EKS cluster
 ![](images/CreatingEksCluster.png)
+<br /><br />
+![](images/EKSClusterCreated.png)
 <br /><br />
 
 2. Install Smart Check with internal registry
@@ -143,15 +145,21 @@ This will do the following:
 
 5. Deploy 3 demo applications
 At the same level as the project directory (cloudOneOnAWS), an "apps" directory will be created.
-Hereunder, 3 apps will be installed (**c1appsecmoneyx, troopers and mydvwa**) <br />
-This will trigger an AWS codeCommit process to build and scan those applications by SmartCheck
+
+Hereunder, 3 app-repos will be git-cloned from the public github (**c1appsecmoneyx, troopers and mydvwa**) ![](images/ThreeDemoApps.png)
+<br />
+And those apps will be pushed to AWS CodeCommit
+![](images/AddingDemoApps.png)
+<br /><br />
+This will trigger an AWS CodeBuild process to build the applications
 
 By default:
 - the **troopers** app will be deployed because it is clean
-- the **c1-app-sec-moneyx and the mydvwa apps will not be deployed** because they have too many vulnerabilities
-
-![](images/AddingDemoApps.png)
+- the **c1-app-sec-moneyx** and the **mydvwa** apps will not be deployed because they have too many vulnerabilities
+![](images/CodePipeline.png)
 <br /><br />
+
+And have then scanned by SmartCheck
 
 If you encounter any **errors**, please check the "common issues" section at the bottom
 

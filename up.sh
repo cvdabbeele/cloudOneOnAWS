@@ -19,10 +19,10 @@ export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
 
 varsok=true
 # Check AWS settings
-if  [ -z "$AWS_REGION" ]; then echo AWSC_REGION must be set && varsok=false; fi
+#if  [ -z "$AWS_REGION" ]; then echo AWSC_REGION must be set && varsok=false; fi
 if  [ -z "$AWS_PROJECT" ]; then echo AWSC_PROJECT must be set && varsok=false; fi
-if  [ -z "$AWS_ACCESS_KEY_ID" ]; then echo AWS_ACCESS_KEY_ID must be set && varsok=false; fi
-if  [ -z "$AWS_SECRET_ACCESS_KEY" ]; then echo AWS_SECRET_ACCESS_KEY must be set && varsok=false; fi
+#if  [ -z "$AWS_ACCESS_KEY_ID" ]; then echo AWS_ACCESS_KEY_ID must be set && varsok=false; fi
+#if  [ -z "$AWS_SECRET_ACCESS_KEY" ]; then echo AWS_SECRET_ACCESS_KEY must be set && varsok=false; fi
 if  [ -z "$AWS_EKS_NODES" ]; then echo AWS_EKS_NODES must be set && varsok=false; fi
 
 # Check Cloud One Container Security (aka Deep Security Smart Check) settings (for pre-runtime scanning)
@@ -51,16 +51,22 @@ printf '%s\n' "--------------------------"
 printf '%s\n' "Setting up Project ${AWS_PROJECT} "
 printf '%s\n' "--------------------------"
 
+#get AWS variables
+
+export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
+export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
+export AWS_REGION=`aws configure get region`
+cat ~/.aws/credentials | grep key >> ~/.aws/config      #seems to be required for EKS 
 #env | grep -i AWS
 # configure AWS cli
-printf '%s\n' "Configuring AWS CLI"
-cat <<EOF>~/.aws/credentials
-[default]
-aws_access_key_id=$AWS_ACCESS_KEY_ID
-aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
-region=$AWS_REGION
-output=json
-EOF
+#####printf '%s\n' "Configuring AWS CLI"
+#####cat <<EOF>~/.aws/credentials
+#####[default]
+#####aws_access_key_id=$AWS_ACCESS_KEY_ID
+#####aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
+#####region=$AWS_REGION
+#####output=json
+#####EOF
 rolefound="false"
 AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
 for i in "${!AWS_ROLES[@]}"; do
