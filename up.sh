@@ -56,7 +56,13 @@ printf '%s\n' "--------------------------"
 export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
 export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
 export AWS_REGION=`aws configure get region`
-cat ~/.aws/credentials | grep key >> ~/.aws/config      #seems to be required for EKS 
+
+if [ -z "cat ~/.aws/credentials | grep key " ]
+then
+  cat ~/.aws/credentials | grep key >> ~/.aws/config      #seems to be required for EKS
+fi
+
+
 #env | grep -i AWS
 # configure AWS cli
 #####printf '%s\n' "Configuring AWS CLI"
