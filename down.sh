@@ -80,11 +80,11 @@ for i in "${!aws_eks_clusters[@]}"; do
         sleep 30  #giving the delete cluster process a bit more time
         endtime="$(date +%s)"
         printf '%s\n' "Elapsed time: $((($endtime-$starttime)/60)) minutes"
-
       else
         printf '%s \n' "PANIC: eks cluster with name ${AWS_PROJECT} exists, but file \"${AWS_PROJECT}EksCluster.yml\" does not"
         printf '%s \n' "This situation should not exist.  Manual cleanup is required"
       fi
+       printf "%s\n" "Please be patient, this can take up to 30 minutes... (started at:`date`)"
   fi
 done
 
@@ -219,12 +219,15 @@ for i in "${!aws_stacks[@]}"; do
   # printf "%s\n" "stack $i =  ${aws_stacks[$i]}"
   if [[ "${aws_stacks[$i]}" =~ "eksctl-${AWS_PROJECT}-cluster" ]]; then
     printf "%s\n" "Deleting CloudFormation Stack:  ${aws_stacks[$i]}"
-    printf "%s\n" "Please be patient, this can take up to 30 minutes... (started at:`date`)"
+    starttime="$(date +%s)"
+    printf "%s\n" "Please be patient, this can take up to 30 minutes... (started at:$starttime)"
     aws cloudformation delete-stack --stack-name ${aws_stacks[$i]} --region ${AWS_REGION}
     aws cloudformation wait stack-delete-complete --stack-name ${aws_stacks[$i]}  --region ${AWS_REGION}
+    endtime="$(date +%s)"
+    printf '%s\n' "Elapsed time: $((($endtime-$starttime)/60)) minutes"
   fi
 done
-
+ 
 
 
 #cleanup codepipelineartifactbuckets

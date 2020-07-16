@@ -2,6 +2,10 @@
 # import variables
 # check for variabels
 #-----------------------
+
+#TODO: add base64
+
+
 printf '%s' "Importing variables... "
 #TBD: verify ALL variables
 . ./00_define_vars.sh

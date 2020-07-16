@@ -18,23 +18,21 @@ This README.md describes how to deploy the demo environment
 Checkout the **howToDemo.md** for demo scenarios
 
 # High level overview of steps (see detailed steps in next section)
-1. open Cloud9
-2. configure AWS CLI with your keys and region
-3. clone this repo
-4. enter your settings in `00_define_vars.sh`
-5. run ./up.sh to deploy the environment (pipeline, scanner,...)
-6. build a sample container and see how it gets scanned by Cloud One Container Security (C1CS).  If it has more  vulnerabilities, malware or sensitive content than defined in the threshold, it will not be pushed to the ECR Registry and it will not be deployed.
-7. increase the security thresholds in buildspec.yaml file (=allow more risk) and rebuild the (vulnerable) container.  It will now be pushed to the ECR registry and deployed on EKS.
-8. Run a few exploits against it.  Depending on the settings in Cloud One Application Security (C1AS), they will be blocked.  (for a detailed demo scenario, see **howToDemo.md** )
-9. run ./down.sh to tear everything down
+1. open Cloud9, configure AWS CLI with your keys and region and clone this repo
+2. enter your settings in `00_define_vars.sh`
+3. run ./up.sh to deploy the environment (pipeline, scanner,...)
+4. see [howToDemo.md](howToDemo.md) for demo scenarios
+5. run ./down.sh to tear everything down
 
 # Detailed setup instructions
 
 ## Requirements       -----DO READ-----
+**Shared AWS Accounts**   <br/>
+If you share an AWS account with a co-worker, make sure that you both use **different regions**
 
-The AWS Region that you will use must have
+The AWS Region that you will use must have:
 - **one "free" VPC "slot"**
-  By default, there is a soft limit of 5 VPCs per region.  This script must be able to create 1 VPC
+   By default, there is a soft limit of 5 VPCs per region.  This script must be able to create 1 VPC
 - **one "free" Elastic IP "slot"**
   By default, there is a soft limit of 5 Elastic IPs per region.  This script must be able to create 1 Elastic IP
 
@@ -42,7 +40,7 @@ The Cloud Formation Template to build the EKS cluster will crash if those resour
 
 The IAM User account that you will use:
 - must have **Programmatic Access** as well as **AWS Management Console Access**
-- must have **AdministratorAccess** permissions (AWS console -> Services -> IAM -> Users -> click on the user -> Permissions tab -> If AdministratorAccess is not there, then click on Add permissions and add it; or request the rights from you Admin)  The reason is that the script will not only create an EKS cluster, but also a lot of other things, like VPC, subnets, routetables, roles, IPs,...
+- must have **AdministratorAccess** permissions (AWS console -> Services -> IAM -> Users -> click on the user -> Permissions tab -> If AdministratorAccess is not there, then click on Add permissions and add it; or request the rights from you Admin)  The reason is that the script will not only create an EKS cluster, but also a lot of other things, like create  VPC, subnets, routetables, roles, IPs, S3 buckets, ...
 
 (trial) Licenses:
 - **A license for Cloud One Container Image Security** (aka SmartCheck) If you don't have a license key yet, you can get one here: https://www.trendmicro.com/product_trials/download/index/us/168 <br />
@@ -77,16 +75,15 @@ https://console.aws.amazon.com/iam/home#/roles$new?step=review&commonUseCase=EC2
 Click on the AWS Cloud9 tab in the Cloud9 menu bar.  The tab may also show as a cloud with a number 9 in it.  If you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible.  Go to -> Preferences (see "1") -> scroll down and expand "AWS Settings" (see "2")-> Credentials -> uncheck "AWS managed temporary credentials"  (see "3")   
 ![](images/DisableAWSManagedTemporaryCredentials.png)
 
-<!--3. configure AWS cli
+3. configure AWS cli
 ```
 $ aws configure
 AWS Access Key ID [****************GT7G]:   type your AWS Access Key here
 AWS Secret Access Key [****************0LQy]:  type your AWS Secret Access key here
 Default region name [eu-central-1]:    Configure your region here
-Default output format [json]:
+Default output format [json]:          This setting is not used by the Project
 ```
-
-4. Create credentials for CodeCommit  
+<!--4. Create credentials for CodeCommit  
 CodeCommit requires AWS Key Management Service. If you are using an existing IAM user, make sure there are no policies attached to the user that expressly deny the AWS KMS actions required by CodeCommit. For more information, see AWS KMS and encryption. <br />
 - In the AWS console, go to Services and choose IAM, then go to Users, and then click on the IAM user you want to configure for CodeCommit access.<br />
 - On the Permissions tab, choose Add Permissions.
@@ -109,6 +106,7 @@ This will provide runtime protection to the containers.
 In your Cloud9 environment, run the following command to clone this repository:
 ```
 git clone https://github.com/cvdabbeele/cloudOneOnAWS.git
+cd cloudOneOnAWS
 ```
 ## Define variables for AWS, Cloud One Container Security and for Cloud One Application Security
 Copy 00_define_vars.sh.sample to 00_define_vars.sh
@@ -130,22 +128,17 @@ This will do the following:  <BR /> <sup>
 (PS: there is a "Common Issues" section at the end of this document)</sup>
 
 1. Create an EKS cluster
-![](images/CreatingEksCluster.png)
-<br />
-![](images/EKSClusterCreated.png)
-<br />
+![](images/CreatingEksCluster.png) <br />
+![](images/EKSClusterCreated.png) <br />
 
 2. Install Smart Check with internal registry
-![](images/DeployingDSSC.png)
-<br />
+![](images/DeployingDSSC.png) <br />
 
 3. Add the internal Repository plus a demo Repository to Smart Check
-![](images/AddRepos.png)
-<br />
+![](images/AddRepos.png) <br />
 
 4. Setup demo pipelines
-![](images/CreatingPipelines.png)
-<br />
+![](images/CreatingPipelines.png) <br />
 
 5. git-clone 3 demo applications <br />
 At the same level as the project directory (cloudOneOnAWS), an "apps" directory will be created.
