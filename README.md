@@ -1,27 +1,29 @@
 # Overview
-This is a collaborated effort with mawinkler and nicgoth   
-This sets up:
+This is a collaborative effort with mawinkler and nicgoth   
+In short, the script in this repo sets up:
+- an AWS Elastic Kubernetes Service Cluster (EKS)
 - an AWS codeCommit registry
-- codePipeline
-- deploys Trend Micro Cloud One Container Security (C1CS)
-- and integrates it in the pipeline.  
+- three AWS codePipelines
+- Trend Micro Cloud One Container Registry Security (C1CS or "SmartCheck") and integrates it in the pipelines
 
 Then it will:
-- deploy 3 containers and
+- build 3 containers and
 - scan them for vulnerabilities, malware, sensitive content etc..
-- and then push them to the ECR registry
+- and, if the risk is below the defined threshold:
+    - push them to the ECR registry
+    - deploy them on AKS
 
 This README.md describes how to deploy the demo environment
 
 Checkout the **howToDemo.md** for demo scenarios
 
-# High level overview of steps (detailed steps in next section)
+# High level overview of steps (see detailed steps in next section)
 1. open Cloud9
-2. configure AWS CLI
+2. configure AWS CLI with your keys and region
 3. clone this repo
-4. enter your configuration settings in `00_define_vars.sh.sample` and save it as `.sh` (make sure it is executable)
+4. enter your settings in `00_define_vars.sh`
 5. run ./up.sh to deploy the environment (pipeline, scanner,...)
-6. build a sample container and see how it get scanned by Cloud One Container Security (C1CS).  If it has more  vulnerabilities, malware or sensitive content than defined in the threshold, then it will not be pushed to the ECR Registry.
+6. build a sample container and see how it gets scanned by Cloud One Container Security (C1CS).  If it has more  vulnerabilities, malware or sensitive content than defined in the threshold, it will not be pushed to the ECR Registry and it will not be deployed.
 7. increase the security thresholds in buildspec.yaml file (=allow more risk) and rebuild the (vulnerable) container.  It will now be pushed to the ECR registry and deployed on EKS.
 8. Run a few exploits against it.  Depending on the settings in Cloud One Application Security (C1AS), they will be blocked.  (for a detailed demo scenario, see **howToDemo.md** )
 9. run ./down.sh to tear everything down
@@ -29,11 +31,6 @@ Checkout the **howToDemo.md** for demo scenarios
 # Detailed setup instructions
 
 ## Requirements       -----DO READ-----
-The AWS region that you work in, on your account, must be able to create a VPC and a Public IP. (there is a soft limit of 5 VPCs per AWS account per AWS region)  <br />
-The Cloud Formation Template to build the EKS cluster will crash if those resources cannot be created, <br />
-The User account that you will use:
-- must have **Programmatic Access** as well as **AWS Management Console Access**
-- must have **AdministratorAccess** permissions (AWS console -> Services -> IAM -> Users -> click on the user -> Permissions tab -> If AdministratorAccess is not there, then click on Add permissions and add it; or request the rights from you Admin)  The reason is that the script will not only create an EKS cluster, but also a lot of other things, like VPC, subnets, routetables, roles, IPs,...
 
 The AWS Region that you will use must have
 - **one "free" VPC "slot"**
@@ -41,15 +38,21 @@ The AWS Region that you will use must have
 - **one "free" Elastic IP "slot"**
   By default, there is a soft limit of 5 Elastic IPs per region.  This script must be able to create 1 Elastic IP
 
+The Cloud Formation Template to build the EKS cluster will crash if those resources cannot be created
+
+The IAM User account that you will use:
+- must have **Programmatic Access** as well as **AWS Management Console Access**
+- must have **AdministratorAccess** permissions (AWS console -> Services -> IAM -> Users -> click on the user -> Permissions tab -> If AdministratorAccess is not there, then click on Add permissions and add it; or request the rights from you Admin)  The reason is that the script will not only create an EKS cluster, but also a lot of other things, like VPC, subnets, routetables, roles, IPs,...
+
 (trial) Licenses:
 - **A license for Cloud One Container Image Security** (aka SmartCheck) If you don't have a license key yet, you can get one here: https://www.trendmicro.com/product_trials/download/index/us/168 <br />
-- **CloudOne Application Security Account** If you want to demo the Runtime Protection as well, then you need this account.  You can register for a trial here: https://cloudone.trendmicro.com/_workload_iframe//SignUp.screen  You will need to create a "group" for the MoneyX application.  This will give you a **key** and a **secret** that you can use for TREND_AP_KEY and TREND_AP_SECRET<br />
+- **CloudOne Application Security Account**  You can register for a trial here: https://cloudone.trendmicro.com/_workload_iframe//SignUp.screen  You will need to create a "group" for the MoneyX application.  This will give you a **key** and a **secret** that you can use for the TREND_AP_KEY and TREND_AP_SECRET variables in this script.<br />
 
 ## Preparation  
 1. Setup an AWS Cloud9 development environment
   - select `Create a new EC2 instance for environment (direct access)`
   - use `t2.micro`
-  - use `Ubuntu Server 18.04 LTS`
+  - use **Ubuntu Server 18.04 LTS**
   - tag it to your liking (tags are good)
   - use default settings for the rest
 
@@ -71,7 +74,7 @@ https://console.aws.amazon.com/iam/home#/roles$new?step=review&commonUseCase=EC2
 -->
 
 2. In Cloud9, disable the `AWS-managed temporary credentials`  
-Click on the AWS Cloud9 tab in the Cloud9 menu bar (if you don't see the menu bar as indicated in the screfenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible) -> Preferences -> scroll down and expand "AWS Settings" -> Credentials -> uncheck "AWS managed temporary credentials"    
+Click on the AWS Cloud9 tab in the Cloud9 menu bar.  The tab may also show as a cloud with a number 9 in it.  If you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible.  Go to -> Preferences (see "1") -> scroll down and expand "AWS Settings" (see "2")-> Credentials -> uncheck "AWS managed temporary credentials"  (see "3")   
 ![](images/DisableAWSManagedTemporaryCredentials.png)
 
 <!--3. configure AWS cli
@@ -99,59 +102,60 @@ https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpi
 This will provide pre-runtime scanning of containers.
 see: https://github.com/deep-security/smartcheck-helm
 
-4. (optionally) Get a trial account for Trend Micro Cloud One Application Security.  
+4. Get a trial account for Trend Micro Cloud One Application Security.  
 This will provide runtime protection to the containers.
 
-## 1. Define variables for AWS, Cloud One Container Security and (optionally) for Cloud One Application Security
-Open a Cloud9 environment and clone this repo:
-
+##  Clone this repo:
+In your Cloud9 environment, run the following command to clone this repository:
 ```
 git clone https://github.com/cvdabbeele/cloudOneOnAWS.git
 ```
-Copy `00_define_vars.sh.sample` to 00_define_vars.sh
+## Define variables for AWS, Cloud One Container Security and for Cloud One Application Security
+Copy 00_define_vars.sh.sample to 00_define_vars.sh
 ```
 cp 00_define_vars.sh.sample 00_define_vars.sh
 ```
-edit the 00_define_vars.sh file (e.g. by using vi)  <br />
+Edit the 00_define_vars.sh file (e.g. by using vi)  <br />
 Enter your own configuration variables in the config file
 ```
 vi 00_define_vars.sh.sample
 ```
 
-## 2. Deploy the environment
+## Deploy the environment
 
 ```
 $ ./up.sh
 ```
-This will do the following:
+This will do the following:  <BR /> <sup>
+(PS: there is a "Common Issues" section at the end of this document)</sup>
 
 1. Create an EKS cluster
 ![](images/CreatingEksCluster.png)
-<br /><br />
+<br />
 ![](images/EKSClusterCreated.png)
-<br /><br />
+<br />
 
 2. Install Smart Check with internal registry
 ![](images/DeployingDSSC.png)
-<br /><br />
+<br />
 
 3. Add the internal Repository plus a demo Repository to Smart Check
 ![](images/AddRepos.png)
-<br /><br />
+<br />
 
 4. Setup demo pipelines
 ![](images/CreatingPipelines.png)
-<br /><br />
+<br />
 
-5. Deploy 3 demo applications
+5. git-clone 3 demo applications <br />
 At the same level as the project directory (cloudOneOnAWS), an "apps" directory will be created.
 
-Hereunder, 3 app-repos will be git-cloned from the public github (**c1appsecmoneyx, troopers and mydvwa**) ![](images/ThreeDemoApps.png)
-<br />
-And those apps will be pushed to AWS CodeCommit
-![](images/AddingDemoApps.png)
-<br /><br />
-This will trigger an AWS CodeBuild process to build the applications
+Hereunder, 3 app-repos will be git-cloned from the public github (**c1appsecmoneyx, troopers and mydvwa**) ![](images/ThreeDemoApps.png) <br />
+
+6. Those apps will be pushed to the AWS CodeCommit repository of the project
+![](images/AddingDemoApps.png) <br />
+
+7. This will trigger an AWS CodeBuild process to build the applications
 
 By default:
 - the **troopers** app will be deployed because it is clean
@@ -159,7 +163,11 @@ By default:
 ![](images/CodePipeline.png)
 <br /><br />
 
-And have then scanned by SmartCheck
+8. And it will have the images scanned by SmartCheck before they are pushed to the internal ECR repository of the Project.
+
+8. If the risk is below the defined threshold (as set in the codebuild.yaml file), the images will be pushed to the ECR
+
+9. And they will be deployed on the EKS cluster of the Project
 
 If you encounter any **errors**, please check the "common issues" section at the bottom
 
@@ -167,15 +175,17 @@ If you encounter any **errors**, please check the "common issues" section at the
 ### Demo Scenario##
 For the demo scenario, see [howToDemo.md](howToDemo.md) <br />
 
-
+<br /><br />
 ## Suspend / Tear down
 ```
 $ ./down.sh
 ```
-Unfortunately it is (currently) not possible to *suspend* the environment.  <br />
-- (One cannot set the number of EKS nodes to 0 and if we top an EKS worker node (EC2) then EKS spins up a new one because we have set a minimum level).  
+Unfortunately it is (currently) not possible to *suspend* the environment.
+- One cannot set the number of EKS nodes to 0.  
+- Also if we top an EKS worker node (which is an E2 instance) then EKS spins up a new one because we have set a required minimum number of nodes.  
 
-To avoid exessive costs when not using the demo environment, tear-down the environment.  The ./down.sh script will delete the EKS cluster, the EC2 instances, Cloudformation Stacks, Roles, VPCs, Subnets, S3buckets,....  The Cloud9 EC2 instance will stop, but remain available for later.  
+To avoid excessive costs when not using the demo environment, tear-down the environment.  The ./down.sh script will delete the EKS cluster, the EC2 instances, Cloudformation Stacks, Roles, VPCs, Subnets, S3buckets,....  <br/>
+The Cloud9 EC2 instance will stop, but remain available for later.  
 
 To start the enviroment again, simply reconnect to the Cloud9 environment and run **./up.sh**  This will redeploy everything from scratch
 
@@ -197,3 +207,7 @@ This variable is used for several purposes and each of them have their own restr
 <br />
   Ensure that you can create Elastic IPs in this region.  <br />
   By default, there is a (soft) limit of 5 Elastic IPs per AWS region
+
+## Next Step
+Checkout [howToDemo.md](howToDemo.md) <br />
+**howToDemo.md** for a few typical demo scenarios
