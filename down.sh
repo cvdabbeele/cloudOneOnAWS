@@ -227,7 +227,7 @@ for i in "${!aws_stacks[@]}"; do
     printf '%s\n' "Elapsed time: $((($endtime-$starttime)/60)) minutes"
   fi
 done
- 
+
 
 
 #cleanup codepipelineartifactbuckets
@@ -255,8 +255,6 @@ done
 #rm -rf ~/environment/${APP1}/
 
 
-AWS_PROJECT="cloudone03"
-#TODO: delete Role(-s)
 printf "%s\n" "Deleting Roles and Instance-Profiles"
 AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
 for i in "${!AWS_ROLES[@]}"; do
@@ -264,11 +262,11 @@ for i in "${!AWS_ROLES[@]}"; do
      printf "%s\n" "Role $i =  ${AWS_ROLES[$i]}.........."
      #printf "%s\n" "Getting AWS_POLICIES"
      AWS_POLICIES=(`aws iam list-role-policies --role-name ${AWS_ROLES[$i]} | jq -r '.PolicyNames[]'`)
-     aws iam list-role-policies --role-name ${AWS_ROLES[$i]}
+      #              aws iam list-role-policies --role-name ${AWS_ROLES[$i]}
      printf "%s\n" "AWS_POLICIES= $AWS_POLICIES"
      for j in "${!AWS_POLICIES[@]}"; do
        printf "%s\n" "  Policy $j =  ${AWS_POLICIES[$j]}"
-        aws iam detach-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
+      aws iam detach-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
         aws iam delete-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
      done
      #printf "%s\n" "Getting instance Profiles"
@@ -283,6 +281,6 @@ for i in "${!AWS_ROLES[@]}"; do
      aws iam delete-role  --role-name ${AWS_ROLES[$i]}
   fi
 done
-aws iam list-roles | jq -r '.Roles[].RoleName ' | grep cloudone
+#aws iam list-roles | jq -r '.Roles[].RoleName ' | grep cloudone
 
 #TODO: delete Policy
