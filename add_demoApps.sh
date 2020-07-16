@@ -86,7 +86,11 @@ function setupApp {
     git config --global user.email ${AWS_PROJECT}@example.com
     git remote add origin https://${AWS_CC_REPO_URL}.git
   fi
-  #generating a dummy change to trigger a pipeline
+  echo generating a dummy change to trigger a pipeline
+  echo generating a dummy change to trigger a pipeline
+  echo generating a dummy change to trigger a pipeline
+  
+  echo generating a dummy change to trigger a pipeline
   echo " " >> Dockerfile
   #. push to the git repo in AWS
   printf "%s\n" "updating CodeCommit repository"
@@ -117,8 +121,8 @@ printf '%s\n' "Deploying $APP3 (from $APP_GIT_URL3)"
 printf '%s\n' "---------------------------------------------"
 setupApp ${APP3} ${APP_GIT_URL3}
 
-exit
 #optionally (if the app makes it through the scanning)
 getUrl $APP1
 getUrl $APP2
 getUrl $APP3
+exit

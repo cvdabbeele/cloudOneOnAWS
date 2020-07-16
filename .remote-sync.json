@@ -5,7 +5,7 @@
   "uploadOnSave": true,
   "useAtomicWrites": false,
   "deleteLocal": false,
-  "hostname": "18.194.242.95",
+  "hostname": "18.156.69.227",
   "port": "22",
   "target": "/home/ubuntu/environment/cloudOneOnAWS",
   "ignore": [

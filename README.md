@@ -62,6 +62,7 @@ Create an AWS Role to allow the EKS worker nodes (EC2 instances) to connect to E
  - Assign permission policy : "AmazonEC2ContainerRegistryFullAccess" -> Next: Tags
  - -> Next Role name: e.g. project_name_EC2_access_to_ECR  
   -->
+
 <!-- 0. Grant the Cloud9 environment Administrator Access <br />
 - Click the following deep to create the Role for Cloud9:
 https://console.aws.amazon.com/iam/home#/roles$new?step=review&commonUseCase=EC2%2BEC2&selectedUseCase=EC2&policies=arn:aws:iam::aws:policy%2FAdministratorAccess 
@@ -118,7 +119,7 @@ Enter your own configuration variables in the config file
 ```
 vi 00_define_vars.sh.sample
 ```
-
+  
 ## Deploy the environment
 
 ```
