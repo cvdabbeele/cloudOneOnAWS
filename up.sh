@@ -62,10 +62,10 @@ if [[ ! ${TMP} =~ "key" ]]
 then
   cat ~/.aws/credentials | grep key >> ~/.aws/config      #seems to be required for EKS
 fi
-
+sed 's/aws_session_token = //g' ~/.aws/config 
 #env | grep -i AWS
 # configure AWS cli
-#####printf '%s\n' "Configuring AWS CLI"
+printf '%s\n' "Configuring AWS CLI"
 #####cat <<EOF>~/.aws/credentials
 #####[default]
 #####aws_access_key_id=$AWS_ACCESS_KEY_ID
