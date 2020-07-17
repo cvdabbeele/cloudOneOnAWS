@@ -20,7 +20,7 @@ Checkout the **howToDemo.md** for demo scenarios
 # High level overview of steps (see detailed steps in next section)
 1. open Cloud9, configure AWS CLI with your keys and region and clone this repo
 2. enter your settings in `00_define_vars.sh`
-3. run ./up.sh to deploy the environment (pipeline, scanner,...)
+3. run  . ./up.sh to deploy the environment (mind the extra dot which is needed to "source" the vars from the script)
 4. see [howToDemo.md](howToDemo.md) for demo scenarios
 5. run ./down.sh to tear everything down
 
@@ -123,7 +123,7 @@ vi 00_define_vars.sh.sample
 ## Deploy the environment
 
 ```
-$ ./up.sh
+$ . ./up.sh
 ```
 This will do the following:  <BR /> <sup>
 (PS: there is a "Common Issues" section at the end of this document)</sup>
