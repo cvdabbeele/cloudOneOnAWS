@@ -4,9 +4,9 @@
 
 printf '%s' "Defining variables... "
 
-#  AWS settings
-export AWS_PROJECT='cloudone01'    #may only contain lowercase and trailing numbers, but no "-", no "_", nor any special characters.
-export AWS_EKS_NODES='2'
+
+#### ----------below this line are settings which MUST be customised  ----------
+#### ---------------------------------------------------------------------------
 
 # Cloud One Container Security (aka Deep Security Smart Check) License (used for pre-runtime scanning)
 export DSSC_AC='xx-xxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx'
@@ -16,8 +16,12 @@ export TREND_AP_KEY='your_trend_key_for_cloudOne_Application_Security'
 export TREND_AP_SECRET='your_trend_secret_for_cloudOne_Application_Security'
 
 
-#### ----------below this line are default settings which may (optionally) be customised  ----------
-#### ------------------------------------------------------------------------------------------------
+#### ----------below this line are default settings which may be customised (check the passwords) ----------
+#### -------------------------------------------------------------------------------------------------------
+
+#  AWS settings
+export AWS_PROJECT='cloudone01'    #may only contain lowercase and trailing numbers, but no "-", no "_", nor any special characters.
+export AWS_EKS_NODES='2'
 
 # Cloud One Container Security (aka Deep Security Smart Check) settings (for pre-runtime scanning)
 export DSSC_NAMESPACE='smartcheck' #Namespace to deploy Cloud One Container Security'

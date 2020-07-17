@@ -2,6 +2,9 @@
 # import variables
 # check for variabels
 #-----------------------
+#TODO: check if we can create a VPC (or if one for our project already exists fro a previous run of this script)
+#TODO: check if we can create a IGW (or if one for our project already exists fro a previous run of this script
+#TODO: check if we can create an Elastic IP  (or if one for our project already exists fro a previous run of this script)
 
 printf '%s' "Importing variables... "
 . ./00_define_vars.sh
@@ -62,7 +65,8 @@ if [[ ! ${TMP} =~ "key" ]]
 then
   cat ~/.aws/credentials | grep key >> ~/.aws/config      #seems to be required for EKS
 fi
-sed 's/aws_session_token = //g' ~/.aws/config 
+sed 's/aws_session_token = //g' ~/.aws/config
+sed 's/aws_session_token = //g' ~/.aws/credentials
 #env | grep -i AWS
 # configure AWS cli
 printf '%s\n' "Configuring AWS CLI"
@@ -73,6 +77,7 @@ printf '%s\n' "Configuring AWS CLI"
 #####region=$AWS_REGION
 #####output=json
 #####EOF
+
 rolefound="false"
 AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
 for i in "${!AWS_ROLES[@]}"; do

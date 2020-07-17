@@ -34,7 +34,9 @@ The AWS Region that you will use must have:
 - **one "free" VPC "slot"**
    By default, there is a soft limit of 5 VPCs per region.  This script must be able to create 1 VPC
 - **one "free" Elastic IP "slot"**
-  By default, there is a soft limit of 5 Elastic IPs per region.  This script must be able to create 1 Elastic IP
+   By default, there is a soft limit of 5 Elastic IPs per region.  This script must be able to create 1 Elastic IP
+- **one "free" Internet Gateway "slot"**
+   By default, there is a soft limit of 5 Internet Gateways per region.  This script must be able to create 1 Internet Gateway
 
 The Cloud Formation Template to build the EKS cluster will crash if those resources cannot be created
 
@@ -201,6 +203,9 @@ This variable is used for several purposes and each of them have their own restr
 <br />
   Ensure that you can create Elastic IPs in this region.  <br />
   By default, there is a (soft) limit of 5 Elastic IPs per AWS region
+
+## Error 
+
 
 ## Next Step
 Checkout [howToDemo.md](howToDemo.md) <br />
