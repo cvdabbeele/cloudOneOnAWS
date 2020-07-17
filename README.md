@@ -82,7 +82,7 @@ $ aws configure
 AWS Access Key ID [****************GT7G]:   type your AWS Access Key here
 AWS Secret Access Key [****************0LQy]:  type your AWS Secret Access key here
 Default region name [eu-central-1]:    Configure your region here
-Default output format [json]:          This setting is not used by the Project
+Default output format [json]:          Set default output to JSON
 ```
 <!--4. Create credentials for CodeCommit  
 CodeCommit requires AWS Key Management Service. If you are using an existing IAM user, make sure there are no policies attached to the user that expressly deny the AWS KMS actions required by CodeCommit. For more information, see AWS KMS and encryption. <br />
@@ -119,7 +119,7 @@ Enter your own configuration variables in the config file
 ```
 vi 00_define_vars.sh.sample
 ```
-  
+
 ## Deploy the environment
 
 ```

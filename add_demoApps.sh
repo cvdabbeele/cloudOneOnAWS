@@ -89,14 +89,18 @@ function setupApp {
   echo generating a dummy change to trigger a pipeline
   echo generating a dummy change to trigger a pipeline
   echo generating a dummy change to trigger a pipeline
-  
+
   echo generating a dummy change to trigger a pipeline
-  echo " " >> Dockerfile
+  echo adding test to Dockerfile
+  echo "#test " >> Dockerfile
   #. push to the git repo in AWS
   printf "%s\n" "updating CodeCommit repository"
   git add .
   git commit -m "commit by \"add_demoApps\""
-  git push --set-upstream origin master
+  #git push --set-upstream origin master
+  echo AWS_CC_REPO_URL = $AWS_CC_REPO_URL
+  echo about to push
+  git config -l
   git push https://${AWS_CC_REPO_URL}
 
   #4. pipeline will pick it up, build an Image, send it to SmartCheck..
@@ -107,19 +111,21 @@ function getUrl {
   #todo.. wait for service to become online
   fqdn=`kubectl get service ${1}  | grep ${1} | awk '{ print $4 }'`
   port=`kubectl get service ${1}  | grep ${1} | awk '{ print $5 }' |  awk -F ":" '{ print $1 }'`
-  printf '%s\n' "App \"${1}\" can be reached at http(s)://${fqdn}:${port}"
+  if [ ! -z "$fqdn" ]; then
+    printf '%s\n' "App \"${1}\" has been deployed to EKS and can be reached at http(s)://${fqdn}:${port}"
+  fi
   return 0
 }
 
 printf '%s\n' "Deploying $APP1 (from $APP_GIT_URL1)"
 printf '%s\n' "---------------------------------------------"
 setupApp ${APP1} ${APP_GIT_URL1}
-printf '%s\n' "Deploying $APP2 (from $APP_GIT_URL2)"
-printf '%s\n' "---------------------------------------------"
-setupApp ${APP2} ${APP_GIT_URL2}
-printf '%s\n' "Deploying $APP3 (from $APP_GIT_URL3)"
-printf '%s\n' "---------------------------------------------"
-setupApp ${APP3} ${APP_GIT_URL3}
+#####printf '%s\n' "Deploying $APP2 (from $APP_GIT_URL2)"
+#####printf '%s\n' "---------------------------------------------"
+#####setupApp ${APP2} ${APP_GIT_URL2}
+#####printf '%s\n' "Deploying $APP3 (from $APP_GIT_URL3)"
+#####printf '%s\n' "---------------------------------------------"
+#####setupApp ${APP3} ${APP_GIT_URL3}
 
 #optionally (if the app makes it through the scanning)
 getUrl $APP1
