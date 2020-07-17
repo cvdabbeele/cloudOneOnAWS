@@ -28,7 +28,9 @@ Checkout the **howToDemo.md** for demo scenarios
 
 ## Requirements       -----DO READ-----
 **Shared AWS Accounts**   <br/>
-If you share an AWS account with a co-worker, make sure that you both use **different regions**
+If you share an AWS account with a co-worker, make sure that:
+- you both use **different regions**
+- you both use different project names and that project name is not a subset of the other one: eg cloudone and cloudone01 would be bad, but cloudone01 and cloudone02 would be fine  (I know... there is room for improvement here)
 
 The AWS Region that you will use must have:
 - **one "free" VPC "slot"**
@@ -204,7 +206,7 @@ This variable is used for several purposes and each of them have their own restr
   Ensure that you can create Elastic IPs in this region.  <br />
   By default, there is a (soft) limit of 5 Elastic IPs per AWS region
 
-## Error 
+## Error
 
 
 ## Next Step

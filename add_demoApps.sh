@@ -78,28 +78,21 @@ function setupApp {
   cd ../apps/$dirname
   # removing the link to github as this will be linked to the AWS CodeCommit
   if [ -d ".git" ]; then
-    echo ".git directory found, skipping git init"
+    printf '%s\n'  ".git directory found, skipping git init"
   else
-    echo "initializing git for CodeCommit"
+    printf '%s\n'  "initializing git for CodeCommit"
     git init
     git config --global user.name ${AWS_PROJECT}
     git config --global user.email ${AWS_PROJECT}@example.com
     git remote add origin https://${AWS_CC_REPO_URL}.git
   fi
-  echo generating a dummy change to trigger a pipeline
-  echo generating a dummy change to trigger a pipeline
-  echo generating a dummy change to trigger a pipeline
-
-  echo generating a dummy change to trigger a pipeline
+  printf '%s\n'  "generating a dummy change to trigger a pipeline"
   echo " " >> Dockerfile
   #. push to the git repo in AWS
   printf "%s\n" "updating CodeCommit repository"
   git add .
   git commit -m "commit by \"add_demoApps\""
   git push --set-upstream origin master
-  #echo AWS_CC_REPO_URL = $AWS_CC_REPO_URL
-  #echo about to push
-  #git config -l
   git push https://${AWS_CC_REPO_URL}
 
   #4. pipeline will pick it up, build an Image, send it to SmartCheck..

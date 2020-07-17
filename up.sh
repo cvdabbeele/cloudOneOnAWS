@@ -14,11 +14,6 @@ sudo apt-get install jq -y
 
 export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
 
-  #tr -d "-" | tr -d "_"| awk '{ print tolower($1) }'
-
-#declare -a APP_GITTT_URL
-#export APP_GITTT_URL=(https://github.com/cvdabbeele/c1-app-sec-moneyx.git https://github.com/cvdabbeele/troopers.git https://github.com/cvdabbeele/mydvwa.git)
-
 
 varsok=true
 # Check AWS settings
@@ -38,7 +33,6 @@ if  [ -z "$DSSC_HOST" ]; then echo DSSC_HOST must be set && varsok=false; fi
 if  [ -z "$DSSC_REGUSER" ]; then echo DSSC_REGUSER must be set && varsok=false; fi
 if  [ -z "$DSSC_REGPASSWORD" ]; then echo DSSC_REGPASSWORD must be set && varsok=false; fi
 
-
 if  [ -z "$APP_GIT_URL1" ]; then echo APP_GIT_URL1 must be set && varsok=false; fi
 if  [ -z "$APP_GIT_URL2" ]; then echo APP_GIT_URL2 must be set && varsok=false; fi
 if  [ -z "$APP_GIT_URL3" ]; then echo APP_GIT_URL3 must be set && varsok=false; fi
@@ -55,7 +49,6 @@ printf '%s\n' "Setting up Project ${AWS_PROJECT} "
 printf '%s\n' "--------------------------"
 
 #get AWS variables
-
 export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
 export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
 export AWS_REGION=`aws configure get region`
@@ -69,7 +62,7 @@ sed 's/aws_session_token = //g' ~/.aws/config
 sed 's/aws_session_token = //g' ~/.aws/credentials
 #env | grep -i AWS
 # configure AWS cli
-printf '%s\n' "Configuring AWS CLI"
+#####printf '%s\n' "Configuring AWS CLI"
 #####cat <<EOF>~/.aws/credentials
 #####[default]
 #####aws_access_key_id=$AWS_ACCESS_KEY_ID
