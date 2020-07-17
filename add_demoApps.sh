@@ -97,7 +97,7 @@ function setupApp {
   printf "%s\n" "updating CodeCommit repository"
   git add .
   git commit -m "commit by \"add_demoApps\""
-  #git push --set-upstream origin master
+  git push --set-upstream origin master
   echo AWS_CC_REPO_URL = $AWS_CC_REPO_URL
   echo about to push
   git config -l
@@ -126,8 +126,11 @@ setupApp ${APP1} ${APP_GIT_URL1}
 #####printf '%s\n' "Deploying $APP3 (from $APP_GIT_URL3)"
 #####printf '%s\n' "---------------------------------------------"
 #####setupApp ${APP3} ${APP_GIT_URL3}
-
+exit
 #optionally (if the app makes it through the scanning)
+#it takes a while for the apps to get processed through the pipeline
+#running the getUrl below will typically result in errors because the apps have not been deployed yet
+
 getUrl $APP1
 getUrl $APP2
 getUrl $APP3

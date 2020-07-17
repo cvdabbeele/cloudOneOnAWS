@@ -3,8 +3,6 @@
 # check for variabels
 #-----------------------
 
-
-
 printf '%s' "Importing variables... "
 . ./00_define_vars.sh
 
@@ -59,13 +57,11 @@ export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
 export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
 export AWS_REGION=`aws configure get region`
 
-cat ~/.aws/config
 TMP=`cat ~/.aws/config | grep key`
 if [[ ! ${TMP} =~ "key" ]]
 then
   cat ~/.aws/credentials | grep key >> ~/.aws/config      #seems to be required for EKS
 fi
-cat ~/.aws/config
 
 #env | grep -i AWS
 # configure AWS cli
