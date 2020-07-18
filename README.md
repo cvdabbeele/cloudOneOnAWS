@@ -86,7 +86,7 @@ $ aws configure
 AWS Access Key ID [****************GT7G]:   type your AWS Access Key here
 AWS Secret Access Key [****************0LQy]:  type your AWS Secret Access key here
 Default region name [eu-central-1]:    Configure your region here
-Default output format [json]:          Set default output to JSON
+Default output format [json]:          Set default output to json
 ```
 <!--4. Create credentials for CodeCommit  
 CodeCommit requires AWS Key Management Service. If you are using an existing IAM user, make sure there are no policies attached to the user that expressly deny the AWS KMS actions required by CodeCommit. For more information, see AWS KMS and encryption. <br />
@@ -209,6 +209,5 @@ This variable is used for several purposes and each of them have their own restr
 ## Error
 
 
-## Next Step
-Checkout [howToDemo.md](howToDemo.md) <br />
-**howToDemo.md** for a few typical demo scenarios
+## Next Step: How to Demo
+Checkout [howToDemo.md](howToDemo.md) for a few typical demo scenarios
