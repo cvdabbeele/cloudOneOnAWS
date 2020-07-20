@@ -24,20 +24,20 @@ Checkout the **howToDemo.md** for demo scenarios
 Contents
 
 - [Overview](#overview)
-- [High level overview of steps (see detailed steps in next section)](#high-level-overview-of-steps-see-detailed-steps-in-next-section)
-- [Detailed setup instructions](#detailed-setup-instructions)
-  - [Requirements       -----DO READ-----](#requirements------do-read-----)
-    - [Shared AWS Accounts](#shared-aws-accounts)
-  - [Preparation](#preparation)
-  - [Deploy the environment](#deploy-the-environment)
-  - [Next Step: How to Demo](#next-step-how-to-demo)
-  - [Suspend / Tear down](#suspend--tear-down)
-- [Common issues (WIP)](#common-issues-wip)
-  - [Error: Kubernetes cluster unreachable](#error-kubernetes-cluster-unreachable)
-  - [Error Code: AddressLimitExceeded](#error-code-addresslimitexceeded)
+  - [High level overview of steps (see detailed steps in next section)](#high-level-overview-of-steps-see-detailed-steps-in-next-section)
+  - [Detailed setup instructions](#detailed-setup-instructions)
+    - [Requirements       -----DO READ-----](#requirements------do-read-----)
+      - [Shared AWS Accounts](#shared-aws-accounts)
+    - [Preparation](#preparation)
+    - [Deploy the environment](#deploy-the-environment)
+    - [Next Step: How to Demo](#next-step-how-to-demo)
+    - [Suspend / Tear down](#suspend--tear-down)
+  - [Common issues (WIP)](#common-issues-wip)
+    - [Error: Kubernetes cluster unreachable](#error-kubernetes-cluster-unreachable)
+    - [Error Code: AddressLimitExceeded](#error-code-addresslimitexceeded)
 
 
-# High level overview of steps (see detailed steps in next section)
+## High level overview of steps (see detailed steps in next section)
 
 1. open Cloud9, configure AWS CLI with your keys and region and clone this repo
 
@@ -50,11 +50,11 @@ git clone https://github.com/cvdabbeele/cloudOneOnAws
 4. see [howToDemo.md](howToDemo.md) for demo scenarios
 5y<<>>. run ./down.sh to tear everything down
 
-# Detailed setup instructions
+## Detailed setup instructions
 
-## Requirements       -----DO READ-----
+### Requirements       -----DO READ-----
 
-### Shared AWS Accounts
+#### Shared AWS Accounts
 
 If you share an AWS account with a co-worker, make sure that:
 
@@ -82,7 +82,7 @@ The IAM User account that you will use:
 - **A license for Cloud One Container Image Security** (aka SmartCheck) If you don't have a license key yet, you can get one here: <https://www.trendmicro.com/product_trials/download/index/us/168>
 - **CloudOne Application Security Account**  You can register for a trial here: <https://cloudone.trendmicro.com/_workload_iframe//SignUp.screen>  You will need to create a "group" for the MoneyX application.  This will give you a **key** and a **secret** that you can use for the TREND_AP_KEY and TREND_AP_SECRET variables in this script.
 
-## Preparation  
+### Preparation  
 
 1. Setup an AWS Cloud9 development environment
   - select `Create a new EC2 instance for environment (direct access)`
@@ -170,7 +170,7 @@ Enter your own configuration variables in the config file at least for
 
 The rest are preconfigured default variables which you can directly use.
 
-## Deploy the environment
+### Deploy the environment
 
 ```shell
 . ./up.sh
@@ -470,11 +470,11 @@ By default:
 
 If you encounter any **errors**, please check the "common issues" section at the bottom
 
-## Next Step: How to Demo
+### Next Step: How to Demo
 
 Checkout [howToDemo.md](howToDemo.md) for a few typical demo scenarios
 
-## Suspend / Tear down
+### Suspend / Tear down
 
 ```shell
 ./down.sh
@@ -491,9 +491,9 @@ The Cloud9 EC2 instance will stop, but remain available for later.
 To start the enviroment again, simply reconnect to the Cloud9 environment and run **./up.sh**  This will redeploy everything from scratch
 
 
-# Common issues (WIP)
+## Common issues (WIP)
 
-## Error: Kubernetes cluster unreachable
+### Error: Kubernetes cluster unreachable
 
 `The connection to the server localhost:8080 was refused - did you specify the right host or port?`
 
@@ -506,7 +506,7 @@ Verify your AWS_PROJECT variable. It may only contain **lowercase and trailing n
 
 This variable is used for several purposes and each of them have their own restrictions,..which add up to "only a-z lowercase and numbers"  It may also not begin with a number.
 
-## Error Code: AddressLimitExceeded
+### Error Code: AddressLimitExceeded
 
 ![Address Limit Exceeded](images/AddressLimitExceeded.png)
 
