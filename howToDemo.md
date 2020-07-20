@@ -13,7 +13,7 @@ In this demo scenario we will be using the MoneyX demo application. This is the 
 
 Login to your CloudOne account and go to Cloud One Application Security. Find the group that you created for the MoneyX application (`c1-app-sec-moneyx`).
 
-Open Polcies" and set all policies to REPORT.
+Open Policies" and set all policies to REPORT.
 
 In AWS, under `CodePipeline -> Pipelines` -> make sure you have a failed pipeline for the `cloudone01c1appsecmoneyxPipeline`
 
@@ -21,7 +21,7 @@ Ensure to have the following browser tabs opened and authenticated.
 
 - Cloud9 shell
 - AWS Service CodePipeline.
-- CloudOnw Application Security
+- CloudOne Application Security
 - MoneyX
 
 ## Demo Scenario
