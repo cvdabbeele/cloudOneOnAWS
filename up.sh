@@ -56,20 +56,10 @@ export AWS_REGION=`aws configure get region`
 TMP=`cat ~/.aws/config | grep key`
 if [[ ! ${TMP} =~ "key" ]]
 then
-  cat ~/.aws/credentials | grep key >> ~/.aws/config      #seems to be required for EKS
+  cat ~/.aws/credentials | grep key >> ~/.aws/config
 fi
-sed 's/aws_session_token = //g' ~/.aws/config
-sed 's/aws_session_token = //g' ~/.aws/credentials
-#env | grep -i AWS
-# configure AWS cli
-#####printf '%s\n' "Configuring AWS CLI"
-#####cat <<EOF>~/.aws/credentials
-#####[default]
-#####aws_access_key_id=$AWS_ACCESS_KEY_ID
-#####aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
-#####region=$AWS_REGION
-#####output=json
-#####EOF
+sed -n 's/aws_session_token = //g' ~/.aws/config
+sed -n 's/aws_session_token = //g' ~/.aws/credentials
 
 rolefound="false"
 AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
