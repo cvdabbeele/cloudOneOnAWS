@@ -1,6 +1,6 @@
-# How to Demo (wip)
+# How to Demo
 
-- [How to Demo (wip)](#how-to-demo-wip)
+- [How to Demo](#how-to-demo)
   - [Preparation for the Demo](#preparation-for-the-demo)
   - [Demo Scenario](#demo-scenario)
     - [Story: We have to deploy with vulnerabilities](#story-we-have-to-deploy-with-vulnerabilities)
