@@ -21,8 +21,6 @@ This README.md describes how to deploy the demo environment
 
 Checkout the **howToDemo.md** for demo scenarios
 
-Contents
-
 - [Overview](#overview)
   - [High level overview of steps (see detailed steps in next section)](#high-level-overview-of-steps-see-detailed-steps-in-next-section)
   - [Detailed setup instructions](#detailed-setup-instructions)
@@ -35,6 +33,7 @@ Contents
   - [Common issues (WIP)](#common-issues-wip)
     - [Error: Kubernetes cluster unreachable](#error-kubernetes-cluster-unreachable)
     - [Error Code: AddressLimitExceeded](#error-code-addresslimitexceeded)
+    - [Error: `fatal: unable to access 'https://git-codecommit.eu-central-1.amazonaws.com/v1/repos/<somerepo>.git/': The requested URL returned error: 403`](#error-fatal-unable-to-access-httpsgit-codecommiteu-central-1amazonawscomv1repossomerepogit-the-requested-url-returned-error-403)
 
 
 ## High level overview of steps (see detailed steps in next section)
@@ -46,7 +45,7 @@ git clone https://github.com/cvdabbeele/cloudOneOnAws
 ```
 
 2. enter your settings in `00_define_vars.sh`
-3. run  . ./up.sh to deploy the environment (mind the extra dot which is needed to "source" the vars from the script)
+3. run  `. ./up.sh` to deploy the environment (mind the extra dot which is needed to "source" the vars from the script)
 4. see [howToDemo.md](howToDemo.md) for demo scenarios
 5y<<>>. run ./down.sh to tear everything down
 
@@ -114,14 +113,14 @@ Click on the AWS Cloud9 tab in the Cloud9 menu bar.  The tab may also show as a 
 ![AWS Settings](images/DisableAWSManagedTemporaryCredentials.png)
 
 3. configure AWS cli
- 
+
 ```shell
 aws configure
 ```
 
 Please set `Default region` to the region you're working on and default the output format to `json`.
 
-```
+```shell
 AWS Access Key ID [****************GT7G]:   type your AWS Access Key here
 AWS Secret Access Key [****************0LQy]:  type your AWS Secret Access key here
 Default region name [eu-central-1]:    Configure your region here
@@ -172,6 +171,8 @@ The rest are preconfigured default variables which you can directly use.
 
 ### Deploy the environment
 
+Important: don't forget the first dot :-)
+
 ```shell
 . ./up.sh
 ```
@@ -182,11 +183,11 @@ This will do the following:
 
 ```shell
 --------------------------
-        Tools             
+        Tools
 --------------------------
 installing jq
 Reading package lists... Done
-Building dependency tree       
+Building dependency tree
 Reading state information... Done
 jq is already the newest version (1.5+dfsg-2).
 0 upgraded, 0 newly installed, 0 to remove and 4 not upgraded.
@@ -485,7 +486,7 @@ Unfortunately it is (currently) not possible to *suspend* the environment.
 - One cannot set the number of EKS nodes to 0.  
 - Also if we top an EKS worker node (which is an E2 instance) then EKS spins up a new one because we have set a required minimum number of nodes.  
 
-To avoid excessive costs when not using the demo environment, tear-down the environment.  The ./down.sh script will delete the EKS cluster, the EC2 instances, Cloudformation Stacks, Roles, VPCs, Subnets, S3buckets,....  <br/>
+To avoid excessive costs when not using the demo environment, tear-down the environment.  The ./down.sh script will delete the EKS cluster, the EC2 instances, Cloudformation Stacks, Roles, VPCs, Subnets, S3buckets,....  
 The Cloud9 EC2 instance will stop, but remain available for later.  
 
 To start the enviroment again, simply reconnect to the Cloud9 environment and run **./up.sh**  This will redeploy everything from scratch
@@ -512,3 +513,14 @@ This variable is used for several purposes and each of them have their own restr
 
 Ensure that you can create Elastic IPs in this region.
 By default, there is a (soft) limit of 5 Elastic IPs per AWS region.
+
+### Error: `fatal: unable to access 'https://git-codecommit.eu-central-1.amazonaws.com/v1/repos/<somerepo>.git/': The requested URL returned error: 403`
+
+This has to do wich the credential helper and the environment which is created by the `up.sh`. Very likely you forgot the first `.`when running `up.sh`.  
+So please rerun
+
+```shell
+. ./up.sh
+```
+
+Afterwards you will be able to commit changes to your CodeCommit repositories.
