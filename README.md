@@ -39,11 +39,6 @@ Checkout the **howToDemo.md** for demo scenarios
 ## High level overview of steps (see detailed steps in next section)
 
 1. open Cloud9, configure AWS CLI with your keys and region and clone this repo
-
-```shell
-git clone https://github.com/cvdabbeele/cloudOneOnAws
-```
-
 2. enter your settings in `00_define_vars.sh`
 3. run  `. ./up.sh` to deploy the environment (mind the extra dot which is needed to "source" the vars from the script)
 4. see [howToDemo.md](howToDemo.md) for demo scenarios
@@ -207,9 +202,9 @@ installing AWS authenticator....
 2. Create an EKS cluster
 
 ```shell
------------------------ 
- Creating EKS cluster 
------------------------ 
+-----------------------
+ Creating EKS cluster
+-----------------------
 Creating file: cloudone01EksCluster.yml...
 Creating a 2-node eks cluster named: cloudone01 in region eu-central-1
 This may take up to 20 minutes... (started at:Mon Jul 20 07:44:39 UTC 2020)
@@ -248,7 +243,7 @@ This may take up to 20 minutes... (started at:Mon Jul 20 07:44:39 UTC 2020)
 [ℹ]  kubectl command should work with "/home/ubuntu/.kube/config", try 'kubectl get nodes'
 [✔]  EKS cluster "cloudone01" in "eu-central-1" region is ready
 Cloudformation Stacks deployed.  Elapsed time: 15 minutes
-Checking EKS cluster.  You should see your EKS cluster in the list below 
+Checking EKS cluster.  You should see your EKS cluster in the list below
 NAME            REGION
 cloudone01      eu-central-1
 ```
@@ -257,7 +252,7 @@ cloudone01      eu-central-1
 
 ```shell
 ------------------------------
- Cloud One Container Security 
+ Cloud One Container Security
 ------------------------------
 Creating namespace smartcheck...namespace/smartcheck created
 Creating certificate for loadballancer...Generating a RSA private key
@@ -267,16 +262,16 @@ writing new private key to 'k8s.key'
 -----
 Creating secret with keys in Kubernetes...secret/k8s-certificate created
 Creating overrides.yml file
-Deploying Helm chart... 
+Deploying Helm chart...
 
 Waiting for Cloud One Container Security to come online: ........  
-Doing initial (required) password change 
+Doing initial (required) password change
 You can login:  
--------------- 
-     URL: https://a1837449ce2db4dcf8a56d955208c8dc-263324481.eu-central-1.elb.amazonaws.com 
-     user: administrator 
-     passw: trendmicro 
--------------- 
+--------------
+     URL: https://a1837449ce2db4dcf8a56d955208c8dc-263324481.eu-central-1.elb.amazonaws.com
+     user: administrator
+     passw: trendmicro
+--------------
 ```
 
 4. Add the internal Repository plus a demo Repository to Smart Check
@@ -286,47 +281,47 @@ You can login:
  Adding internal repository to Cloud One Container Security  
 -------------------------------------------------------------
 --------------------------------------------------------
- Adding Demo repository to Cloud One Container Security 
+ Adding Demo repository to Cloud One Container Security
 --------------------------------------------------------
-    Adding demo repository with filter: {*photo*} 
+    Adding demo repository with filter: {*photo*}
 ```
 
 5. Setup demo pipelines
 
 ```shell
 -------------------------------
-Creating CodeBuild pipelines 
+Creating CodeBuild pipelines
 -------------------------------
 Patching aws-auth configmap for cloudone01
 configmap/aws-auth patched
 No environment found:
 --------------------------
    CodeCommit repo:  exists = false
-   CloudFormation stack:  status = 
+   CloudFormation stack:  status =
    CodePipeline:  exists = false
    ECR repo:  exists = false
-creating: CodeCommit repository , ECR repository , Pipeline cloudone01c1appsecmoneyx and Cloudformation stack 
-Creating file: cloudone01c1appsecmoneyxPipeline.yml 
+creating: CodeCommit repository , ECR repository , Pipeline cloudone01c1appsecmoneyx and Cloudformation stack
+Creating file: cloudone01c1appsecmoneyxPipeline.yml
 Creating Cloudformation Stack and Pipeline cloudone01c1appsecmoneyx...
-^[cWaiting for Cloudformation stack cloudone01c1appsecmoneyxPipeline to be created. 
+^[cWaiting for Cloudformation stack cloudone01c1appsecmoneyxPipeline to be created.
 No environment found:
 --------------------------
    CodeCommit repo:  exists = false
-   CloudFormation stack:  status = 
+   CloudFormation stack:  status =
    CodePipeline:  exists = false
    ECR repo:  exists = false
-creating: CodeCommit repository , ECR repository , Pipeline cloudone01troopers and Cloudformation stack 
-Creating file: cloudone01troopersPipeline.yml 
+creating: CodeCommit repository , ECR repository , Pipeline cloudone01troopers and Cloudformation stack
+Creating file: cloudone01troopersPipeline.yml
 Creating Cloudformation Stack and Pipeline cloudone01troopers...
-Waiting for Cloudformation stack cloudone01troopersPipeline to be created. 
+Waiting for Cloudformation stack cloudone01troopersPipeline to be created.
 No environment found:
 --------------------------
    CodeCommit repo:  exists = false
-   CloudFormation stack:  status = 
+   CloudFormation stack:  status =
    CodePipeline:  exists = false
    ECR repo:  exists = false
-creating: CodeCommit repository , ECR repository , Pipeline cloudone01mydvwa and Cloudformation stack 
-Creating file: cloudone01mydvwaPipeline.yml 
+creating: CodeCommit repository , ECR repository , Pipeline cloudone01mydvwa and Cloudformation stack
+Creating file: cloudone01mydvwaPipeline.yml
 Creating Cloudformation Stack and Pipeline cloudone01mydvwa...
 Waiting for Cloudformation stack cloudone01mydvwaPipeline to be created.
 ```
@@ -336,7 +331,7 @@ At the same level as the project directory (cloudOneOnAWS), an "apps" directory 
 
 ```shell
 ---------------------
- Adding Demo-apps 
+ Adding Demo-apps
 ---------------------
 Deploying c1appsecmoneyx (from https://github.com/cvdabbeele/c1-app-sec-moneyx.git)
 ---------------------------------------------

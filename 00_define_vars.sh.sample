@@ -16,7 +16,7 @@ export TREND_AP_KEY='your_trend_key_for_cloudOne_Application_Security'
 export TREND_AP_SECRET='your_trend_secret_for_cloudOne_Application_Security'
 
 
-#### ----------below this line are default settings which may be customised (check the passwords) ----------
+#### ----------below this line are default settings which may be customised  ----------
 #### -------------------------------------------------------------------------------------------------------
 
 #  AWS settings
