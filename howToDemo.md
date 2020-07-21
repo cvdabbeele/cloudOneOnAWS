@@ -19,14 +19,13 @@ In AWS, under `CodePipeline -> Pipelines` -> make sure you have a failed pipelin
 
 Ensure to have the following browser tabs opened and authenticated.
 
-- Cloud9 shell
-- AWS Service CodePipeline.
 - CloudOne Application Security
+- CloudOne Image Security
+- AWS Service CodePipeline / CodeCommit
+- Cloud9 shell
 - MoneyX
 
 ## Demo Scenario
-
-Open the following browser tabs for your Cloud9 shell and the AWS Service CodePipeline.
 
 - Show the 3 AWS CodeCommit repositories
 - Show the AWS pipelines -> click on the failed c1appsecmoneyx pipeline and scroll all the way down.  

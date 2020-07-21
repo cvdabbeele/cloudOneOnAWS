@@ -160,7 +160,7 @@ cd cloudOneOnAWS
 cp 00_define_vars.sh.sample 00_define_vars.sh
 ```
 
-Edit the `00_define_vars.sh` file with the built in editor of Cloud9 or by youre prefered editor (e.g. by using vi).
+Edit the `00_define_vars.sh` file with the built in editor of Cloud9 or by your prefered editor (e.g. by using vi).
 Enter your own configuration variables in the config file at least for
 
 - `DSSC_AC`
