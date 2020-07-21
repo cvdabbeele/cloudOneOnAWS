@@ -6,8 +6,8 @@
     - [Story: We have to deploy with vulnerabilities](#story-we-have-to-deploy-with-vulnerabilities)
     - [Attack and Protect the running app](#attack-and-protect-the-running-app)
     - [Walk through how Cloud 1 Application Control setup](#walk-through-how-cloud-1-application-control-setup)
-  
-## Preparation for the Demo
+
+## Prepare for the Demo
 
 In this demo scenario we will be using the MoneyX demo application. This is the only app that has the runtime protection enabled.
 
@@ -20,33 +20,52 @@ In AWS, under `CodePipeline -> Pipelines` -> make sure you have a failed pipelin
 Ensure to have the following browser tabs opened and authenticated.
 
 - CloudOne Application Security
-- CloudOne Image Security
+- Your deployed CloudOne Container Image Security (SmartCheck)
 - AWS Service CodePipeline / CodeCommit
 - Cloud9 shell
-- MoneyX
 
 ## Demo Scenario
 
-- Show the 3 AWS CodeCommit repositories
-- Show the AWS pipelines -> click on the failed c1appsecmoneyx pipeline and scroll all the way down.  
+- Show the 3 AWS CodeCommit repositories (AWS -> Services -> CodeCommit -> Repositories) ![Exceeded Threshold](images/CodeCommitRepositories.png)
+
+- Show the AWS pipelines (on the same page: Pipeline -> Pipelines)-> click on the failed c1appsecmoneyx pipeline -> BuildAndScan -> click on "Details" and scroll all the way down.  
   Show why this pipeline failed (see "Vulnerabilities exceeded threshold" in screenshot below) ![Exceeded Threshold](images/VulnerabilitiesExceededThreshold.png)  
 - In Cloud9 type `eksctl get clusters` and show that you have an EKS cluster
 - Type `kubectl get pods --namespace smartcheck` and show the pods used by smartcheck.  Also show the deployments `kubectl get deployments -n smartcheck`
+  - if you want to dive a little deeper you can:
+  ```
+  helm list -n $DSSC_NAMESPACE
+  ```
+
+  - to tear down SmartCheck you can run:
+  ```
+  helm delete -n $DSSC_NAMESPACE deepsecurity-smartcheck
+  helm list -n $DSSC_NAMESPACE
+  ```
+
+  - to set it up again (without the added repositories)
+  ```
+  less overrides.yml    
+  helm install -n $DSSC_NAMESPACE --values overrides.yml deepsecurity-smartcheck https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz
+  helm list -n $DSSC_NAMESPACE
+  ```
 - Type `kubectl get svc -n smartcheck proxy  -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'` and open a browser to that url
 (e.g. <https://afa8c13bf2497469ba8411dfa1cfebec-1286344911.eu-central-1.elb.amazonaws.com>)
+
 - Show and discuss the scanfindings in Smart Check
 
 ### Story: We have to deploy with vulnerabilities
 
-For an urgent Marketing event, the "business" wants us to put this application online ASAP.  Our code is fine, the vulnerabilities are in the external libraries that we have used and we don't know how to quickly fix them.  
+For an urgent Marketing event, the "business" wants us to put this application online ASAP.  Our code is fine, but we have found vulnerabilities in the external libraries that we have used and we don't know how to quickly fix them (or the fixes are not yet available).  
 
-As a work-around, we will deploy the app with vulnerabilities and rely on runtime protection (CloudOne Application Control)
+As a work-around, we will deploy the app with vulnerabilities and rely on runtime protection (CloudOne Application Security)
 
 ```shell
 cd ~/environment/apps/c1-app-sec-moneyx/
 ```
 
-And edit the buildspec.yml. Bump up thresholds for vulnerabilities as indicated below
+Edit the buildspec.yml.   
+Bump up thresholds for vulnerabilities as indicated below
 
 ```yaml
         ...
@@ -60,7 +79,7 @@ Now, commit and push the changes.
 git commit buildspec.yml -m "removed safety thresholds" && git push
 ```
 
-While the pipeline is building;
+While the pipeline is building;  
 explore the buildspec.yaml and the Dockerfile
 
 ```shell

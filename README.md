@@ -38,11 +38,12 @@ Checkout the **howToDemo.md** for demo scenarios
 
 ## High level overview of steps (see detailed steps in next section)
 
-1. open Cloud9, configure AWS CLI with your keys and region and clone this repo
-2. enter your settings in `00_define_vars.sh`
-3. run  `. ./up.sh` to deploy the environment (mind the extra dot which is needed to "source" the vars from the script)
-4. see [howToDemo.md](howToDemo.md) for demo scenarios
-5y<<>>. run ./down.sh to tear everything down
+1. open Cloud9, configure AWS CLI with your keys and region
+2. clone this repo  
+3. enter your settings in `00_define_vars.sh`  
+4. run  `. ./up.sh` to deploy the environment (mind the extra dot which is needed to "source" the vars from the script)
+5. see [howToDemo.md](howToDemo.md) for demo scenarios
+6. run ./down.sh to tear everything down
 
 ## Detailed setup instructions
 
@@ -76,7 +77,7 @@ The IAM User account that you will use:
 - **A license for Cloud One Container Image Security** (aka SmartCheck) If you don't have a license key yet, you can get one here: <https://www.trendmicro.com/product_trials/download/index/us/168>
 - **CloudOne Application Security Account**  You can register for a trial here: <https://cloudone.trendmicro.com/_workload_iframe//SignUp.screen>  You will need to create a "group" for the MoneyX application.  This will give you a **key** and a **secret** that you can use for the TREND_AP_KEY and TREND_AP_SECRET variables in this script.
 
-### Preparation  
+### Prepare the environment
 
 1. Setup an AWS Cloud9 development environment
   - select `Create a new EC2 instance for environment (direct access)`
@@ -135,21 +136,21 @@ see also:
 https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np
 -->
 
-3. Get a trial account for Trend Micro Cloud One Container Security (aka Deep Security Smart Check).  
+4. Get a trial account for Trend Micro Cloud One Container Security (aka Deep Security Smart Check).  
 This will provide pre-runtime scanning of containers.
 see: <https://github.com/deep-security/smartcheck-helm>
 
-4. Get a trial account for Trend Micro Cloud One Application Security.  
+5. Get a trial account for Trend Micro Cloud One Application Security.  
 This will provide runtime protection to the containers.
 
-5. In your Cloud9 environment, run the following command to clone this repository:
+6. In your Cloud9 environment, run the following command to clone this repository:
 
 ```shell
 git clone https://github.com/cvdabbeele/cloudOneOnAWS.git
 cd cloudOneOnAWS
 ```
 
-6. Define variables for AWS, Cloud One Container Security and for Cloud One Application Security
+7. Define variables for AWS, Cloud One Container Security and for Cloud One Application Security
 
 ```shell
 cp 00_define_vars.sh.sample 00_define_vars.sh
