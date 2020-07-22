@@ -87,10 +87,19 @@ Show the 3 AWS CodeCommit repositories (AWS -> Services -> CodeCommit -> Reposit
 ![CodePipeline](images/CodePipeline.png)
 - click on the failed c1appsecmoneyx pipeline -> BuildAndScan -> click on "Details"
 ![BuildAndScan](images/BuildAndScan.png)
-- and scroll all the way down.  
-  Show why this pipeline failed (see "Vulnerabilities exceeded threshold" in screenshot below) ![Exceeded Threshold](images/VulnerabilitiesExceededThreshold.png)  
+- and scroll all the way down.
+- show where the smartcheck-scan-action container is started
+![SmartCheck-scan-action](images/SmartCheck-scan-action.png)
+- show where the pipeline is waiting for the can results
+ ![CheckingscanStatus](images/CheckingscanStatus.png)
+- and SmartCheck is scanning the container-image: ![Scanstarted](images/ScanStarted.png)
+- walk through the scan results
+![ScanResults1](images/ScanResults1.png)
+- and specifically point out the Snyk Java scan results.  This is something that will not show up in e.g. the Clair Open Source scanner
+![ScanResultsSnyk.png](images/ScanResultsSnyk.png)
+- show why this pipeline failed (see "Vulnerabilities exceeded threshold" in screenshot below) ![Exceeded Threshold](images/VulnerabilitiesExceededThreshold.png)  
 
-- This ensures that only "clean" images make it to our ECR registry
+- The above integration ensures that only "clean" images can get published in our ECR registry
 
 ### Story: We have to deploy with vulnerabilities
 
@@ -142,21 +151,26 @@ troopers-6c6b4cc9cd-bv5qv         1/1     Running   0          4m56s
 ```
 
 Maybe you need to repeat `kubectl get pods`, since building and deploying takes a couple of minutes.  
+Show the Pipelines again and confirm that this time the cloudone01c1appsecmoneyxPipeline succeeded
+![MoneyXSucceeded.png](images/MoneyXSucceeded.png)
+
 Walk through the scanresults in SmartCheck and notice that we still have a vulnerable image.
 
 
-### Attack and Protect the running app
+### Attack and Protect the running container
 Now that we have the MoneyX app successfully deployed, get the URL and port (8080) of its service:
 ```shell
 echo $(kubectl get svc c1appsecmoneyx -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):$(kubectl get svc c1appsecmoneyx -o jsonpath='{.spec.ports[0].port}')
 ```
 login to the MoneyX app  
 - username = "user"
-- password = "user123"
+- password = "user123"   
+
 ![LoginToMoneyX](images/LoginToMoneyX.png)
 
 
-Go to Received Payments.  You see no received payments.  ![NoReceivedPayments](images/NoReceivedPayments.png)
+Go to Received Payments.    
+You see no received payments.  ![NoReceivedPayments](images/NoReceivedPayments.png)
 
 
 Go to the URL window at the top of the browser and add to the end of the url:  " or 1=1" (without the quotes)
@@ -184,15 +198,14 @@ Run the SQL injection again  (just refresh the browser page)   You should get ou
 ![Blocked](images/Blocked.png)
 
 
-### Walk through how Cloud 1 Application Control setup
+### Walk through the integration with CloudOne Application Control
 
 In AWS codecommit: show the Dockerfile
 ![DockerfileWithAppSec](images/DockerfileWithAppSec.png)
 
 point out:
+- ADD command: this is where we import the library in our app (in this case it is a java app, so we added a java library)
+- CMD command: this is where the app will get started and our library will be included.  Here we invoke the imported library
 
-- ADD command: library is imported (in this case it is a java app, so we added the java library)
-- CMD -> library inserted.  Here we invoke the imported library
-
-The Registration keys for Cloud One Application Security must be called at runtime.  You can show those in the Cloud Formation Template -> Tab:Template ->search appSec registration keys for AppSec
+The Registration keys for Cloud One Application Security must be called per running instance, at runtime.  You can show those in the Cloud Formation Template -> Tab:Template ->search appSec registration keys for AppSec
 ![AppSecKey](images/AppSecKey.png)
