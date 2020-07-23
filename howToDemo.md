@@ -201,7 +201,7 @@ Run the SQL injection again  (just refresh the browser page)   You should get ou
 ### Walk through the integration with CloudOne Application Control
 
 In AWS codecommit: show the Dockerfile
-![DockerfileWithAppSec](images/DockerfileWithAppSec.png)
+![DockerFileWithAppSec](images/DockerFileWithAppSec.png)
 
 point out:
 - ADD command: this is where we import the library in our app (in this case it is a java app, so we added a java library)
