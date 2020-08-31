@@ -66,7 +66,7 @@ function setupApp {
   dirname=`echo ${2} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' `
   #echo ${2}
   #echo dirname= $dirname
-  #clone for public git if not already done so
+  #clone from public git if not already done so
   if [ -d "${dirname}" ]; then
      printf '%s\n' "Directory ../apps/${dirname} exists.  Not downloading app again"
   else

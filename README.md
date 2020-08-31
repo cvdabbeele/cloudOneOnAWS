@@ -136,12 +136,10 @@ see also:
 https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np
 -->
 
-4. Get a trial account for Trend Micro Cloud One Container Security (aka Deep Security Smart Check).  
-This will provide pre-runtime scanning of containers.
-see: <https://github.com/deep-security/smartcheck-helm>
-
-5. Get a trial account for Trend Micro Cloud One Application Security.  
-This will provide runtime protection to the containers.
+4. You will need a License key for:
+- Trend Micro Cloud One Container (Image) Security, and one for
+- Trend Micro Cloud One Application Control
+You can request trial keys via your Account Manager or SE.
 
 6. In your Cloud9 environment, run the following command to clone this repository:
 

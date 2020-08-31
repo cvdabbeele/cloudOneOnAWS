@@ -410,18 +410,18 @@ done
 #check if CodeCommit repo exists
 aws_cc_repo_exists="false"
 aws_cc_repos=(`aws codecommit list-repositories --region $AWS_REGION | jq -r '.repositories[].repositoryName'`)
-aws_cc_repo=''
+export aws_cc_repo=''
 for i in "${!aws_cc_repos[@]}"; do
   #printf '%s\n' "Checking CC Repo $i =  ${aws_cc_repos[$i]} ..........Comparing with ${1}"
   if [[ "${aws_cc_repos[$i]}" =~ "${1}" ]]; then
       #printf "%s\n" "Found CodeCommit Repo "${aws_cc_repos[$i]}
-      aws_cc_repo=${aws_cc_repos[$i]}
+      export aws_cc_repo=${aws_cc_repos[$i]}
       export AWS_CC_REPO_URL=`aws codecommit get-repository --region $AWS_REGION --repository-name ${aws_cc_repo} | jq -r '.repositoryMetadata.cloneUrlHttp' | sed 's/https\:\/\///'`
       #printf "%s\n" "Found CodeCommit Repo URL ${AWS_CC_REPO_URL}"
       aws_cc_repo_exists="true"
       break
   else
-    aws_cc_repo=''
+    export aws_cc_repo=''
   fi
 done
 
