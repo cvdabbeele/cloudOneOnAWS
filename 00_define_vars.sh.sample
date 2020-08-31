@@ -9,9 +9,11 @@ printf '%s' "Defining variables... "
 #### ---------------------------------------------------------------------------
 
 # Cloud One Container Security (aka Deep Security Smart Check) License (used for pre-runtime scanning)
+#Note: AC=ActivationCode or License Key for SmartCheck
 export DSSC_AC='xx-xxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx'
 
 # Cloud One Application Security settings (used for runtime protection)
+Those are the keys that you get when you have created a "group" for the MoneyX app in CloudOne Application Security
 export TREND_AP_KEY='your_trend_key_for_cloudOne_Application_Security'
 export TREND_AP_SECRET='your_trend_secret_for_cloudOne_Application_Security'
 
