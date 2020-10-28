@@ -469,16 +469,26 @@ If you encounter any **errors**, please check the "common issues" section at the
 
 Checkout [howToDemo.md](howToDemo.md) for a few typical demo scenarios
 
-### Suspend / Tear down
+### Suspend
+
+```shell
+./pause.sh
+```
+The pause.sh script removes the Nodegroup.  This drains the 2 worker nodes and then terminates them  
+
+### Resume
+
+```shell  
+./resume.sh  
+```
+The resume script re-creates the Nodegroup.  Make sure to leave enough time between a pause and a resume.  Sometimes AWS needs a lot of time to cleanup things  
+
+### Tear down  
 
 ```shell
 ./down.sh
 ```
 
-Unfortunately it is (currently) not possible to *suspend* the environment.
-
-- One cannot set the number of EKS nodes to 0.  
-- Also if we top an EKS worker node (which is an E2 instance) then EKS spins up a new one because we have set a required minimum number of nodes.  
 
 To avoid excessive costs when not using the demo environment, tear-down the environment.  The ./down.sh script will delete the EKS cluster, the EC2 instances, Cloudformation Stacks, Roles, VPCs, Subnets, S3buckets,....  
 The Cloud9 EC2 instance will stop, but remain available for later.  
