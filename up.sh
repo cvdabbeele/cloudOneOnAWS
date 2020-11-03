@@ -41,7 +41,11 @@ if  [ -z "$APP_GIT_URL3" ]; then echo APP_GIT_URL3 must be set && varsok=false; 
 if  [ -z "$TREND_AP_KEY" ]; then echo TREND_AP_KEY must be set && varsok=false; fi
 if  [ -z "$TREND_AP_SECRET" ]; then echo TREND_AP_SECRET must be set && varsok=false; fi
 
-if  [ "$varsok" = false ]; then exit ; fi
+if  [ "$varsok" = false ]; then
+  printf '%s\n' "Please check your 00_define_vars.sh file"
+  read -t 15 -p "exiting script in 15 seconds"
+  exit
+fi
 printf '%s\n' "OK"
 
 printf '%s\n' "--------------------------"
