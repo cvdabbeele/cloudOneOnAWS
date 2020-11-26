@@ -30,7 +30,7 @@ sed -n 's/aws_session_token = //g' ~/.aws/config
 sed -n 's/aws_session_token = //g' ~/.aws/credentials
 
 aws_cluster_exists="false"
-aws_clusters=( `eksctl get clusters -o json| jq '.[].name'` )
+aws_clusters=( `eksctl get clusters -o json| jq '.[].metadata.name'` )
 for i in "${!aws_clusters[@]}"; do
   #printf "%s" "cluster $i =  ${aws_clusters[$i]}.........."
   if [[ "${aws_clusters[$i]}" =~ "${AWS_PROJECT}" ]]; then

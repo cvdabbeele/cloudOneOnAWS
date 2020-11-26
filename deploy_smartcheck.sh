@@ -1,12 +1,12 @@
 #!/bin/bash
 ###eksctl scale nodegroup --cluster=managed-smartcheck --nodes=1 --name=<nodegroupName>
-printf '%s\n' "------------------------------"
-printf '%s\n' " Cloud One Container Security "
-printf '%s\n' "------------------------------"
+printf '%s\n' "-----------------"
+printf '%s\n' "   Smart Check   "
+printf '%s\n' "-----------------"
 
 
 #Deploy Smartcheck
-#------------------  
+#------------------
 HELM_DEPLOYMENTS=
 if [[ "`helm list -n ${DSSC_NAMESPACE} -o json | jq -r '.[].name'`" =~ 'deepsecurity-smartcheck' ]];
   then
@@ -100,7 +100,7 @@ EOF
     printf '%s\n' "Deploying Helm chart... "
     helm install -n ${DSSC_NAMESPACE} --values overrides.yml deepsecurity-smartcheck https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz > /dev/null
     #printf '%s\n' "Waiting for SmartCheck Service to come online"
-    DSSC_HOST=''
+    export DSSC_HOST=''
     while [[ "$DSSC_HOST" == '' ]];do
       export DSSC_HOST=`kubectl get svc -n ${DSSC_NAMESPACE} proxy -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'`
       sleep 10
@@ -110,12 +110,12 @@ EOF
     #echo Password: $(kubectl get  secrets -o jsonpath='{ .data.password }' deepsecurity-smartcheck-auth | base64 --decode)
     echo
     printf '%s' "Waiting for Cloud One Container Security to come online: ."
-    DSSC_BEARERTOKEN=''
+    export DSSC_BEARERTOKEN=''
     while [[ "$DSSC_BEARERTOKEN" == '' ]];do
       sleep 10
-      DSSC_USERID=`curl -s -k -X POST https://${DSSC_HOST}/api/sessions -H "Content-Type: application/json"  -H "Api-Version: 2018-05-01" -H "cache-control: no-cache" -d "{\"user\":{\"userid\":\"${DSSC_USERNAME}\",\"password\":\"${DSSC_TEMPPW}\"}}" | jq '.user.id' | tr -d '"'  2>/dev/null`
+      export DSSC_USERID=`curl -s -k -X POST https://${DSSC_HOST}/api/sessions -H "Content-Type: application/json"  -H "Api-Version: 2018-05-01" -H "cache-control: no-cache" -d "{\"user\":{\"userid\":\"${DSSC_USERNAME}\",\"password\":\"${DSSC_TEMPPW}\"}}" | jq '.user.id' | tr -d '"'  2>/dev/null`
       #printf '%s' userid=$DSSC_USERID
-      DSSC_BEARERTOKEN=`curl -s -k -X POST https://${DSSC_HOST}/api/sessions -H "Content-Type: application/json"  -H "Api-Version: 2018-05-01" -H "cache-control: no-cache" -d "{\"user\":{\"userid\":\"${DSSC_USERNAME}\",\"password\":\"${DSSC_TEMPPW}\"}}" | jq '.token' | tr -d '"'  2>/dev/null`
+      export DSSC_BEARERTOKEN=`curl -s -k -X POST https://${DSSC_HOST}/api/sessions -H "Content-Type: application/json"  -H "Api-Version: 2018-05-01" -H "cache-control: no-cache" -d "{\"user\":{\"userid\":\"${DSSC_USERNAME}\",\"password\":\"${DSSC_TEMPPW}\"}}" | jq '.token' | tr -d '"'  2>/dev/null`
       #printf '%s' Bearertoken=$DSSC_BEARERTOKEN
       printf '%s' "."
     done

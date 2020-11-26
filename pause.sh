@@ -30,7 +30,7 @@ sed -n 's/aws_session_token = //g' ~/.aws/config
 sed -n 's/aws_session_token = //g' ~/.aws/credentials
 
 aws_cluster_exists="false"
-aws_clusters=( `eksctl get clusters -o json| jq '.[].name'` )
+aws_clusters=( `eksctl get clusters -o json| jq '.[].metadata.name'` )
 for i in "${!aws_clusters[@]}"; do
   #printf "%s" "cluster $i =  ${aws_clusters[$i]}.........."
   if [[ "${aws_clusters[$i]}" =~ "${AWS_PROJECT}" ]]; then
@@ -53,7 +53,7 @@ if (( $len == 1 )); then
   eksctl delete nodegroup ${aws_nodegroups[0]} --cluster=${AWS_PROJECT}
   printf "%s\n" "Waiting for nodegroup ${aws_nodegroups[0]} to be fully deleted"
   #TODO comparion in while needs to be enhanced
-  while [[ `eksctl get nodegroup ${aws_nodegroups[0]} --cluster=${AWS_PROJECT}` != "No nodegroups found" ]];do
+  while [[ `eksctl get nodegroup ${aws_nodegroups[0]} --cluster=${AWS_PROJECT}` != "Error: Nodegroup with name  not found" ]];do
     sleep 2
     printf "%s" "."
     #eksctl delete nodegroup ${aws_nodegroups[0]} --cluster=${AWS_PROJECT}
@@ -65,6 +65,6 @@ else
       printf "%s\n" "This is unexpected, please resolve manually or terminate and recreate the environment"
       printf "%s\n" "e.g. eksctl delete nodegroup  --cluster=${AWS_PROJECT}  --name=XYZ"
   else
-      printf "%s\n" "Nodegroup already deleted"
+      printf "%s\n" "Nodegroup deleted"
   fi
 fi

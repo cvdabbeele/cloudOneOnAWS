@@ -15,7 +15,7 @@ if  [ -z "$AWS_EKS_NODES" ]; then echo AWS_EKS_NODES must be set && varsok=false
 if  [ "$varsok" = false ]; then printf '%s\n' "Missing variables" && exit ; fi
 
 aws_cluster_exists="false"
-aws_clusters=( `eksctl get clusters -o json| jq '.[].name'` )
+aws_clusters=( `eksctl get clusters -o json| jq '.[].metadata.name'` ) 
 for i in "${!aws_clusters[@]}"; do
   #printf "%s" "cluster $i =  ${aws_clusters[$i]}.........."
   if [[ "${aws_clusters[$i]}" =~ "${AWS_PROJECT}" ]]; then

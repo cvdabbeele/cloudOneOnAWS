@@ -17,11 +17,24 @@ printf '%s\n' "Getting region from AWS configure"
 export AWS_REGION=`aws configure get region`
 echo AWS_REGION= $AWS_REGION
 
+#delete services
+printf "%s\n" "Removing Services on EKS cluster "
+for i in `kubectl get services -o json | jq -r '.items[].metadata.name'`
+do
+  kubectl delete service $i
+done
+
 #delete deployed apps
 printf "%s\n" "Removing Deployments on EKS cluster"
-kubectl delete deployment $APP1
-kubectl delete deployment $APP2
-kubectl delete deployment $APP3
+for i in `kubectl get deployments  -o json | jq -r '.items[].metadata.name'`
+do
+  kubectl delete deployment $i
+done
+
+#printf "%s\n" "Uninistalling smartcheck "
+helm delete deepsecurity-smartcheck -n ${DSSC_NAMESPACE}
+#delete C1CS
+helm delete trendmicro -n c1cs\
 
 # Delete ECR repos
 printf "%s\n" "Checking ECR Repositories"
@@ -68,7 +81,7 @@ printf "\n"
 
 # delete cluster
 printf "%s \n" "Checking EKS cluster..."
-aws_eks_clusters=(`eksctl get clusters -o json | jq -r '.[].name'`)
+aws_eks_clusters=(`eksctl get clusters -o json | jq -r '.[].metadata.name'`)
 for i in "${!aws_eks_clusters[@]}"; do
   #printf "%s" "cluster $i =  ${aws_eks_clusters[$i]}.........."
   if [[ "${aws_eks_clusters[$i]}" =~ "${AWS_PROJECT}" ]]; then
@@ -194,7 +207,8 @@ for i in "${!aws_vpc_ids[@]}"; do
 done
 
 #the EKS cluster should already have been deleted  (in reality it is sometimes not)
-aws_eks_clusters=(`eksctl get clusters -o json | jq -r '.[].name'`)
+echo "Second attempt to delete the eks cluster"
+aws_eks_clusters=(`eksctl get clusters -o json | jq -r '.[].metadata.name'`)
 for i in "${!aws_eks_clusters[@]}"; do
   printf "%s" "cluster $i =  ${aws_eks_clusters[$i]}.........."
   if [[ "${aws_eks_clusters[$i]}" =~ "${AWS_PROJECT}"  && "${aws_eks_clusters[$i]}" =~ "Pipeline" ]]; then

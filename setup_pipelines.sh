@@ -38,6 +38,20 @@ Parameters:
     MinLength: 1
     MaxLength: 100
 
+  DockerhubUsername:
+    Type: String
+    Description: Your DockerHub username
+    Default: ${DOCKERHUB_USERNAME}
+    MinLength: 1
+    MaxLength: 100
+
+  DockerhubPassword:
+    Type: String
+    Description: Your DockerHub Password
+    Default: ${DOCKERHUB_PASSWORD}
+    MinLength: 1
+    MaxLength: 100
+
   EcrRepoName:
     Type: String
     Description: The name of the ECR Repository
@@ -50,7 +64,7 @@ Parameters:
     Description: Smartcheck host URL
     Default: ${DSSC_HOST}
     MinLength: 1
-    MaxLength: 100
+    MaxLength: 500
     ConstraintDescription: You must enter a Smartcheck host URL
 
   SmartcheckUser:
@@ -125,6 +139,22 @@ Parameters:
     MaxLength: 50
     ConstraintDescription: Do not change this
 
+  AwsAccessKey:
+      Type: String
+      Description: The AWS access key for SmartCheck to retrieve the images from ECR
+      Default: ${AWS_ACCESS_KEY_ID}
+      MinLength: 1
+      MaxLength: 50
+      ConstraintDescription: Do not change this
+
+  AwsSecretAccessKey:
+        Type: String
+        Description: The AWS secret access key for SmartCheck to retrieve the images from ECR
+        Default: ${AWS_SECRET_ACCESS_KEY}
+        MinLength: 1
+        MaxLength: 50
+        ConstraintDescription: Do not change this
+
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -146,9 +176,18 @@ Metadata:
           - EksClusterName
           - AppSecKey
           - AppSecSecret
+          - AwsAccessKey
+          - AwsSecretAccessKey
+          - DockerhubUsername
+          - DockerhubPassword
+
     ParameterLabels:
       CodeCommitRepoName:
         default: CodeCommit Repositry Name (Project Name)
+      DockerhubUsername:
+        default: Your Dokerhub Username
+      DockerhubPassword:
+        default: Your Dokerhub Password
       EcrRepoName:
         default: ECR Repository Name
       SmartcheckHost:
@@ -171,6 +210,10 @@ Metadata:
         default: Application Security Key
       AppSecSecret:
         default: Application Security Secret
+      AwsAccesskey:
+          default: AWS_ACCESS_KEY_ID
+      AwsSecretAccessKey:
+            default: AWS_SECRET_ACCESS_KEY
 Resources:
   EcrDockerRepository:
     Type: AWS::ECR::Repository
@@ -305,6 +348,10 @@ Resources:
         Type: LINUX_CONTAINER
         Image: aws/codebuild/docker:17.09.0
         EnvironmentVariables:
+          - Name: DOCKERHUB_USERNAME
+            Value: !Ref DockerhubUsername
+          - Name: DOCKERHUB_PASSWORD
+            Value: !Ref DockerhubPassword
           - Name: PRE_SCAN_REPOSITORY
             Value: !Ref PreregistryHost
           - Name: PRE_SCAN_USER
@@ -327,6 +374,10 @@ Resources:
             Value: !Ref AppSecKey
           - Name: APPSEC_SECRET
             Value: !Ref AppSecSecret
+          - Name: AwsAccessKey
+            Value: !Ref AwsAccessKey
+          - Name: AwsSecretAccessKey
+            Value: !Ref AwsSecretAccessKey
 
       Name: PreScanBuild${1}
       Description: Pre-scan container image with Smartcheck and push to registry

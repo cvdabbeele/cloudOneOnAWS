@@ -2,7 +2,15 @@
 
 This is a collaborative effort with mawinkler and nicgoth.
 
-In short, the script in this repo sets up:
+## UPDATES  
+### 20201126  
+1. To deal with docker image pull rate-limits, the script will now do authenticated pulls (to https://hub.docker.com) from the AWS pipeline.  
+  (https://www.docker.com/increase-rate-limits Image Pulls  for unauthenticated users are capped to 100 and 200 for authenticated users)  
+2. The json structure that is returned by command "eksctl get cluster" has changed (the Name attribute is now part of a Metadata structure).  This threw errors in the up.sh, down.sh, pause.sh and resume.sh.  The scripts have been adapted for this.  
+3. The down.sh script has been enhanced to provide a better cleanup.
+
+
+## In short, the script in this repo sets up:
 
 - an AWS Elastic Kubernetes Service Cluster (EKS)
 - an AWS codeCommit registry
