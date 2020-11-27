@@ -38,7 +38,7 @@ Parameters:
     MinLength: 1
     MaxLength: 100
 
- DockerhubUsername:
+  DockerhubUsername:
     Type: String
     Description: Your DockerHub username
     Default: ${DOCKERHUB_USERNAME}
@@ -51,6 +51,7 @@ Parameters:
     Default: ${DOCKERHUB_PASSWORD}
     MinLength: 1
     MaxLength: 100
+
   EcrRepoName:
     Type: String
     Description: The name of the ECR Repository
@@ -137,7 +138,8 @@ Parameters:
     MinLength: 1
     MaxLength: 50
     ConstraintDescription: Do not change this
-AwsAccessKey:
+
+  AwsAccessKey:
       Type: String
       Description: The AWS access key for SmartCheck to retrieve the images from ECR
       Default: ${AWS_ACCESS_KEY_ID}

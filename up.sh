@@ -98,9 +98,11 @@ fi
 
 # setup AWS CodePipeline
 . ./setup_pipelines.sh
-
+  
 # add ECR registry to SmartCheck
 . ./add_ECR_registry.sh
 
 # add the demo apps
 . ./add_demoApps.sh
+
+#end

@@ -214,7 +214,6 @@ for i in "${!aws_vpc_ids[@]}"; do
 done
 
 #the EKS cluster should already have been deleted  (in reality it is sometimes not)
-echo "Second attempt to delete the eks cluster"
 aws_eks_clusters=(`eksctl get clusters -o json | jq -r '.[].metadata.name'`)
 for i in "${!aws_eks_clusters[@]}"; do
   printf "%s" "cluster $i =  ${aws_eks_clusters[$i]}.........."
@@ -222,6 +221,7 @@ for i in "${!aws_eks_clusters[@]}"; do
       printf "%s\n" "Deleting EKS cluster: ${AWS_PROJECT}"
       if [ -s  "${AWS_PROJECT}EksCluster.yml" ]; then
         #eksctl delete cluster -f ${AWS_PROJECT}EksCluster.yml
+        echo "Second attempt to delete the EKS cluster"
         eksctl delete cluster ${AWS_PROJECT}
         sleep 30  #giving the delete cluster process a bit more time
       else
