@@ -46,12 +46,12 @@ else
     #exit
 fi
 
-aws_nodegroups=( `eksctl get  nodegroup  --cluster=${AWS_PROJECT} -o json| jq -r '.[].Name'` )
-len=${#aws_nodegroups[@]}
+aws_nodegroup=`eksctl get nodegroup  --cluster=${AWS_PROJECT} -o json| jq -r '.[].Name'`
 
-if (( $len == 0 )); then
+ if [[ "${aws_nodegroup}" == ""  ]]
+ then
   printf "%s\n" "Creating nodegroup nodegroup"
-  eksctl create nodegroup ${aws_nodegroups[0]} --cluster=${AWS_PROJECT}
+  eksctl create nodegroup nodegroup --cluster=${AWS_PROJECT}
 else
   printf "%s\n" "Already found a nodegroup for this cluster"
   printf "%s\n" "This is unexpected, please resolve manually or terminate and recreate the environment"

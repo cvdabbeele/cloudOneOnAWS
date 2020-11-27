@@ -31,10 +31,17 @@ do
   kubectl delete deployment $i
 done
 
-#printf "%s\n" "Uninistalling smartcheck "
-helm delete deepsecurity-smartcheck -n ${DSSC_NAMESPACE}
-#delete C1CS
-helm delete trendmicro -n c1cs\
+helm_smartcheck=`helm list -n ${DSSC_NAMESPACE}  -o json | jq -r '.[].name'`
+if [[ "${helm_smartcheck}" =~ "deepsecurity-smartcheck" ]]; then
+  printf "%s\n" "Uninstalling smartcheck "
+  helm delete deepsecurity-smartcheck -n ${DSSC_NAMESPACE}
+fi
+
+helm_c1cs=`helm list -n c1cs -o json | jq -r '.[].name'`
+if [[ "${helm_c1cs}" == "trendmicro" ]]; then
+  printf "%s\n" "Unistalling C1CS"
+  helm delete trendmicro -n c1cs
+fi
 
 # Delete ECR repos
 printf "%s\n" "Checking ECR Repositories"

@@ -38,7 +38,7 @@ Parameters:
     MinLength: 1
     MaxLength: 100
 
-  DockerhubUsername:
+ DockerhubUsername:
     Type: String
     Description: Your DockerHub username
     Default: ${DOCKERHUB_USERNAME}
@@ -51,7 +51,6 @@ Parameters:
     Default: ${DOCKERHUB_PASSWORD}
     MinLength: 1
     MaxLength: 100
-
   EcrRepoName:
     Type: String
     Description: The name of the ECR Repository
@@ -88,7 +87,7 @@ Parameters:
     Description: Smartcheck host URL
     Default: ${DSSC_HOST}
     MinLength: 1
-    MaxLength: 100
+    MaxLength: 500
     ConstraintDescription: You must enter a Smartcheck host URL
 
   PreregistryUser:
@@ -138,8 +137,7 @@ Parameters:
     MinLength: 1
     MaxLength: 50
     ConstraintDescription: Do not change this
-
-  AwsAccessKey:
+AwsAccessKey:
       Type: String
       Description: The AWS access key for SmartCheck to retrieve the images from ECR
       Default: ${AWS_ACCESS_KEY_ID}
@@ -154,7 +152,7 @@ Parameters:
         MinLength: 1
         MaxLength: 50
         ConstraintDescription: Do not change this
-
+        
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -181,10 +179,11 @@ Metadata:
           - DockerhubUsername
           - DockerhubPassword
 
+
     ParameterLabels:
       CodeCommitRepoName:
         default: CodeCommit Repositry Name (Project Name)
-      DockerhubUsername:
+        DockerhubUsername:
         default: Your Dokerhub Username
       DockerhubPassword:
         default: Your Dokerhub Password
@@ -211,9 +210,9 @@ Metadata:
       AppSecSecret:
         default: Application Security Secret
       AwsAccesskey:
-          default: AWS_ACCESS_KEY_ID
+        default: AWS_ACCESS_KEY_ID
       AwsSecretAccessKey:
-            default: AWS_SECRET_ACCESS_KEY
+        default: AWS_SECRET_ACCESS_KEY
 Resources:
   EcrDockerRepository:
     Type: AWS::ECR::Repository

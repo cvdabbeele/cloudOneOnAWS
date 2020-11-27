@@ -46,25 +46,19 @@ else
     #exit
 fi
 #TODO needs to be enhanced: jq errors when there are no nodegroups
-aws_nodegroups=( `eksctl get nodegroup  --cluster=${AWS_PROJECT} -o json| jq -r '.[].Name'` )
-len=${#aws_nodegroups[@]}
-if (( $len == 1 )); then
-  printf "%s\n" "Deleting nodegroup ${aws_nodegroups[0]}"
-  eksctl delete nodegroup ${aws_nodegroups[0]} --cluster=${AWS_PROJECT}
-  printf "%s\n" "Waiting for nodegroup ${aws_nodegroups[0]} to be fully deleted"
+aws_nodegroup=`eksctl get nodegroup  --cluster=${AWS_PROJECT} -o json| jq -r '.[].Name'`
+if [[ "${aws_nodegroup}" == "nodegroup"  ]]; then
+  printf "%s\n" "Deleting nodegroup \"nodegroup\""
+  eksctl delete nodegroup nodegroup --cluster=${AWS_PROJECT}
+  printf "%s\n" "Waiting for nodegroup \"nodegroup\" to be fully deleted"
   #TODO comparion in while needs to be enhanced
-  while [[ `eksctl get nodegroup ${aws_nodegroups[0]} --cluster=${AWS_PROJECT}` != "Error: Nodegroup with name  not found" ]];do
+  while [[ `eksctl get nodegroup nodegroup --cluster=${AWS_PROJECT}` != "" ]];do
+    aws_nodegroup=`eksctl get nodegroup  --cluster=${AWS_PROJECT} -o json| jq -r '.[].Name'`
     sleep 2
     printf "%s" "."
-    #eksctl delete nodegroup ${aws_nodegroups[0]} --cluster=${AWS_PROJECT}
   done
   printf "%s\n" ""
-else
-  if (( $len > 1 )); then
-      printf "%s\n" "Found more than 1 nodegroup for this cluster"
-      printf "%s\n" "This is unexpected, please resolve manually or terminate and recreate the environment"
-      printf "%s\n" "e.g. eksctl delete nodegroup  --cluster=${AWS_PROJECT}  --name=XYZ"
-  else
-      printf "%s\n" "Nodegroup deleted"
-  fi
+fi
+if [[ "`eksctl get nodegroup nodegroup --cluster=${AWS_PROJECT}`"  == ""  ]]; then
+  printf "%s\n" "Nodegroup has been deleted"
 fi

@@ -4,9 +4,9 @@ This is a collaborative effort with mawinkler and nicgoth.
 
 ## UPDATES  
 ### 20201126  
-1. To deal with docker image pull rate-limits, the script will now do authenticated pulls (to https://hub.docker.com) from the AWS pipeline.  
-  (https://www.docker.com/increase-rate-limits Image Pulls  for unauthenticated users are capped to 100 and 200 for authenticated users)  
-2. The json structure that is returned by command "eksctl get cluster" has changed (the Name attribute is now part of a Metadata structure).  This threw errors in the up.sh, down.sh, pause.sh and resume.sh.  The scripts have been adapted for this.  
+1. You now need to enter your DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD in the 00_define_vars.sh file (may be a free account).  To deal with docker image pull rate-limits, the buildscipts of the Apps will now do authenticated pulls (to https://hub.docker.com) from the AWS pipeline.  This script passes along those variables to the buildspec.yml files
+  For more info on the Dockerhub pull rate limits, see: https://www.docker.com/increase-rate-limits  Image Pulls for unauthenticated connections are now capped to 100 and for connections authenticated with a free account, they are capped to 200.  Both pull rates are for the last 6 hours (sliding window).  Paid dockerhub subscriptions have no pull rate limit.
+2. The json structure that is returned by the command "eksctl get cluster" has apparently changed (the Name attribute is now part of a Metadata sub-structure).  This threw errors in the down.sh, pause.sh and resume.sh scripts.  These scripts have been adapted for this.  
 3. The down.sh script has been enhanced to provide a better cleanup.
 
 

@@ -84,23 +84,23 @@ if [[ "${rolefound}" = "false" ]]; then
 fi
 
 # install tools
-./install_tools.sh
+. ./install_tools.sh
 
 #create cluster
-./create_cluster.sh
+. ./create_cluster.sh
 
 # deploy SmartCheck
-./deploy_smartcheck.sh
+. ./deploy_smartcheck.sh
 
 #adding registries
-./add_internal_repo.sh
-./add_demo_repo.sh
+. ./add_internal_repo.sh
+. ./add_demo_repo.sh
 
 # setup AWS CodePipeline
-./setup_pipelines.sh
+. ./setup_pipelines.sh
 
 # add ECR registry to SmartCheck
-./add_ECR_registry.sh
+. ./add_ECR_registry.sh
 
 # add the demo apps
-./add_demoApps.sh
+. ./add_demoApps.sh
