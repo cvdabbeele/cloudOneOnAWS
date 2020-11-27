@@ -185,7 +185,7 @@ Metadata:
     ParameterLabels:
       CodeCommitRepoName:
         default: CodeCommit Repositry Name (Project Name)
-        DockerhubUsername:
+      DockerhubUsername:
         default: Your Dokerhub Username
       DockerhubPassword:
         default: Your Dokerhub Password
