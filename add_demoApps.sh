@@ -118,12 +118,11 @@ setupApp ${APP2} ${APP_GIT_URL2}
 printf '%s\n' "Deploying $APP3 (from $APP_GIT_URL3)"
 printf '%s\n' "---------------------------------------------"
 setupApp ${APP3} ${APP_GIT_URL3}
-exit
+#exit
 #optionally (if the app makes it through the scanning)
 #it takes a while for the apps to get processed through the pipeline
 #running the getUrl below will typically result in errors because the apps have not been deployed yet
+#getUrl $APP1
+#getUrl $APP2
+#getUrl $APP3
 
-getUrl $APP1
-getUrl $APP2
-getUrl $APP3
-exit
