@@ -1,4 +1,6 @@
-
+printf '%s\n' "----------------------------------"
+printf '%s\n' "Addming CLoudOneContainerSecurity"
+printf '%s\n' "----------------------------------"
 # Create a Cluster
 ## Create a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster
 printf '%s\n' "Create a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster"
