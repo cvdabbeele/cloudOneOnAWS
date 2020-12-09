@@ -2,9 +2,9 @@
 # import variables
 # check for variabels
 #-----------------------
-#TODO: check if we can create a VPC (or if one for our project already exists fro a previous run of this script)
-#TODO: check if we can create a IGW (or if one for our project already exists fro a previous run of this script
-#TODO: check if we can create an Elastic IP  (or if one for our project already exists fro a previous run of this script)
+#TODO: check if we have enough limits to create a VPC (or if one for our project already exists fro a previous run of this script)
+#TODO: check if we have enough limits to create a IGW (or if one for our project already exists fro a previous run of this script
+#TODO: check if we have enough limits to create an Elastic IP  (or if one for our project already exists fro a previous run of this script)
 
 printf '%s' "Importing variables... "
 . ./00_define_vars.sh
@@ -104,5 +104,7 @@ fi
 
 # add the demo apps
 . ./add_demoApps.sh
+
+# add C1CS
 
 #end

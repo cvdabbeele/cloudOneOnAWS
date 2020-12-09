@@ -23,19 +23,36 @@ curl --location --request GET 'https://cloudone.trendmicro.com/api/container/clu
 --header 'Content-Type: application/json' \
 --header "api-secret-key: ${C1APIKEY}"  \
 --header 'api-version: v1' \
- | jq -r ".clusters[] | select(.name == \"${AWS_PROJECT}\")|.name"\
-`)
+ | jq -r ".clusters[] | select(.name == \"${AWS_PROJECT}\").id"`)
 
 for i in "${!C1CSCLUSTERS[@]}"
 do
-   printf "%s\n" "deleting cluster"
-  ### TODO  NEED TO HAVE THE CLUSTERIDs
+  printf "%s\n" "deleting cluster ${C1CSCLUSTERS[$i]}"
+  curl --location --request DELETE "https://cloudone.trendmicro.com/api/container/clusters/${C1CSCLUSTERS[$i]}" \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' 
 done 
 
 
 
-#remove scanner from c1cs
-# TODO 
+# remove this project's Scanner from c1cs
+C1CSSCANNERS=(`\
+curl --location --request GET 'https://cloudone.trendmicro.com/api/container/scanners' \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' \
+ | jq -r ".scanners[] | select(.name == \"${AWS_PROJECT}\").id"`)
+
+for i in "${!C1CSSCANNERS[@]}"
+do
+  printf "%s\n" "deleting scanner ${C1CSSCANNERS[$i]}"
+  curl --location --request DELETE "https://cloudone.trendmicro.com/api/container/scanners/${C1CSSCANNERS[$i]}" \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' 
+done 
+
 
 #delete smartcheck 
 helm_smartcheck=`helm list -n ${DSSC_NAMESPACE}  -o json | jq -r '.[].name'`
