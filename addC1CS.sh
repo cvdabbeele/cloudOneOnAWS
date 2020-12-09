@@ -3,7 +3,7 @@
 ## Create a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster
 printf '%s\n' "Create a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster"
 export C1CSAPIKEYforCLUSTERS=`\
-curl --location --request POST 'https://cloudone.trendmicro.com/api/container/clusters' \
+curl --silent --location --request POST 'https://cloudone.trendmicro.com/api/container/clusters' \
 --header 'Content-Type: application/json' \
 --header "api-secret-key: ${C1APIKEY}"  \
 --header 'api-version: v1' \
@@ -36,7 +36,7 @@ helm upgrade \
 ## Create a Scanner object in C1Cs and get an API key to grant C1CS to push scanresults to C1CS
 printf '%s\n' "Create a Scanner object in C1Cs and get an API key to grant C1CS to push scanresults to C1CS"
 export C1CSAPIKEYforSCANNERS=`\
-curl --location --request POST 'https://cloudone.trendmicro.com/api/container/scanners' \
+curl --silent --location --request POST 'https://cloudone.trendmicro.com/api/container/scanners' \
 --header 'Content-Type: application/json' \
 --header "api-secret-key: ${C1APIKEY}"  \
 --header 'api-version: v1' \
