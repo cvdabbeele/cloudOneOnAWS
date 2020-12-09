@@ -18,4 +18,5 @@ k8s.crt
 k8s.key
 overrides.yml
 req.conf
-.remote-sync.json 
+.remote-sync.json
+*.tmp

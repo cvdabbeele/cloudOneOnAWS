@@ -17,6 +17,40 @@ printf '%s\n' "Getting region from AWS configure"
 export AWS_REGION=`aws configure get region`
 echo AWS_REGION= $AWS_REGION
 
+#remove this projects clusters from c1cs
+C1CSCLUSTERS=(`\
+curl --location --request GET 'https://cloudone.trendmicro.com/api/container/clusters' \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' \
+ | jq -r ".clusters[] | select(.name == \"${AWS_PROJECT}\")|.name"\
+`)
+
+for i in "${!C1CSCLUSTERS[@]}"
+do
+   printf "%s\n" "deleting cluster"
+  ### TODO  NEED TO HAVE THE CLUSTERIDs
+done 
+
+
+
+#remove scanner from c1cs
+# TODO 
+
+#delete smartcheck 
+helm_smartcheck=`helm list -n ${DSSC_NAMESPACE}  -o json | jq -r '.[].name'`
+if [[ "${helm_smartcheck}" =~ "deepsecurity-smartcheck" ]]; then
+  printf "%s\n" "Uninstalling smartcheck "
+  helm delete deepsecurity-smartcheck -n ${DSSC_NAMESPACE}
+fi
+
+#delete c1cs 
+helm_c1cs=`helm list -n c1cs -o json | jq -r '.[].name'`
+if [[ "${helm_c1cs}" == "trendmicro" ]]; then
+  printf "%s\n" "Unistalling C1CS"
+  helm delete trendmicro -n c1cs
+fi
+
 #delete services
 printf "%s\n" "Removing Services on EKS cluster "
 for i in `kubectl get services -o json | jq -r '.items[].metadata.name'`
@@ -30,18 +64,6 @@ for i in `kubectl get deployments  -o json | jq -r '.items[].metadata.name'`
 do
   kubectl delete deployment $i
 done
-
-helm_smartcheck=`helm list -n ${DSSC_NAMESPACE}  -o json | jq -r '.[].name'`
-if [[ "${helm_smartcheck}" =~ "deepsecurity-smartcheck" ]]; then
-  printf "%s\n" "Uninstalling smartcheck "
-  helm delete deepsecurity-smartcheck -n ${DSSC_NAMESPACE}
-fi
-
-helm_c1cs=`helm list -n c1cs -o json | jq -r '.[].name'`
-if [[ "${helm_c1cs}" == "trendmicro" ]]; then
-  printf "%s\n" "Unistalling C1CS"
-  helm delete trendmicro -n c1cs
-fi
 
 # Delete ECR repos
 printf "%s\n" "Checking ECR Repositories"
