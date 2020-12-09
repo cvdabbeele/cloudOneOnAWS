@@ -14,7 +14,6 @@ curl --location --request POST 'https://cloudone.trendmicro.com/api/container/cl
     \"runtimeEnabled\": true
 }" | jq -r ".apiKey"\
 `
-echo ${C1CSAPIKEYforCLUSTERS}
 
 ## deploy C1CS to the K8S cluster of the CloudOneOnAWS project
 printf '%s\n' "deploy C1CS to the K8S cluster of the CloudOneOnAWS project"
@@ -24,7 +23,6 @@ cloudOne:
    admissionController:
      apiKey: ${C1CSAPIKEYforCLUSTERS}
 EOF
-cat overrides.addC1csToK8s.yml
 
 helm upgrade \
      trendmicro-c1cs \
@@ -33,13 +31,6 @@ helm upgrade \
      --install \
      --create-namespace \
      https://github.com/trendmicro/cloudone-container-security-helm/archive/master.tar.gz
-
-cat << EOF >overrides.smartcheck.yml
-cloudOne:
-     apiKey: ${C1CSAPIKEY}
-EOF
-cat overrides.smartcheck.yml
-
 
 # Create a Scanner
 ## Create a Scanner object in C1Cs and get an API key to grant C1CS to push scanresults to C1CS
@@ -54,10 +45,14 @@ curl --location --request POST 'https://cloudone.trendmicro.com/api/container/sc
     \"description\": \"The SmartCheck scanner added by the CloudOneOnAWS project ${AWS_PROJECT}\"
 }" | jq -r ".apiKey"\
 `
-echo ${C1CSAPIKEYforSCANNERS}
 
 ## add C1CS to smartcheck
 printf '%s\n' "add C1CS to smartcheck"
+cat << EOF >overrides.smartcheck.yml
+cloudOne:
+     apiKey: ${C1CSAPIKEYforSCANNERS}
+EOF
+
 helm upgrade \
           deepsecurity-smartcheck \
           --reuse-values \
