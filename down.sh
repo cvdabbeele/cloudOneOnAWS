@@ -17,7 +17,27 @@ printf '%s\n' "Getting region from AWS configure"
 export AWS_REGION=`aws configure get region`
 echo AWS_REGION= $AWS_REGION
 
-#remove this projects clusters from c1cs
+
+#TODO remove this project's Policy from c1cs
+C1CSPOLICIES=(`\
+curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/container/policies' \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' \
+ | jq -r ".policies[] | select(.name == \"${AWS_PROJECT}\").id"`)
+echo $C1CSPOLICIES
+
+for i in "${!C1CSPOLICIES[@]}"
+do
+  printf "%s\n" "deleting policy ${C1CSPOLICIES[$i]} from C1CS"
+  curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/container/policies/${C1CSPOLICIES[$i]}" \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' 
+done 
+
+
+#remove this project's cluster from c1cs
 C1CSCLUSTERS=(`\
 curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/container/clusters' \
 --header 'Content-Type: application/json' \
@@ -33,7 +53,6 @@ do
 --header "api-secret-key: ${C1APIKEY}"  \
 --header 'api-version: v1' 
 done 
-
 
 
 # remove this project's Scanner from c1cs
@@ -54,18 +73,20 @@ do
 done 
 
 
-#delete smartcheck 
-helm_smartcheck=`helm list -n ${DSSC_NAMESPACE}  -o json | jq -r '.[].name'`
-if [[ "${helm_smartcheck}" =~ "deepsecurity-smartcheck" ]]; then
-  printf "%s\n" "Uninstalling smartcheck "
-  helm delete deepsecurity-smartcheck -n ${DSSC_NAMESPACE}
-fi
-
 #delete c1cs 
+printf '%s\n' "Removing Cloud One Container Security from c1cs"
 helm_c1cs=`helm list -n c1cs -o json | jq -r '.[].name'`
 if [[ "${helm_c1cs}" == "trendmicro" ]]; then
   printf "%s\n" "Unistalling C1CS"
   helm delete trendmicro -n c1cs
+fi
+
+#remove smartcheck 
+printf '%s\n' "Removing Smart Check from c1cs"
+helm_smartcheck=`helm list -n ${DSSC_NAMESPACE}  -o json | jq -r '.[].name'`
+if [[ "${helm_smartcheck}" =~ "deepsecurity-smartcheck" ]]; then
+  printf "%s\n" "Uninstalling smartcheck "
+  helm delete deepsecurity-smartcheck -n ${DSSC_NAMESPACE}
 fi
 
 #delete services
@@ -76,14 +97,13 @@ do
 done
 
 #delete deployed apps
-printf "%s\n" "Removing Deployments on EKS cluster"
+printf "%s\n" "Removing Deployments from EKS cluster"
 for i in `kubectl get deployments  -o json | jq -r '.items[].metadata.name'`
 do
   kubectl delete deployment $i
 done
 
 # Delete ECR repos
-printf "%s\n" "Checking ECR Repositories"
 aws_ecr_repos=(`aws ecr describe-repositories --region ${AWS_REGION} | jq -r '.repositories[].repositoryName'`)
 aws_ecr_repo=''
 for i in "${!aws_ecr_repos[@]}"; do
@@ -97,7 +117,6 @@ for i in "${!aws_ecr_repos[@]}"; do
 done
 
 # Delete CodeCommit repos
-printf "%s\n" "Checking CodeCommit Repositories"
 aws_cc_repos=(`aws codecommit list-repositories --region $AWS_REGION | jq -r '.repositories[].repositoryName'`)
 aws_cc_repo=''
 for i in "${!aws_cc_repos[@]}"; do
@@ -109,7 +128,6 @@ for i in "${!aws_cc_repos[@]}"; do
 done
 
 # Delete Cloudformation Stacks
-printf "%s \n" "Checking CloudFormation Pipeline Stacks..."
 aws_stack=""
 aws_stacks=(`aws cloudformation describe-stacks --output json --region $AWS_REGION| jq -r '.Stacks[].StackName'` )
 for i in "${!aws_stacks[@]}"; do
@@ -126,7 +144,6 @@ printf "\n"
 #TBD: delete log groups
 
 # delete cluster
-printf "%s \n" "Checking EKS cluster..."
 aws_eks_clusters=(`eksctl get clusters -o json | jq -r '.[].metadata.name'`)
 for i in "${!aws_eks_clusters[@]}"; do
   #printf "%s" "cluster $i =  ${aws_eks_clusters[$i]}.........."

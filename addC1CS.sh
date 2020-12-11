@@ -1,9 +1,9 @@
 printf '%s\n' "----------------------------------"
-printf '%s\n' "Addming CLoudOneContainerSecurity"
+printf '%s\n' " Adding CLoudOneContainerSecurity"
 printf '%s\n' "----------------------------------"
-# Create a Cluster
-## Create a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster
-printf '%s\n' "Create a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster"
+# Creating a Cluster
+## Creating a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster
+printf '%s\n' "Creating a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster"
 export C1CSAPIKEYforCLUSTERS=`\
 curl --silent --location --request POST 'https://cloudone.trendmicro.com/api/container/clusters' \
 --header 'Content-Type: application/json' \
@@ -34,9 +34,9 @@ helm upgrade \
      --create-namespace \
      https://github.com/trendmicro/cloudone-container-security-helm/archive/master.tar.gz
 
-# Create a Scanner
-## Create a Scanner object in C1Cs and get an API key to grant C1CS to push scanresults to C1CS
-printf '%s\n' "Create a Scanner object in C1Cs and get an API key to grant C1CS to push scanresults to C1CS"
+# Creating a Scanner
+## Creating a Scanner object in C1Cs and get an API key to grant C1CS rights to push scanresults to C1CS
+printf '%s\n' "Creating a Scanner object in C1Cs and get an API key to grant C1CS rights to push scanresults to C1CS"
 export C1CSAPIKEYforSCANNERS=`\
 curl --silent --location --request POST 'https://cloudone.trendmicro.com/api/container/scanners' \
 --header 'Content-Type: application/json' \
@@ -62,22 +62,90 @@ helm upgrade \
           -n ${DSSC_NAMESPACE} \
           https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz
 
-# create Admission Policy
+# Creating an Admission Policy
 # TODO
+printf '%s\n' "Creating an Admission Policy in C1Cs"
 
-# Assign Cluster to Admission Policy
-# Todo  to do  TODO 
 
-###TOTO### # Whitelist smartcheck namespace
-###TOTO### # ------------------------------
-###TOTO### kubectl label namespace smartcheck ignoreAdmissionControl=ignore
-###TOTO### kubectl run busybox  --image=busybox --namespace busybox
-###TOTO### 
-###TOTO### kubectl run busybox  --image=busybox   # will fail if "not scanned"
-###TOTO### kubectl create namespace mywhitelistednamespace
-###TOTO### #whitelist that namespace for C1CS
-###TOTO### kubectl label namespace mywhitelistednamespace ignoreAdmissionControl=ignore
-###TOTO### #deploying busybox in the "mywhitelistednamespace" will work:
-###TOTO### kubectl run busybox  --image=busybox --namespace mywhitelistednamespace
-###TOTO### kubectl get namespaces --show-labels
-###TOTO### 
+export POLICYID=`curl --silent --location --request POST 'https://cloudone.trendmicro.com/api/container/policies' \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' \
+--data-raw "{
+    \"name\": \"${AWS_PROJECT}TEST\",
+    \"description\": \"Policy created by CloudOneOnAWS project ${AWS_PROJECT}\",
+    \"default\": {
+        \"rules\": [
+            {
+                \"type\": \"registry\",
+                \"enabled\": true,
+                \"action\": \"block\",
+                \"statement\": {
+                    \"key\": \"equals\",
+                    \"value\": \"docker.io\"
+                }
+             },   
+            {
+              \"action\": \"block\",
+              \"type\": \"unscannedImage\",
+              \"enabled\": true
+            },
+            {
+              \"action\": \"block\",
+              \"type\": \"malware\",
+              \"enabled\": true,
+              \"statement\": {
+                \"key\": \"count\",
+                \"value\": \"0\"
+              }
+            }
+
+          ],
+        \"exceptions\": [
+            {
+                \"type\": \"registry\",
+                \"enabled\": true,
+                \"statement\": {
+                    \"key\": \"equals\",
+                    \"value\": \"gcr.io\"
+                }
+            }
+        ]
+    }
+}" \
+| jq -r ".id"`
+echo $POLICYID
+
+
+# get all policies
+# curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/container/policies' \
+# --header 'Content-Type: application/json' \
+# --header "api-secret-key: ${C1APIKEY}"  \
+# --header 'api-version: v1' \
+# | jq -r ".policies[].id"
+
+
+# AssignAdmission Policy to Clusterf
+# TODO to test 
+curl --request POST \
+  --url https://cloudone.trendmicro.com/api/container/clusters/{id} \
+  --header 'api-secret-key: REPLACE_KEY_VALUE' \
+  --header 'content-type: application/json' \
+  --data '{"description":"My cluster description","policyID":"$POLICYID"}'
+
+
+
+
+
+# Whitelist smartcheck namespace
+# ------------------------------
+kubectl label namespace smartcheck ignoreAdmissionControl=ignore
+kubectl run busybox  --image=busybox --namespace busybox
+
+kubectl run busybox  --image=busybox   # will fail if "not scanned"
+kubectl create namespace mywhitelistednamespace
+#whitelist that namespace for C1CS
+kubectl label namespace mywhitelistednamespace ignoreAdmissionControl=ignore
+#deploying busybox in the "mywhitelistednamespace" will work:
+kubectl run busybox  --image=busybox --namespace mywhitelistednamespace
+kubectl get namespaces --show-labels
