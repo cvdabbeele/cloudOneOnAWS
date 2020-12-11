@@ -106,5 +106,5 @@ fi
 . ./add_demoApps.sh
 
 # add C1CS
-
+. ./addC1CS.sh
 #end
