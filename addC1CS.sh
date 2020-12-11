@@ -4,7 +4,7 @@ printf '%s\n' "----------------------------------"
 # Creating a Cluster
 ## Creating a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster
 printf '%s\n' "Creating a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster"
-export C1CSAPIKEYforCLUSTERS=`\
+export TEMPJSON=`\
 curl --silent --location --request POST 'https://cloudone.trendmicro.com/api/container/clusters' \
 --header 'Content-Type: application/json' \
 --header "api-secret-key: ${C1APIKEY}"  \
@@ -14,8 +14,13 @@ curl --silent --location --request POST 'https://cloudone.trendmicro.com/api/con
     \"description\": \"EKS cluster added by the CloudOneOnAWS project ${AWS_PROJECT}\",
     \"policyID\": \"TO DO\",
     \"runtimeEnabled\": true
-}" | jq -r ".apiKey"\
-`
+}" `
+echo $TEMPJSON
+
+export C1CSAPIKEYforCLUSTERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
+echo  $C1CSAPIKEYforCLUSTERS
+export C1CSCLUSTERID=`echo ${TEMPJSON}| jq -r ".id"`
+echo $C1CSCLUSTERID
 
 ## deploy C1CS to the K8S cluster of the CloudOneOnAWS project
 printf '%s\n' "deploy C1CS to the K8S cluster of the CloudOneOnAWS project"
@@ -37,16 +42,23 @@ helm upgrade \
 # Creating a Scanner
 ## Creating a Scanner object in C1Cs and get an API key to grant C1CS rights to push scanresults to C1CS
 printf '%s\n' "Creating a Scanner object in C1Cs and get an API key to grant C1CS rights to push scanresults to C1CS"
-export C1CSAPIKEYforSCANNERS=`\
+export TEMPJSON=`\
 curl --silent --location --request POST 'https://cloudone.trendmicro.com/api/container/scanners' \
 --header 'Content-Type: application/json' \
 --header "api-secret-key: ${C1APIKEY}"  \
 --header 'api-version: v1' \
 --data-raw "{
     \"name\": \"${AWS_PROJECT}\",
-    \"description\": \"The SmartCheck scanner added by the CloudOneOnAWS project ${AWS_PROJECT}\"
-}" | jq -r ".apiKey"\
-`
+    \"description\": \"The SmartCheck scanner added by the CloudOneOnAWS project ${AWS_PROJECT} \"
+}" `
+echo $TEMPJSON
+
+export C1CSAPIKEYforSCANNERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
+echo  $C1CSAPIKEYforSCANNERS
+export C1CSSCANNERID=`echo ${TEMPJSON}| jq -r ".id"`
+echo $C1CSSCANNERID
+
+
 
 ## add C1CS to smartcheck
 printf '%s\n' "add C1CS to smartcheck"
@@ -73,7 +85,7 @@ export POLICYID=`curl --silent --location --request POST 'https://cloudone.trend
 --header 'api-version: v1' \
 --data-raw "{
     \"name\": \"${AWS_PROJECT}TEST\",
-    \"description\": \"Policy created by CloudOneOnAWS project ${AWS_PROJECT}\",
+    \"description\": \"Policy created by the CloudOneOnAWS project ${AWS_PROJECT}\",
     \"default\": {
         \"rules\": [
             {
@@ -128,13 +140,10 @@ echo $POLICYID
 # AssignAdmission Policy to Clusterf
 # TODO to test 
 curl --request POST \
-  --url https://cloudone.trendmicro.com/api/container/clusters/{id} \
-  --header 'api-secret-key: REPLACE_KEY_VALUE' \
+  --url https://cloudone.trendmicro.com/api/container/clusters/${C1CSCLUSTERID} \
+  --header "api-secret-key: ${C1APIKEY}" \
   --header 'content-type: application/json' \
-  --data '{"description":"My cluster description","policyID":"$POLICYID"}'
-
-
-
+  --data "{\"description\":\"EKS cluster added and Policy Assigned by the CloudOneOnAWS project ${AWS_PROJECT}\",\"policyID\":\"${POLICYID}\"}" | jq
 
 
 # Whitelist smartcheck namespace

@@ -10,12 +10,12 @@ printf '%s\n' "----------------------"
 
 varsok=true
 #if  [ -z "${AWS_REGION}" ]; then echo AWS_REGION must be set && varsok=false; fi
-if  [ -z "${AWS_PROJECT}" ]; then echo AWS_PROJECT must be set && varsok=false; fi
+if  [ -z "${AWS_PROJECT}" ]; then printf '%s\n' "AWS_PROJECT must be set" && varsok=false; fi
 if  [ "$varsok" = false ]; then exit ; fi
 
 printf '%s\n' "Getting region from AWS configure"
 export AWS_REGION=`aws configure get region`
-echo AWS_REGION= $AWS_REGION
+printf '%s\n' "AWS_REGION= $AWS_REGION"
 
 
 #TODO remove this project's Policy from c1cs
@@ -25,11 +25,10 @@ curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/cont
 --header "api-secret-key: ${C1APIKEY}"  \
 --header 'api-version: v1' \
  | jq -r ".policies[] | select(.name == \"${AWS_PROJECT}\").id"`)
-echo $C1CSPOLICIES
 
 for i in "${!C1CSPOLICIES[@]}"
 do
-  printf "%s\n" "deleting policy ${C1CSPOLICIES[$i]} from C1CS"
+  printf "%s\n" "C1CS: deleting policy ${C1CSPOLICIES[$i]}"
   curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/container/policies/${C1CSPOLICIES[$i]}" \
 --header 'Content-Type: application/json' \
 --header "api-secret-key: ${C1APIKEY}"  \
@@ -47,7 +46,7 @@ curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/cont
 
 for i in "${!C1CSCLUSTERS[@]}"
 do
-  printf "%s\n" "deleting cluster ${C1CSCLUSTERS[$i]} from C1CS"
+  printf "%s\n" "C1CS: deleting cluster ${C1CSCLUSTERS[$i]}"
   curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/container/clusters/${C1CSCLUSTERS[$i]}" \
 --header 'Content-Type: application/json' \
 --header "api-secret-key: ${C1APIKEY}"  \
@@ -65,7 +64,7 @@ curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/cont
 
 for i in "${!C1CSSCANNERS[@]}"
 do
-  printf "%s\n" "deleting scanner ${C1CSSCANNERS[$i]} from C1CS"
+  printf "%s\n" "C1CS: deleting scanner ${C1CSSCANNERS[$i]}"
   curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/container/scanners/${C1CSSCANNERS[$i]}" \
 --header 'Content-Type: application/json' \
 --header "api-secret-key: ${C1APIKEY}"  \
@@ -74,7 +73,7 @@ done
 
 
 #delete c1cs 
-printf '%s\n' "Removing Cloud One Container Security from c1cs"
+printf '%s\n' "C1CS: Removing from EKS cluster"
 helm_c1cs=`helm list -n c1cs -o json | jq -r '.[].name'`
 if [[ "${helm_c1cs}" == "trendmicro" ]]; then
   printf "%s\n" "Unistalling C1CS"
@@ -82,7 +81,7 @@ if [[ "${helm_c1cs}" == "trendmicro" ]]; then
 fi
 
 #remove smartcheck 
-printf '%s\n' "Removing Smart Check from c1cs"
+printf '%s\n' "Deleting Smart Check"
 helm_smartcheck=`helm list -n ${DSSC_NAMESPACE}  -o json | jq -r '.[].name'`
 if [[ "${helm_smartcheck}" =~ "deepsecurity-smartcheck" ]]; then
   printf "%s\n" "Uninstalling smartcheck "
@@ -90,7 +89,7 @@ if [[ "${helm_smartcheck}" =~ "deepsecurity-smartcheck" ]]; then
 fi
 
 #delete services
-printf "%s\n" "Removing Services on EKS cluster "
+printf "%s\n" "Removing Services from EKS cluster "
 for i in `kubectl get services -o json | jq -r '.items[].metadata.name'`
 do
   kubectl delete service $i
