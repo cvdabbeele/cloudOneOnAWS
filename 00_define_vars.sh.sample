@@ -26,8 +26,8 @@ export TREND_AP_SECRET='your_trend_secret_for_cloudOne_Application_Security'
 export C1CSAPIKEY='C1CS API Key'
 
 # Dockerhub account information (required to do "authenticated pulls" from docker to get a higher max-pull limit)
-export DOCKERHUB_USERNAME="your username of your (free) account on hub.docker.com"
-export DOCKERHUB_PASSWORD="your password of your (free) account on hub.docker.com"
+export DOCKERHUB_USERNAME='your username of your (free) account on hub.docker.com'
+export DOCKERHUB_PASSWORD='your password of your (free) account on hub.docker.com'
 
 #### ----------below this line are default settings which may be customised (optionally) ----------
 #### -------------------------------------------------------------------------------------------------------

@@ -15,7 +15,7 @@ if  [ "$varsok" = false ]; then exit 1 ; fi
 function setupApp {
   #$1=appname
   #$2=downloadURL for application on public git
-
+  currentDir=`pwd`
   #printf '%s\n' "Creating required vars for ${1}"
   #finding AWS_CODECOMMITURL
   aws_cc_repos=(`aws codecommit list-repositories --region $AWS_REGION | jq -r '.repositories[].repositoryName'`)
@@ -96,7 +96,7 @@ function setupApp {
   git push https://${AWS_CC_REPO_URL}
 
   #4. pipeline will pick it up, build an Image, send it to SmartCheck..
-  cd ..
+  cd $currentDir
 }
 
 function getUrl {
