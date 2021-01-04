@@ -1,7 +1,7 @@
 #!/bin/bash
 #printf "Checking required variables..."
 printf '%s\n' "-------------------------------------------------------------"
-printf '%s\n' " Adding internal repository to Cloud One Container Security  "
+printf '%s\n' " Adding internal repository to SmartCheck  "
 printf '%s\n' "-------------------------------------------------------------"
 . cloudOneCredentials.txt
 

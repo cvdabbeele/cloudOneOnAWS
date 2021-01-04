@@ -23,12 +23,16 @@ export C1CSCLUSTERID=`echo ${TEMPJSON}| jq -r ".id"`
 echo $C1CSCLUSTERID
 
 ## deploy C1CS to the K8S cluster of the CloudOneOnAWS project
-printf '%s\n' "deploy C1CS to the K8S cluster of the CloudOneOnAWS project"
+printf '%s\n' "Deploying C1CS to the K8S cluster of the CloudOneOnAWS project"
 
 cat << EOF >overrides.addC1csToK8s.yml
 cloudOne:
    admissionController:
      apiKey: ${C1CSAPIKEYforCLUSTERS}
+    runtimeSecurity:
+        enabled: true
+        apiKey: ${TREND_AP_KEY}
+        secret: ${TREND_AP_SECRET}
 EOF
 
 helm upgrade \
@@ -146,15 +150,22 @@ curl --request POST \
   --data "{\"description\":\"EKS cluster added and Policy Assigned by the CloudOneOnAWS project ${AWS_PROJECT}\",\"policyID\":\"${POLICYID}\"}" | jq
 
 
-# Whitelist smartcheck namespace
-# ------------------------------
+# testing C1CS (admission control)
+# --------------------------------
+printf '%s\n' "Whitelisting namespace smartcheck for Admission Control"
 kubectl label namespace smartcheck ignoreAdmissionControl=ignore
-kubectl run busybox  --image=busybox --namespace busybox
 
-kubectl run busybox  --image=busybox   # will fail if "not scanned"
+printf '%s\n' "Deploying nginx pod in its own namspace --- this will fail"
+kubectl create namespace nginx
+kubectl run --generator=run-pod/v1 --image=nginx --namespace nginx nginx
+
+printf '%s\n' "Deploying nginx pod in whitelisted namspace --- this will work"
 kubectl create namespace mywhitelistednamespace
 #whitelist that namespace for C1CS
 kubectl label namespace mywhitelistednamespace ignoreAdmissionControl=ignore
-#deploying busybox in the "mywhitelistednamespace" will work:
-kubectl run busybox  --image=busybox --namespace mywhitelistednamespace
+#deploying nginx in the "mywhitelistednamespace" will work:
+kubectl run --generator=run-pod/v1 --image=nginx --namespace mywhitelistednamespace nginx
+
+kubectl run nginx  --image=nginx --namespace mywhitelistednamespace
 kubectl get namespaces --show-labels
+kubectl get pods -A | grep nginx

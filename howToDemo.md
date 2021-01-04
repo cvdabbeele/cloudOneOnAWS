@@ -1,17 +1,18 @@
 # How to Demo
 
 - [How to Demo](#how-to-demo)
-  - [Preparation for the Demo](#preparation-for-the-demo)
-  - [Demo Scenario](#demo-scenario)
-    - [Story: We have to deploy with vulnerabilities](#story-we-have-to-deploy-with-vulnerabilities)
-    - [Attack and Protect the running app](#attack-and-protect-the-running-app)
-    - [Walk through how Cloud 1 Application Control setup](#walk-through-how-cloud-1-application-control-setup)
+  - [Prepare for the Demo](#prepare-for-the-demo)
+  - [Demo AWS pipeline integrations with SmartCheck](#demo-aws-pipeline-integrations-with-smartcheck)
+  - [Demo CloudOne Application Security (C1AS)](#demo-cloudone-application-security-c1as)
+    - [Attack and Protect the running container](#attack-and-protect-the-running-container)
+    - [Walk through the integration with CloudOne Application Control](#walk-through-the-integration-with-cloudone-application-control)
+  - [Walk through CloudOne Container Security (Admission Control)](#walk-through-cloudone-container-security-admission-control)
 
 ## Prepare for the Demo
 
 In this demo scenario we will be using the MoneyX demo application. This is the only app that has the runtime protection enabled.
 
-Login to your CloudOne account and go to Cloud One Application Security. Find the group that you created for the MoneyX application (`c1-app-sec-moneyx`).
+Login to your CloudOne account and go to CloudOne Application Security. Find the group that you created for the MoneyX application (`c1-app-sec-moneyx`).
 
 Open Policies" and set all policies to REPORT.
 
@@ -24,9 +25,10 @@ Ensure to have the following browser tabs opened and authenticated.
 - AWS Service CodePipeline / CodeCommit
 - Cloud9 shell
 
-## Demo Scenario
+## Demo AWS pipeline integrations with SmartCheck
 
-- In Cloud9 type
+- Show the EKS cluster  
+  In Cloud9 type:
 ```shell
 eksctl get clusters
 ```
@@ -101,7 +103,8 @@ Show the 3 AWS CodeCommit repositories (AWS -> Services -> CodeCommit -> Reposit
 
 - The above integration ensures that only "clean" images can get published in our ECR registry
 
-### Story: We have to deploy with vulnerabilities
+## Demo CloudOne Application Security (C1AS)
+Story: We have to deploy with vulnerabilities
 
 For an urgent Marketing event, the "business" wants us to put this application online ASAP.  Our code is fine, but we have found vulnerabilities in the external libraries that we have used and we don't know how to quickly fix them (or the fixes are not yet available).  
 
@@ -207,5 +210,36 @@ point out:
 - ADD command: this is where we import the library in our app (in this case it is a java app, so we added a java library)
 - CMD command: this is where the app will get started and our library will be included.  Here we invoke the imported library
 
-The Registration keys for Cloud One Application Security must be called per running instance, at runtime.  You can show those in the Cloud Formation Template -> Tab:Template ->search appSec registration keys for AppSec
+The Registration keys for CloudOne Application Security must be called per running instance, at runtime.  You can show those in the AWS Cloud Formation Template -> Tab:Template ->search appSec registration keys for AppSec
 ![AppSecKey](images/AppSecKey.png)
+
+## Walk through CloudOne Container Security (Admission Control)
+- go to the CloudOne Container Security web interface and show the Admission Policy.  
+  Point out that we will not be able to deploy containers directly pulled from gcr.io (this is just an example).  Also pods that have not been scanned will not be allowed to run
+![C1CSAdmissionPolicies](images/C1CSAdmissionPolicies.png)
+Demonstrate this by trying to start an nginx pod, right from dockerhub
+```
+kubectl run --generator=run-pod/v1 --image=nginx --namespace nginx nginx
+```
+This will not be allowed and will generate the following error:    
+```
+Error from server: admission webhook "trendmicro-admission-controller.c1cs.svc" denied the request: 
+- unscannedImage violated in container(s) "nginx" (block).
+```
+![C1CSpodDeploymentFailed](images/C1CSpodDeploymentFailed.png)  
+
+Show the Admission Events in the WebUI:
+![C1CSAdmissionEvents](images/C1CSAdmissionEvents.png)
+
+- Whitelist a namespace and deploy nginx in that namespace
+```
+kubectl create namespace mywhitelistednamespace
+#whitelist that namespace for C1CS
+kubectl label namespace mywhitelistednamespace ignoreAdmissionControl=ignore
+#deploying nginx in the "mywhitelistednamespace" will work:
+kubectl run --generator=run-pod/v1 --image=nginx --namespace mywhitelistednamespace nginx
+
+kubectl run nginx  --image=nginx --namespace mywhitelistednamespace
+kubectl get namespaces --show-labels
+kubectl get pods -A | grep nginx
+```
