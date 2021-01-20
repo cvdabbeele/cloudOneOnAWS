@@ -57,13 +57,13 @@ export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
 export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
 export AWS_REGION=`aws configure get region`
 
-TMP=`cat ~/.aws/config | grep key`
-if [[ ! ${TMP} =~ "key" ]]
-then
-  cat ~/.aws/credentials | grep key >> ~/.aws/config
-fi
-sed -n 's/aws_session_token = //g' ~/.aws/config
-sed -n 's/aws_session_token = //g' ~/.aws/credentials
+#TMP=`cat ~/.aws/config | grep key`
+#if [[ ! ${TMP} =~ "key" ]]
+#then
+#  cat ~/.aws/credentials | grep key >> ~/.aws/config
+#fi
+#sed -n 's/aws_session_token = //g' ~/.aws/config
+#sed -n 's/aws_session_token = //g' ~/.aws/credentials
 
 rolefound="false"
 AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
@@ -106,5 +106,5 @@ fi
 . ./add_demoApps.sh
 
 # add C1CS
-. ./addC1CS.sh
+. ./add_C1CS.sh
 #end

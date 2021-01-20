@@ -88,7 +88,7 @@ export POLICYID=`curl --silent --location --request POST 'https://cloudone.trend
 --header "api-secret-key: ${C1APIKEY}"  \
 --header 'api-version: v1' \
 --data-raw "{
-    \"name\": \"${AWS_PROJECT}TEST\",
+    \"name\": \"${AWS_PROJECT}\",
     \"description\": \"Policy created by the CloudOneOnAWS project ${AWS_PROJECT}\",
     \"default\": {
         \"rules\": [
