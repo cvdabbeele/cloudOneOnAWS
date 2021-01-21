@@ -18,24 +18,6 @@ export AWS_REGION=`aws configure get region`
 printf '%s\n' "AWS_REGION= $AWS_REGION"
 
 
-#TODO remove this project's Policy from c1cs
-C1CSPOLICIES=(`\
-curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/container/policies' \
---header 'Content-Type: application/json' \
---header "api-secret-key: ${C1APIKEY}"  \
---header 'api-version: v1' \
- | jq -r ".policies[] | select(.name == \"${AWS_PROJECT}\").id"`)
-
-for i in "${!C1CSPOLICIES[@]}"
-do
-  printf "%s\n" "C1CS: deleting policy ${C1CSPOLICIES[$i]}"
-  curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/container/policies/${C1CSPOLICIES[$i]}" \
---header 'Content-Type: application/json' \
---header "api-secret-key: ${C1APIKEY}"  \
---header 'api-version: v1' 
-done 
-
-
 #remove this project's cluster from c1cs
 C1CSCLUSTERS=(`\
 curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/container/clusters' \
@@ -48,6 +30,24 @@ for i in "${!C1CSCLUSTERS[@]}"
 do
   printf "%s\n" "C1CS: deleting cluster ${C1CSCLUSTERS[$i]}"
   curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/container/clusters/${C1CSCLUSTERS[$i]}" \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' 
+done 
+
+
+# remove this project's Policy from c1cs
+C1CSPOLICIES=(`\
+curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/container/policies' \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' \
+ | jq -r ".policies[] | select(.name == \"${AWS_PROJECT}\").id"`)
+
+for i in "${!C1CSPOLICIES[@]}"
+do
+  printf "%s\n" "C1CS: deleting policy ${C1CSPOLICIES[$i]}"
+  curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/container/policies/${C1CSPOLICIES[$i]}" \
 --header 'Content-Type: application/json' \
 --header "api-secret-key: ${C1APIKEY}"  \
 --header 'api-version: v1' 
