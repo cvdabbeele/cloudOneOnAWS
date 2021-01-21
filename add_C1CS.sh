@@ -29,7 +29,7 @@ cat << EOF >overrides.addC1csToK8s.yml
 cloudOne:
    admissionController:
      apiKey: ${C1CSAPIKEYforCLUSTERS}
-    runtimeSecurity:
+   runtimeSecurity:
         enabled: true
         apiKey: ${TREND_AP_KEY}
         secret: ${TREND_AP_SECRET}
