@@ -98,7 +98,7 @@ certificate:
     privateKey: tls.key
 EOF
 
-    printf '%s\n' "Deploying Helm chart... "
+    printf '%s\n' "Deploying SmartCheck Helm chart... "
     helm install -n ${DSSC_NAMESPACE} --values overrides.yml deepsecurity-smartcheck https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz > /dev/null
     #printf '%s\n' "Waiting for SmartCheck Service to come online"
     export DSSC_HOST=''
