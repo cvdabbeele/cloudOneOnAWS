@@ -38,8 +38,8 @@ curl --silent --location --request POST 'https://cloudone.trendmicro.com/api/con
   \"policyID\": \"TO DO\",
   \"runtimeEnabled\": true }" `
 #echo $TEMPJSON | jq
-export C1CSAPIKEYforCLUSTERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
-#echo  $C1CSAPIKEYforCLUSTERS
+export C1APIKEYforCLUSTERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
+#echo  $C1APIKEYforCLUSTERS
 export C1CSCLUSTERID=`echo ${TEMPJSON}| jq -r ".id"`
 #echo $C1CSCLUSTERID
 
@@ -49,7 +49,7 @@ printf '%s\n' "Deploying C1CS to the K8S cluster of the CloudOneOnAWS project"
 cat << EOF >overrides.addC1csToK8s.yml
 cloudOne:
    admissionController:
-     apiKey: ${C1CSAPIKEYforCLUSTERS}
+     apiKey: ${C1APIKEYforCLUSTERS}
    runtimeSecurity:
      enabled: true
      apiKey: ${TREND_AP_KEY}
@@ -95,8 +95,8 @@ curl --silent --location --request POST 'https://cloudone.trendmicro.com/api/con
     \"description\": \"The SmartCheck scanner added by the CloudOneOnAWS project ${AWS_PROJECT} \"
 }" `
 #echo $TEMPJSON | jq
-export C1CSAPIKEYforSCANNERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
-echo  $C1CSAPIKEYforSCANNERS
+export C1APIKEYforSCANNERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
+echo  $C1APIKEYforSCANNERS
 export C1CSSCANNERID=`echo ${TEMPJSON}| jq -r ".id"`
 echo $C1CSSCANNERID
 
@@ -105,7 +105,7 @@ echo $C1CSSCANNERID
 printf '%s\n' "add C1CS to smartcheck"
 cat << EOF >overrides.smartcheck.yml
 cloudOne:
-     apiKey: ${C1CSAPIKEYforSCANNERS}
+     apiKey: ${C1APIKEYforSCANNERS}
 EOF
 
 helm upgrade \

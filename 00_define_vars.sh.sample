@@ -23,7 +23,7 @@ export TREND_AP_SECRET='your_trend_secret_for_cloudOne_Application_Security'
 
 #Cloud One Container Security Settings:
 # see https://cloudone.trendmicro.com/docs/container-security/api-key-create/
-export C1CSAPIKEY='C1CS API Key'
+export C1APIKEY='C1CS API Key'
 
 # Dockerhub account information (required to do "authenticated pulls" from docker to get a higher max-pull limit)
 export DOCKERHUB_USERNAME='your username of your (free) account on hub.docker.com'
@@ -44,7 +44,7 @@ export DSSC_REGPASSWORD='trendmicro'  #DO CHANGE THIS
 
 
 # Cloud One Container Security settings (for Admission Control)
-export C1CSAPIKEY='your_CloudOne_Container_Security_API_Key; for now you have to create this key in DSaaS aka C1WS'
+export C1APIKEY='your_CloudOne_Container_Security_API_Key; for now you have to create this key in DSaaS aka C1WS'
 
 # APPS  #those apps have been tested and work
 # using distinct variables as exporting arrays in bash is still troublesome

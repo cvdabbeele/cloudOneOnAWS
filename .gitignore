@@ -21,3 +21,4 @@ req.conf
 .remote-sync.json
 *.tmp
 *.code-workspace
+*.bak
