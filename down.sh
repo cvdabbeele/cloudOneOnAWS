@@ -10,41 +10,99 @@ printf '%s\n' "----------------------"
 
 varsok=true
 #if  [ -z "${AWS_REGION}" ]; then echo AWS_REGION must be set && varsok=false; fi
-if  [ -z "${AWS_PROJECT}" ]; then echo AWS_PROJECT must be set && varsok=false; fi
+if  [ -z "${AWS_PROJECT}" ]; then printf '%s\n' "AWS_PROJECT must be set" && varsok=false; fi
 if  [ "$varsok" = false ]; then exit ; fi
 
 printf '%s\n' "Getting region from AWS configure"
 export AWS_REGION=`aws configure get region`
-echo AWS_REGION= $AWS_REGION
+printf '%s\n' "AWS_REGION= $AWS_REGION"
 
-#delete services
-printf "%s\n" "Removing Services on EKS cluster "
-for i in `kubectl get services -o json | jq -r '.items[].metadata.name'`
+
+#remove this project's cluster from c1cs
+C1CSCLUSTERS=(`\
+curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/container/clusters' \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' \
+ | jq -r ".clusters[] | select(.name == \"${AWS_PROJECT}\").id"`)
+
+for i in "${!C1CSCLUSTERS[@]}"
 do
-  kubectl delete service $i
-done
+  printf "%s\n" "C1CS: deleting cluster ${C1CSCLUSTERS[$i]}"
+  curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/container/clusters/${C1CSCLUSTERS[$i]}" \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' 
+done 
 
-#delete deployed apps
-printf "%s\n" "Removing Deployments on EKS cluster"
-for i in `kubectl get deployments  -o json | jq -r '.items[].metadata.name'`
+
+# remove this project's Policy from c1cs
+C1CSPOLICIES=(`\
+curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/container/policies' \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' \
+ | jq -r ".policies[] | select(.name == \"${AWS_PROJECT}\").id"`)
+
+for i in "${!C1CSPOLICIES[@]}"
 do
-  kubectl delete deployment $i
-done
+  printf "%s\n" "C1CS: deleting policy ${C1CSPOLICIES[$i]}"
+  curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/container/policies/${C1CSPOLICIES[$i]}" \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' 
+done 
 
+
+# remove this project's Scanner from c1cs
+C1CSSCANNERS=(`\
+curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/container/scanners' \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' \
+ | jq -r ".scanners[] | select(.name == \"${AWS_PROJECT}\").id"`)
+
+for i in "${!C1CSSCANNERS[@]}"
+do
+  printf "%s\n" "C1CS: deleting scanner ${C1CSSCANNERS[$i]}"
+  curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/container/scanners/${C1CSSCANNERS[$i]}" \
+--header 'Content-Type: application/json' \
+--header "api-secret-key: ${C1APIKEY}"  \
+--header 'api-version: v1' 
+done 
+
+
+#delete c1cs 
+printf '%s\n' "C1CS: Removing from EKS cluster"
+helm_c1cs=`helm list -n c1cs -o json | jq -r '.[].name'`
+if [[ "${helm_c1cs}" == "trendmicro-c1cs" ]]; then
+  printf "%s\n" "Unistalling C1CS"
+  helm delete trendmicro-c1c1 -n c1cs
+fi
+
+#remove smartcheck 
+printf '%s\n' "Deleting Smart Check"
 helm_smartcheck=`helm list -n ${DSSC_NAMESPACE}  -o json | jq -r '.[].name'`
 if [[ "${helm_smartcheck}" =~ "deepsecurity-smartcheck" ]]; then
   printf "%s\n" "Uninstalling smartcheck "
   helm delete deepsecurity-smartcheck -n ${DSSC_NAMESPACE}
 fi
 
-helm_c1cs=`helm list -n c1cs -o json | jq -r '.[].name'`
-if [[ "${helm_c1cs}" == "trendmicro" ]]; then
-  printf "%s\n" "Unistalling C1CS"
-  helm delete trendmicro -n c1cs
-fi
+#delete services
+printf "%s\n" "Removing Services from EKS cluster "
+for i in `kubectl get services -o json | jq -r '.items[].metadata.name'`
+do
+  kubectl delete service $i
+done
+
+#delete deployed apps
+printf "%s\n" "Removing Deployments from EKS cluster"
+for i in `kubectl get deployments  -o json | jq -r '.items[].metadata.name'`
+do
+  kubectl delete deployment $i
+done
 
 # Delete ECR repos
-printf "%s\n" "Checking ECR Repositories"
 aws_ecr_repos=(`aws ecr describe-repositories --region ${AWS_REGION} | jq -r '.repositories[].repositoryName'`)
 aws_ecr_repo=''
 for i in "${!aws_ecr_repos[@]}"; do
@@ -58,7 +116,6 @@ for i in "${!aws_ecr_repos[@]}"; do
 done
 
 # Delete CodeCommit repos
-printf "%s\n" "Checking CodeCommit Repositories"
 aws_cc_repos=(`aws codecommit list-repositories --region $AWS_REGION | jq -r '.repositories[].repositoryName'`)
 aws_cc_repo=''
 for i in "${!aws_cc_repos[@]}"; do
@@ -70,7 +127,6 @@ for i in "${!aws_cc_repos[@]}"; do
 done
 
 # Delete Cloudformation Stacks
-printf "%s \n" "Checking CloudFormation Pipeline Stacks..."
 aws_stack=""
 aws_stacks=(`aws cloudformation describe-stacks --output json --region $AWS_REGION| jq -r '.Stacks[].StackName'` )
 for i in "${!aws_stacks[@]}"; do
@@ -87,7 +143,6 @@ printf "\n"
 #TBD: delete log groups
 
 # delete cluster
-printf "%s \n" "Checking EKS cluster..."
 aws_eks_clusters=(`eksctl get clusters -o json | jq -r '.[].metadata.name'`)
 for i in "${!aws_eks_clusters[@]}"; do
   #printf "%s" "cluster $i =  ${aws_eks_clusters[$i]}.........."

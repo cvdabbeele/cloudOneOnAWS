@@ -21,9 +21,9 @@ DSSC_BEARERTOKEN=$(curl -s -k -X POST https://${DSSC_HOST}/api/sessions -H "Cont
 
 #adding ECR registry
 #-------------------
-DSSC_ECR_FILTER='*'
+export DSSC_ECR_FILTER='*'
 printf '%s' "    Adding ECR registry"
-DSSC_ECR_REPOID=$(curl -s -k -X POST https://${DSSC_HOST}/api/registries?scan=true -H "Content-Type: application/json" -H "Api-Version: 2018-05-01" -H "Authorization: Bearer ${DSSC_BEARERTOKEN}" -H 'cache-control: no-cache' -d  "{  \"name\": \"ECR_${AWS_PROJECT}\",  \"description\": \"Added by  \n\",  \"credentials\": {     \"aws\": {       \"region\": \"${AWS_REGION}\",       \"accessKeyID\": \"${AWS_ACCESS_KEY_ID}\",       \"secretAccessKey\": \"${AWS_SECRET_ACCESS_KEY}\"     }  },  \"insecureSkipVerify\": true,   \"filter\": {    \"include\": [      \"*\"    ]  }, \"schedule\": true}" | jq '.id')
+export DSSC_ECR_REPOID=$(curl -s -k -X POST https://${DSSC_HOST}/api/registries?scan=true -H "Content-Type: application/json" -H "Api-Version: 2018-05-01" -H "Authorization: Bearer ${DSSC_BEARERTOKEN}" -H 'cache-control: no-cache' -d  "{  \"name\": \"ECR_${AWS_PROJECT}\",  \"description\": \"Added by  \n\",  \"credentials\": {     \"aws\": {       \"region\": \"${AWS_REGION}\",       \"accessKeyID\": \"${AWS_ACCESS_KEY_ID}\",       \"secretAccessKey\": \"${AWS_SECRET_ACCESS_KEY}\"     }  },  \"insecureSkipVerify\": true,   \"filter\": {    \"include\": [      \"*\"    ]  }, \"schedule\": true}" | jq '.id')
 echo $DSSC_ECR_REPOID
 #trigger a scan on the registry
 

@@ -25,6 +25,7 @@ cat <<EOF>./req.conf
 [san]
   subjectAltName=DNS:*.${AWS_REGION}.elb.amazonaws.com
 EOF
+
     NAMESPACES=`kubectl get namespaces`
     if [[ "$NAMESPACES" =~ "${DSSC_NAMESPACE}" ]]; then
       printf '%s\n' "Reusing existing namespace \"${DSSC_NAMESPACE}\""
@@ -97,7 +98,7 @@ certificate:
     privateKey: tls.key
 EOF
 
-    printf '%s\n' "Deploying Helm chart... "
+    printf '%s\n' "Deploying SmartCheck Helm chart... "
     helm install -n ${DSSC_NAMESPACE} --values overrides.yml deepsecurity-smartcheck https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz > /dev/null
     #printf '%s\n' "Waiting for SmartCheck Service to come online"
     export DSSC_HOST=''
@@ -109,7 +110,7 @@ EOF
     #echo Username: $(kubectl get  secrets -o jsonpath='{ .data.userName }' deepsecurity-smartcheck-auth | base64 --decode)
     #echo Password: $(kubectl get  secrets -o jsonpath='{ .data.password }' deepsecurity-smartcheck-auth | base64 --decode)
     echo
-    printf '%s' "Waiting for Cloud One Container Security to come online: ."
+    printf '%s' "Waiting for SmartCheck Serivce to come online: ."
     export DSSC_BEARERTOKEN=''
     while [[ "$DSSC_BEARERTOKEN" == '' ]];do
       sleep 10
