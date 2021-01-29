@@ -1,36 +1,36 @@
 # How to Demo
 
 - [How to Demo](#how-to-demo)
-  - [Preparation for the Demo](#preparation-for-the-demo)
+  - [Prepare for the Demo](#prepare-for-the-demo)
   - [Demo Scenario](#demo-scenario)
     - [Story: We have to deploy with vulnerabilities](#story-we-have-to-deploy-with-vulnerabilities)
-    - [Attack and Protect the running app](#attack-and-protect-the-running-app)
-    - [Walk through how Cloud 1 Application Control setup](#walk-through-how-cloud-1-application-control-setup)
+    - [Attack and Protect the running container](#attack-and-protect-the-running-container)
+    - [Walk through the integration with CloudOne Application Control](#walk-through-the-integration-with-cloudone-application-control)
 
 ## Prepare for the Demo
 
-In this demo scenario we will be using the MoneyX demo application. This is the only app that has the runtime protection enabled.
+In this demo scenario we will be using the MoneyX demo application. `This is the only app that has the runtime protection enabled`.
 
-Login to your CloudOne account and go to Cloud One Application Security. Find the group that you created for the MoneyX application (`c1-app-sec-moneyx`).
+Login to your CloudOne account (https://cloudone.trendmicro.com/ ) and go to `Application Security`.  In the left margin, find the group that you created for the MoneyX application (`c1-app-sec-moneyx`).
 
-Open Policies" and set all policies to REPORT.
+Open `Policies` and set all policies to `REPORT`.
 
-In AWS, under CodePipeline -> Pipelines -> make sure you have a failed pipeline for the cloudone01c1appsecmoneyxPipeline
+In AWS, under Services -> CodePipeline -> `Pipelines` -> make sure you have a **failed** pipeline for the `cloudone01c1appsecmoneyxPipeline`
 
 Ensure to have the following browser tabs opened and authenticated.
 
 - CloudOne Application Security
-- Your deployed CloudOne Container Image Security (SmartCheck)
+- SmartCheck
 - AWS Service CodePipeline / CodeCommit
-- Cloud9 shell
+- Your Cloud9 shell
 
 ## Demo Scenario
 
-- In Cloud9 type
+- In Cloud9 show your eks cluster
 ```shell
 eksctl get clusters
 ```
-and show that you have an EKS cluster
+
  ![eksctlGetClusters](images/eksctlGetClusters.png)
 
 - Show the pods used by smartcheck
@@ -47,18 +47,23 @@ kubectl get pods --namespace smartcheck | grep -i scan
 ```shell
 kubectl get deployments -n smartcheck
 ```
-    Deployments ensure that always a given number of instances of each pod is running (in our case this default is 1)
+    Deployments ensure that always a given number of instances of each pod is running (in our case this default is 1) but this can be scaled by the usual kubernetes commands.
 ![kubectlgGetDeployments](images/kubectlgGetDeployments.png)
 
 - To find the SmartCheck URL, we need to get the "services". Type
+
+```shell
+kubectl get svc -n smartcheck 
+```
+or more detailed:
 ```shell
 kubectl get svc -n smartcheck proxy  -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 ```
 and open a browser to that url
 (e.g. <https://afa8c13bf2497469ba8411dfa1cfebec-1286344911.eu-central-1.elb.amazonaws.com>)
 
-- Login to SmartCheck and show/discuss:
-  - the dashboard
+- Login to SmartCheck with the username/password that you have defined in the ))_define_vars.sh file and show/discuss:
+  - the Smart Check dashboard
   - the connected registries and point out how easy it is to add a registry and get full visibility on the security posture of the container-images (you only need the url and credentials with Read-Only rights)
   - the scanfindings
 
@@ -76,9 +81,13 @@ and open a browser to that url
     helm list -n $DSSC_NAMESPACE
     ```    
     To deploy smartcheck, one would only run:  
-```shell
-helm install -n $DSSC_NAMESPACE --values overrides.yml deepsecurity-smartcheck https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz
-```   
+    ```shell
+    helm install -n $DSSC_NAMESPACE --values overrides.yml deepsecurity-smartcheck https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz
+    ```
+    To upgrade smartcheck, one would only run:   
+    ```shell
+    helm install -n $DSSC_NAMESPACE --values overrides.yml deepsecurity-smartcheck https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz
+    ```   
 
 - back to the main demo scenario:  
 Show the 3 AWS CodeCommit repositories (AWS -> Services -> CodeCommit -> Repositories) ![CodeCommitRepositories](images/CodeCommitRepositories.png)
@@ -103,7 +112,7 @@ Show the 3 AWS CodeCommit repositories (AWS -> Services -> CodeCommit -> Reposit
 
 ### Story: We have to deploy with vulnerabilities
 
-For an urgent Marketing event, the "business" wants us to put this application online ASAP.  Our code is fine, but we have found vulnerabilities in the external libraries that we have used and we don't know how to quickly fix them (or the fixes are not yet available).  
+*For an urgent Marketing event, the "business" wants us to put this application online ASAP.  Our code is fine, but we have found vulnerabilities in the external libraries that we have used and we don't know how to quickly fix them (or the fixes are not yet available).*  
 
 As a work-around, we will deploy the app with vulnerabilities and rely on runtime protection (CloudOne Application Security)
 
@@ -117,7 +126,7 @@ You can use the build-in editor of cloud9
 
 ```yaml
         ...
-        --findings-threshold="{\"malware\":0,\"vulnerabilities\":{\"defcon1\":0,\"critical\":100,\"high\":100},\"contents\":{\"defcon1\":0,\"critical\":0,\"high\":1},\"checklists\":{\"defcon1\":0,\"critical\":0,\"high\":0}}"
+        --findings-threshold="{\"malware\":0,\"vulnerabilities\":{\"defcon1\":0,\"critical\":100,\"high\":200},\"contents\":{\"defcon1\":0,\"critical\":0,\"high\":1},\"checklists\":{\"defcon1\":0,\"critical\":0,\"high\":0}}"
         ...
 ```
  ![BumpUpTheThresholds](images/BumpUpTheThresholds.png)
@@ -126,7 +135,8 @@ You can use the build-in editor of cloud9
 Now, commit and push the changes.
 
 ```shell
-git add . && git commit buildspec.yml -m "removed safety thresholds" && git push
+cd ~/apps/c1-app-sec-moneyx/                                  
+git add . && git commit buildspec.yml -m "relaxed safety thresholds" && git push
 ```
 
 While the pipeline is building;  
@@ -138,8 +148,8 @@ kubectl get deployments -n smartcheck
 kubectl get services -n smartcheck
 kubectl get pods
 ```
-
-
+Show the AWS CodeCommit Repository and the Pipeline as before
+Show that now we have a successful pipeline and a deployment
 
 By looking at the "AGE" column, you can see if any of the new apps got (re-)deployed.
 
