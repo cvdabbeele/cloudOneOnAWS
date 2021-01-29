@@ -2,12 +2,16 @@
 
 This is a collaborative effort with mawinkler and nicgoth.
 
-1. [UPDATES](#20201126)  
+1. UPDATES: [20201126](#20201126)  [20210129](#20210129)  
 2. [High level overview](#high-level-overview-of-steps-see-detailed-steps-in-next-section)  
 3. [Detailed Steps](#detailed-setup-instructions)
 
 
 ## UPDATES  
+### 20210129
+Cloud One Container Security is now included.  
+The Admission Controller part is fully functional
+The Runtime protection is still in preview (as this Product Feature is still preview as well)
 ### 20201126  
 1. You now need to enter your DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD in the 00_define_vars.sh file (may be a free account).  To deal with docker image pull rate-limits, the buildscipts of the Apps will now do authenticated pulls (to https://hub.docker.com) from the AWS pipeline.  This script passes along those variables to the buildspec.yml files
   For more info on the Dockerhub pull rate limits, see: https://www.docker.com/increase-rate-limits  Image Pulls for unauthenticated connections are now capped to 100 and for connections authenticated with a free account, they are capped to 200.  Both pull rates are for the last 6 hours (sliding window).  Paid dockerhub subscriptions have no pull rate limit.
@@ -36,6 +40,7 @@ Checkout the **howToDemo.md** for demo scenarios
 
 - [Overview](#overview)
   - [UPDATES](#updates)
+    - [20210129](#20210129)
     - [20201126](#20201126)
   - [In short, the script in this repo sets up:](#in-short-the-script-in-this-repo-sets-up)
   - [High level overview of steps (see detailed steps in next section)](#high-level-overview-of-steps-see-detailed-steps-in-next-section)
@@ -129,11 +134,11 @@ https://console.aws.amazon.com/iam/home#/roles$new?step=review&commonUseCase=EC2
 * Within Cloud9 Preferences -> AWS Settings -> Credentials -> AWS managed temporary credentials -> Disable
 -->
 
-1. In Cloud9, disable the `AWS-managed temporary credentials` :
+2. In Cloud9, disable the `AWS-managed temporary credentials` :
 To do thi, cClick on the AWS Cloud9 tab in the Cloud9 menu bar.  The tab shows as a cloud icon with a number 9 in it.  If you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible.  Go to -> `Preferences` (see "1" in screenshot below) -> scroll down and expand `"AWS Settings"` (see "2")-> `Credentials` -> uncheck `"AWS managed temporary credentials"`  (see "3") It should be RED.
 ![AWS Settings](images/DisableAWSManagedTemporaryCredentials.png)
 
-2. configure AWS cli  
+3. configure AWS cli  
 Find your terminal at the bottom of the window
 At the prompt, type:  
 
@@ -165,16 +170,12 @@ CodeCommit requires AWS Key Management Service. If you are using an existing IAM
 see also:
 https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np
 -->
-3. In your Cloud9 environment, run the following command to clone this repository:
+4. In your Cloud9 environment, run the following command to clone this repository:
 
 ```shell
 git clone https://github.com/cvdabbeele/cloudOneOnAWS.git
 cd cloudOneOnAWS
-```
-4. Integration with Cloud One Container Security is currently in experimental mode.  If you want to use it, change to the c1cs branch of the repo  
-```shell
-git checkout c1cs
-```
+```  
 
 5. Define variables for AWS, Cloud One Container Security and for Cloud One Application Security
 
@@ -189,7 +190,7 @@ To use the built-in editor:
   
 
 Enter your own configuration variables in the config file.   
-At the minimum, configure
+At the minimum, configure the following variables:
 
 - `DSSC_AC` (your SmartCheck Activation Code/Key)
 - `TREND_AP_KEY` (your Cloud One Application Security Key)  see `prerequisites` above if you don't know how to create one) 
