@@ -2,11 +2,16 @@
 .env
 work/
 backup-*/
+.remote-sync.json
+*.tmp
+*.code-workspace
+*.bak
+*.zip
+
 00_define_vars.sh
 00_define_vars.txt
 deploy_moneyx.sh
 eks-cluster.yml
-*.zip
 00_define_vars.sh
 cloudoneEksCluster.yml
 cloudOneCredentials.sh
@@ -18,7 +23,4 @@ k8s.crt
 k8s.key
 overrides.yml
 req.conf
-.remote-sync.json
-*.tmp
-*.code-workspace
-*.bak
+
