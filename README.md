@@ -135,10 +135,10 @@ https://console.aws.amazon.com/iam/home#/roles$new?step=review&commonUseCase=EC2
 -->
 
 2. In Cloud9, disable the `AWS-managed temporary credentials` :
-To do thi, cClick on the AWS Cloud9 tab in the Cloud9 menu bar.  The tab shows as a cloud icon with a number 9 in it.  If you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible.  Go to -> `Preferences` (see "1" in screenshot below) -> scroll down and expand `"AWS Settings"` (see "2")-> `Credentials` -> uncheck `"AWS managed temporary credentials"`  (see "3") It should be RED.
+To do thi, cClick on the AWS Cloud9 tab in the Cloud9 menu bar.  The tab shows as a cloud icon with a number 9 in it.  If you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible.  Go to -> `Preferences` (see screenshot below) -> scroll down and expand `"AWS Settings"` -> `Credentials` -> uncheck `"AWS managed temporary credentials"`  It should be RED.
 ![AWS Settings](images/DisableAWSManagedTemporaryCredentials.png)
 
-3. configure AWS cli  
+1. configure AWS cli  
 Find your terminal at the bottom of the window
 At the prompt, type:  
 
