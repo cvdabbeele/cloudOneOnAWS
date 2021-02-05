@@ -77,7 +77,7 @@ printf '%s\n' "C1CS: Removing from EKS cluster"
 helm_c1cs=`helm list -n c1cs -o json | jq -r '.[].name'`
 if [[ "${helm_c1cs}" == "trendmicro-c1cs" ]]; then
   printf "%s\n" "Unistalling C1CS"
-  helm delete trendmicro-c1c1 -n c1cs
+  helm delete trendmicro-c1cs -n c1cs
 fi
 
 #remove smartcheck 
