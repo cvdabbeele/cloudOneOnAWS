@@ -35,7 +35,6 @@ printf '%s\n' "Creating a cluster object in C1Cs and get an API key to deploy C1
 export TEMPJSON=`\
 curl --silent --location --request POST 'https://cloudone.trendmicro.com/api/container/clusters' --header 'Content-Type: application/json' --header "api-secret-key: ${C1APIKEY}"  --header 'api-version: v1' --data-raw "{    \"name\": \"${AWS_PROJECT}\",
   \"description\": \"EKS cluster added by the CloudOneOnAWS project ${AWS_PROJECT}\",
-  \"policyID\": \"TO DO\",
   \"runtimeEnabled\": true }" `
 #echo $TEMPJSON | jq
 export C1APIKEYforCLUSTERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
