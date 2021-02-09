@@ -38,9 +38,14 @@ curl --silent --location --request POST 'https://cloudone.trendmicro.com/api/con
   \"runtimeEnabled\": true }" `
 #echo $TEMPJSON | jq
 export C1APIKEYforCLUSTERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
-#echo  $C1APIKEYforCLUSTERS
+#echo  C1APIKEYforCLUSTERS = $C1APIKEYforCLUSTERS
 export C1CSCLUSTERID=`echo ${TEMPJSON}| jq -r ".id"`
-#echo $C1CSCLUSTERID
+#echo C1CSCLUSTERID = $C1CSCLUSTERID
+
+export C1RUNTIMEKEY=`echo ${TEMPJSON}| jq -r ".runtimeKey"`
+echo C1RUNTIMEKEY = $C1RUNTIMEKEY
+export C1RUNTIMESECRET=`echo ${TEMPJSON}| jq -r ".runtimeSecret"`
+echo C1RUNTIMESECRET = $C1RUNTIMESECRET
 
 
 ## deploy C1CS to the K8S cluster of the CloudOneOnAWS project
@@ -51,8 +56,8 @@ cloudOne:
      apiKey: ${C1APIKEYforCLUSTERS}
    runtimeSecurity:
      enabled: true
-     apiKey: ${TREND_AP_KEY}
-     secret: ${TREND_AP_SECRET}
+     apiKey: ${C1RUNTIMEKEY}
+     secret: ${C1RUNTIMESECRET}
 EOF
 
 helm upgrade \
