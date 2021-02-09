@@ -1,5 +1,5 @@
 # How to Demo
-
+Update 5 Feb 2021
 - [How to Demo](#how-to-demo)
   - [Prepare for the Demo](#prepare-for-the-demo)
   - [Demo AWS pipeline integrations with SmartCheck](#demo-aws-pipeline-integrations-with-smartcheck)
@@ -31,8 +31,10 @@ Ensure to have the following browser tabs opened and authenticated.
   In Cloud9 type:
 ```shell
 eksctl get clusters
+kubectl get nodes
 ```
-
+Or in the AWS console, go to EKS and show the cluster  
+Mention that in this demo setup we have 2 worker nodes  
  ![eksctlGetClusters](images/eksctlGetClusters.png)
 
 - Show the pods used by smartcheck
@@ -52,8 +54,35 @@ kubectl get deployments -n smartcheck
     Deployments ensure that always a given number of instances of each pod is running (in our case this default is 1) but this can be scaled by the usual kubernetes commands.
 ![kubectlgGetDeployments](images/kubectlgGetDeployments.png)
 
-- To find the SmartCheck URL, we need to get the "services". Type
+- If (optionally) you want to dive a little deeper you can:  
+  - also show that we enforce microsegmentation between the pods.   
+  Show the network policies:
+    ```shell
+    kubectl get networkpolicies -n smartcheck
+    ```  
+    for example, for the proxy pod we have the following network policy  ![ProxyNetworkPolicy](images/ProxyNetworkPolicy.png)
+    Also good to show is the network policy for the database pod  
+    Show the ingress and the port 5432  
+  
+    ```Shell
+    kubectl describe networkpolicy db -n smartcheck
+    ```
+- point out that SmartCheck is deployed using a helm chart with one, single, command.   
+  To check the version of the deployed SmartCheck, run:   
+  ```shell
+  helm list -n $DSSC_NAMESPACE
+  ```    
+  To deploy smartcheck, one would only run:  
+  ```shell
+  helm install -n $DSSC_NAMESPACE --values overrides.yml deepsecurity-smartcheck https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz
+    ```
+    To upgrade smartcheck, one would only run:   
+    ```shell
+    helm install -n $DSSC_NAMESPACE --values overrides.yml deepsecurity-smartcheck https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz
+    ```   
 
+- To find the SmartCheck URL, we need to get the "services". 
+Type:
 ```shell
 kubectl get svc -n smartcheck 
 ```
@@ -68,28 +97,6 @@ and open a browser to that url
   - the Smart Check dashboard
   - the connected registries and point out how easy it is to add a registry and get full visibility on the security posture of the container-images (you only need the url and credentials with Read-Only rights)
   - the scanfindings
-
-- If (optionally) you want to dive a little deeper you can:  
-  - also show that we enforce microsegmentation between the pods.   
-  Show the network policies:
-    ```shell
-    kubectl get networkpolicies -n smartcheck
-    ```  
-
-    for example, for the proxy pod we have the following network policy  ![ProxyNetworkPolicy](images/ProxyNetworkPolicy.png)
-  - point out that SmartCheck is deployed using a helm chart with one, single, command.   
-    To check the version of the deployed SmartCheck, run:   
-    ```shell
-    helm list -n $DSSC_NAMESPACE
-    ```    
-    To deploy smartcheck, one would only run:  
-    ```shell
-    helm install -n $DSSC_NAMESPACE --values overrides.yml deepsecurity-smartcheck https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz
-    ```
-    To upgrade smartcheck, one would only run:   
-    ```shell
-    helm install -n $DSSC_NAMESPACE --values overrides.yml deepsecurity-smartcheck https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz
-    ```   
 
 - back to the main demo scenario:  
 Show the 3 AWS CodeCommit repositories (AWS -> Services -> CodeCommit -> Repositories) ![CodeCommitRepositories](images/CodeCommitRepositories.png)

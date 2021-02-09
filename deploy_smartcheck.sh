@@ -10,7 +10,7 @@ printf '%s\n' "-----------------"
 HELM_DEPLOYMENTS=
 if [[ "`helm list -n ${DSSC_NAMESPACE} -o json | jq -r '.[].name'`" =~ 'deepsecurity-smartcheck' ]];
   then
-    printf '%s\n' "Reusing existing Cloud One Container Security deployment"
+    printf '%s\n' "Reusing existing Smart Check deployment"
     cat cloudOneCredentials.txt
   else
     #get certificate for internal registry

@@ -1,17 +1,12 @@
 # Overview
 
 This is a collaborative effort with mawinkler and nicgoth.
-
 1. UPDATES: [20201126](#20201126)  [20210129](#20210129)  
 2. [High level overview](#high-level-overview-of-steps-see-detailed-steps-in-next-section)  
 3. [Detailed Steps](#detailed-setup-instructions)
 
 
 ## UPDATES  
-### 20210129
-Cloud One Container Security is now included.  
-The Admission Controller part is fully functional
-The Runtime protection is still in preview (as this Product Feature is still preview as well)
 ### 20201126  
 1. You now need to enter your DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD in the 00_define_vars.sh file (may be a free account).  To deal with docker image pull rate-limits, the buildscipts of the Apps will now do authenticated pulls (to https://hub.docker.com) from the AWS pipeline.  This script passes along those variables to the buildspec.yml files
   For more info on the Dockerhub pull rate limits, see: https://www.docker.com/increase-rate-limits  Image Pulls for unauthenticated connections are now capped to 100 and for connections authenticated with a free account, they are capped to 200.  Both pull rates are for the last 6 hours (sliding window).  Paid dockerhub subscriptions have no pull rate limit.
@@ -40,12 +35,11 @@ Checkout the **howToDemo.md** for demo scenarios
 
 - [Overview](#overview)
   - [UPDATES](#updates)
-    - [20210129](#20210129)
     - [20201126](#20201126)
   - [In short, the script in this repo sets up:](#in-short-the-script-in-this-repo-sets-up)
   - [High level overview of steps (see detailed steps in next section)](#high-level-overview-of-steps-see-detailed-steps-in-next-section)
   - [Detailed setup instructions](#detailed-setup-instructions)
-    - [Prerequisiteds     IMPORTANT  IMPORTANT  IMPORTANT](#prerequisiteds-----important--important--important)
+    - [Requirements       -----DO READ-----](#requirements------------do-read-----)
       - [Shared AWS Accounts](#shared-aws-accounts)
     - [Prepare the environment](#prepare-the-environment)
     - [Deploy the environment](#deploy-the-environment)
@@ -70,7 +64,7 @@ Checkout the **howToDemo.md** for demo scenarios
 
 ## Detailed setup instructions
 
-### Prerequisiteds     IMPORTANT  IMPORTANT  IMPORTANT
+### Requirements       -----DO READ-----
 
 #### Shared AWS Accounts
 
@@ -97,24 +91,17 @@ The IAM User account that you will use:
 
 (trial) Licenses:
 
-- **A license for Deep Security SmartCheck** If you don't have a license key yet, you can get one here: <https://www.trendmicro.com/product_trials/download/index/us/168>
+- **A license for Cloud One Container Image Security** (aka SmartCheck) If you don't have a license key yet, you can get one here: <https://www.trendmicro.com/product_trials/download/index/us/168>
 - **CloudOne Application Security Account**  You can register for a trial here: <https://cloudone.trendmicro.com/_workload_iframe//SignUp.screen>  You will need to create a "group" for the MoneyX application.  This will give you a **key** and a **secret** that you can use for the TREND_AP_KEY and TREND_AP_SECRET variables in this script.
 
 ### Prepare the environment
 
 1. Setup an AWS Cloud9 development environment
-  - Login to your AWS account 
-  - go to "Services" -> "Cloud9"
-  - select `Create environment`
-  - Name environment: e.g.: `c1setrain`
-  - `Next`
-  - Environment type: `Create a new EC2 instance for environment (direct access)`
-  - Instance type: `t3.small`
-  - Platform: `**Ubuntu Server 18.04 LTS**`
-  - tag it to your liking 
+  - select `Create a new EC2 instance for environment (direct access)`
+  - use `t2.micro`
+  - use **Ubuntu Server 18.04 LTS**
+  - tag it to your liking (tags are good)
   - use default settings for the rest
-  - `Next`
-  - `Create Environment`  This may take 1-3 minutes
 
 <!--0. <not needed?>
 Create an AWS Role to allow the EKS worker nodes (EC2 instances) to connect to ECR  
@@ -134,22 +121,17 @@ https://console.aws.amazon.com/iam/home#/roles$new?step=review&commonUseCase=EC2
 * Within Cloud9 Preferences -> AWS Settings -> Credentials -> AWS managed temporary credentials -> Disable
 -->
 
-2. In Cloud9, disable the `AWS-managed temporary credentials` :
-To do thi, cClick on the AWS Cloud9 tab in the Cloud9 menu bar.  The tab shows as a cloud icon with a number 9 in it.  If you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible.  Go to -> `Preferences` (see screenshot below) -> scroll down and expand `"AWS Settings"` -> `Credentials` -> uncheck `"AWS managed temporary credentials"`  It should be RED.
+2. In Cloud9, disable the `AWS-managed temporary credentials`  
+Click on the AWS Cloud9 tab in the Cloud9 menu bar.  The tab may also show as a cloud with a number 9 in it.  If you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible.  Go to -> Preferences (see "1") -> scroll down and expand "AWS Settings" (see "2")-> Credentials -> uncheck "AWS managed temporary credentials"  (see "3").
 ![AWS Settings](images/DisableAWSManagedTemporaryCredentials.png)
 
-1. configure AWS cli  
-Find your terminal at the bottom of the window
-At the prompt, type:  
+3. configure AWS cli
 
 ```shell
 aws configure
 ```
 
-Enter your `AWS Access Key ID`  
-Enter your `AWS Secret Access Key`  
-Set the `Default region name` e.g. eu-central-1  
-Set the `Default output format` to `json`  
+Please set `Default region` to the region you're working on and default the output format to `json`.
 
 ```shell
 AWS Access Key ID [****************GT7G]:   type your AWS Access Key here
@@ -170,47 +152,45 @@ CodeCommit requires AWS Key Management Service. If you are using an existing IAM
 see also:
 https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np
 -->
-4. In your Cloud9 environment, run the following command to clone this repository:
+
+4. You will need a License key for:
+- Trend Micro Cloud One Container (Image) Security, and one for
+- Trend Micro Cloud One Application Control
+You can request trial keys via your Account Manager or SE.
+
+6. In your Cloud9 environment, run the following command to clone this repository:
 
 ```shell
 git clone https://github.com/cvdabbeele/cloudOneOnAWS.git
 cd cloudOneOnAWS
-```  
+git checkout 
+git checkout c1cs
+```
 
-5. Define variables for AWS, Cloud One Container Security and for Cloud One Application Security
+7. Define variables for AWS, Cloud One Container Security and for Cloud One Application Security
 
 ```shell
 cp 00_define_vars.sh.sample 00_define_vars.sh
 ```
 
-Edit the `00_define_vars.sh` file with the built in editor of Cloud9 or by your prefered editor (e.g. by using vi).  
-To use the built-in editor:  
-- in the left margin, expand the tree until you see the files of the repo.  
-- double cllick: `00_define_vars.sh`  
-  
+Edit the `00_define_vars.sh` file with the built in editor of Cloud9 or by your prefered editor (e.g. by using vi).
+Enter your own configuration variables in the config file at least for
 
-Enter your own configuration variables in the config file.   
-At the minimum, configure the following variables:
+- `DSSC_AC`
+- `TREND_AP_KEY`
+- `TREND_AP_SECRET`
 
-- `DSSC_AC` (your SmartCheck Activation Code/Key)
-- `TREND_AP_KEY` (your Cloud One Application Security Key)  see `prerequisites` above if you don't know how to create one) 
-- `TREND_AP_SECRET` (your Cloud One Application Security Secret Key)
-
-The rest are preconfigured default variables which you can use as they are.
+The rest are preconfigured default variables which you can directly use.
 
 ### Deploy the environment
 
-Deploy the demo environment by running: `. ./up.sh`   
-Important: don't forget the leading dot and the space.  This is required to source the environment.
+Important: don't forget the first dot :-)
 
 ```shell
 . ./up.sh
 ```
 
-The script will do the following:
-(the text below is meant to provide some guidance of what you will see on the screen.  Newer versions of this script may have a sllightly different output)  
-This deployment may take about `30 minutes`  
-Once the environment is deployed, continue with [howToDemo.md](howToDemo.md) for a few typical demo scenarios  
+This will do the following:
 
 1. Install the essential tools like `eksctl`, `jq`, etc.
 
