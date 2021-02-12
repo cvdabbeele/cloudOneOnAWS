@@ -107,4 +107,15 @@ fi
 
 # add C1CS
 . ./add_C1CS.sh
+
+# kick off sample pipelines
+. ./relaxed_security_settings.sh
+. ./strickt_security_settings.sh  
+
+# check environment
+
+# create report
+#still need to ensure that either "latest" gets scanned or that $TAG gets exported from the pipeline
+# plus: data on Snyk findings is not visible in the report
+# docker run --network host mawinkler/scan-report:dev -O    --name "${TARGET_IMAGE}"    --image_tag latest    --service "${DSSC_HOST}"    --username "${DSSC_USERNAME}"    --password "\"${DSSC_PASSWORD}"\"
 #end
