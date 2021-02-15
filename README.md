@@ -7,6 +7,12 @@ This is a collaborative effort with mawinkler and nicgoth.
 
 
 ## UPDATES  
+### 20210215
+1. The demo has been extended with Cloud One Container Security
+2. During the "prepare" phase of the demo, kick off 3 instances of the MoneyX pipeline.  This will allow for a smoother customer demo.  See **Kick off 2 more builds of the MoneyX pipeline**
+  - the first one, with low security thresholds.  This pipeline is started by default and it will fail/stop before deploying the image to the registry
+  - a second one with very high thresholds.  This pipeline will build the image, push it to the registry and even deploy a (very) vulnerable container from it.  Here we can ***demo runtime protection with Cloud One Application Security**.  This pipeline-instance will be started by running "./pushWithHighSecurityThresholds.sh"
+  - a third pipeline instance where we include malware (eicar) in the MoneyX app. This pipeline-instance will build the image, push it to the registry (because we have also set high security thresholds here), and it will try to deploy a container from it.  Here the **admission controller of Cloud On Container Security** will kick in and prevent the deployment of the container.  This pipeline-instance should be started by running "./pushWithMalware.sh"
 ### 20201126  
 1. You now need to enter your DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD in the 00_define_vars.sh file (may be a free account).  To deal with docker image pull rate-limits, the buildscipts of the Apps will now do authenticated pulls (to https://hub.docker.com) from the AWS pipeline.  This script passes along those variables to the buildspec.yml files
   For more info on the Dockerhub pull rate limits, see: https://www.docker.com/increase-rate-limits  Image Pulls for unauthenticated connections are now capped to 100 and for connections authenticated with a free account, they are capped to 200.  Both pull rates are for the last 6 hours (sliding window).  Paid dockerhub subscriptions have no pull rate limit.
@@ -35,6 +41,7 @@ Checkout the **howToDemo.md** for demo scenarios
 
 - [Overview](#overview)
   - [UPDATES](#updates)
+    - [20210215](#20210215)
     - [20201126](#20201126)
   - [In short, the script in this repo sets up:](#in-short-the-script-in-this-repo-sets-up)
   - [High level overview of steps (see detailed steps in next section)](#high-level-overview-of-steps-see-detailed-steps-in-next-section)
@@ -43,9 +50,9 @@ Checkout the **howToDemo.md** for demo scenarios
       - [Shared AWS Accounts](#shared-aws-accounts)
     - [Prepare the environment](#prepare-the-environment)
     - [Deploy the environment](#deploy-the-environment)
+    - [Kick off 2 more builds of the MoneyX pipeline:](#kick-off-2-more-builds-of-the-moneyx-pipeline)
     - [Next Step: How to Demo](#next-step-how-to-demo)
-    - [Suspend](#suspend)
-    - [Resume](#resume)
+    - [Suspend / Resume](#suspend--resume)
     - [Tear down](#tear-down)
   - [Common issues (WIP)](#common-issues-wip)
     - [Error: Kubernetes cluster unreachable](#error-kubernetes-cluster-unreachable)
@@ -482,32 +489,38 @@ By default:
 - the **troopers** app will be deployed to the EKS cluster because it is clean
 - the **c1-app-sec-moneyx** and the **mydvwa** apps will not be deployed because they have too many vulnerabilities
 
-If you encounter any **errors**, please check the "common issues" section at the bottom
+If you encounter any **errors**, please check the "common issues" section at the bottom  
+
+Verify that the pipelines are being started (AWS Console -> Services:CodePipeline -> Pipelines)
+
+### Kick off 2 more builds of the MoneyX pipeline:  
+When we will demo, we will have 3 MoneyX builds available, each with different settings. 
+
+Once the initial MoneyX pipeline has finished, kick of a second deployment by running the  **pushWithHighSecurityThresholds.sh** script
+
+```shell
+./pushWithHighSecurityThresholds.sh
+```
+Again, check if the pipeline starts (this may take a minute).  Wait until it has completed. Once it has completed, kick of a third pipeline by running the  **pushWithMalware.sh** script
+
+```shell
+./pushWithMalware.sh
+```
+
 
 ### Next Step: How to Demo
 
 Checkout [howToDemo.md](howToDemo.md) for a few typical demo scenarios
 
-### Suspend
+### Suspend / Resume
 
-```shell
-./pause.sh
-```
-The pause.sh script removes the Nodegroup.  This drains the 2 worker nodes and then terminates them  
-
-### Resume
-
-```shell  
-./resume.sh  
-```
-The resume script re-creates the Nodegroup.  Make sure to leave enough time between a pause and a resume.  Sometimes AWS needs a lot of time to cleanup things  
+The Suspens and Resume options have been removed as they did not seem to work reliably
 
 ### Tear down  
 
 ```shell
 ./down.sh
 ```
-
 
 To avoid excessive costs when not using the demo environment, tear-down the environment.  The ./down.sh script will delete the EKS cluster, the EC2 instances, Cloudformation Stacks, Roles, VPCs, Subnets, S3buckets,....  
 The Cloud9 EC2 instance will stop, but remain available for later.  
