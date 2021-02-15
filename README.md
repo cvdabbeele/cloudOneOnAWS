@@ -8,11 +8,13 @@ This is a collaborative effort with mawinkler and nicgoth.
 
 ## UPDATES  
 ### 20210215
-1. The demo has been extended with Cloud One Container Security
-2. During the "prepare" phase of the demo, kick off 3 instances of the MoneyX pipeline.  This will allow for a smoother customer demo.  See **Kick off 2 more builds of the MoneyX pipeline**
+1. The demo has been extended with Cloud One Container Security (both the Admission Controller and -in preview- the Runtime Security)
+2. To make a better demo experience, pre-run 3 instances of the MoneyX pipeline.  This will allow for a smoother customer demo.    
   - the first one, with low security thresholds.  This pipeline is started by default and it will fail/stop before deploying the image to the registry
   - a second one with very high thresholds.  This pipeline will build the image, push it to the registry and even deploy a (very) vulnerable container from it.  Here we can ***demo runtime protection with Cloud One Application Security**.  This pipeline-instance will be started by running "./pushWithHighSecurityThresholds.sh"
-  - a third pipeline instance where we include malware (eicar) in the MoneyX app. This pipeline-instance will build the image, push it to the registry (because we have also set high security thresholds here), and it will try to deploy a container from it.  Here the **admission controller of Cloud On Container Security** will kick in and prevent the deployment of the container.  This pipeline-instance should be started by running "./pushWithMalware.sh"
+  - a third pipeline instance where we include malware (eicar) in the MoneyX app. This pipeline-instance will build the image, push it to the registry (because we have also set high security thresholds here), and it will try to deploy a container from it.  Here the **admission controller of Cloud On Container Security** will kick in and prevent the deployment of the container.  This pipeline-instance should be started by running "./pushWithMalware.sh"  
+  See the updated **howToDemo.md** document in this repo
+3. Removed **pause.sh** and **resume.sh** because they have shown to be unreliable.  
 ### 20201126  
 1. You now need to enter your DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD in the 00_define_vars.sh file (may be a free account).  To deal with docker image pull rate-limits, the buildscipts of the Apps will now do authenticated pulls (to https://hub.docker.com) from the AWS pipeline.  This script passes along those variables to the buildspec.yml files
   For more info on the Dockerhub pull rate limits, see: https://www.docker.com/increase-rate-limits  Image Pulls for unauthenticated connections are now capped to 100 and for connections authenticated with a free account, they are capped to 200.  Both pull rates are for the last 6 hours (sliding window).  Paid dockerhub subscriptions have no pull rate limit.
@@ -49,10 +51,14 @@ Checkout the **howToDemo.md** for demo scenarios
     - [Requirements       -----DO READ-----](#requirements------------do-read-----)
       - [Shared AWS Accounts](#shared-aws-accounts)
     - [Prepare the environment](#prepare-the-environment)
-    - [Deploy the environment](#deploy-the-environment)
-    - [Kick off 2 more builds of the MoneyX pipeline:](#kick-off-2-more-builds-of-the-moneyx-pipeline)
+      - [1. Setup an AWS Cloud9 environment](#1-setup-an-aws-cloud9-environment)
+      - [2. Disable the AWS-managed temporary credentials](#2-disable-the-aws-managed-temporary-credentials)
+      - [3. Configure AWS CLI with your keys and region](#3-configure-aws-cli-with-your-keys-and-region)
+      - [4. Clone this repository](#4-clone-this-repository)
+      - [5. Configure `00_define_vars.sh`](#5-configure-00_define_varssh)
+      - [6. run  `. ./up.sh` to deploy the environment](#6-run---upsh-to-deploy-the-environment)
     - [Next Step: How to Demo](#next-step-how-to-demo)
-    - [Suspend / Resume](#suspend--resume)
+      - [7. Checkout howToDemo.md for a few typical demo scenarios](#7-checkout-howtodemomd-for-a-few-typical-demo-scenarios)
     - [Tear down](#tear-down)
   - [Common issues (WIP)](#common-issues-wip)
     - [Error: Kubernetes cluster unreachable](#error-kubernetes-cluster-unreachable)
@@ -61,13 +67,14 @@ Checkout the **howToDemo.md** for demo scenarios
 
 
 ## High level overview of steps (see detailed steps in next section)
-
-1. open Cloud9, configure AWS CLI with your keys and region
-2. clone this repo  
-3. enter your settings in `00_define_vars.sh`  
-4. run  `. ./up.sh` to deploy the environment (mind the extra dot which is needed to "source" the vars from the script)
-5. see [howToDemo.md](howToDemo.md) for demo scenarios
-6. run ./down.sh to tear everything down
+1. Setup an AWS Cloud9 environment
+2. Disable the AWS-managed temporary credentials
+3. Configure AWS CLI with your keys and region
+4. Clone this repository 
+5. Configure `00_define_vars.sh`  
+6. run  `. ./up.sh` to deploy the environment 
+7. see [howToDemo.md](howToDemo.md) for demo scenarios
+8. run ./down.sh to tear everything down
 
 ## Detailed setup instructions
 
@@ -97,13 +104,13 @@ The IAM User account that you will use:
 - must have **AdministratorAccess** permissions (AWS console -> Services -> IAM -> Users -> click on the user -> Permissions tab -> If AdministratorAccess is not there, then click on Add permissions and add it; or request the rights from you Admin)  The reason is that the script will not only create an EKS cluster, but also a lot of other things, like create  VPC, subnets, routetables, roles, IPs, S3 buckets, ...
 
 (trial) Licenses:
-
-- **A license for Cloud One Container Image Security** (aka SmartCheck) If you don't have a license key yet, you can get one here: <https://www.trendmicro.com/product_trials/download/index/us/168>
-- **CloudOne Application Security Account**  You can register for a trial here: <https://cloudone.trendmicro.com/_workload_iframe//SignUp.screen>  You will need to create a "group" for the MoneyX application.  This will give you a **key** and a **secret** that you can use for the TREND_AP_KEY and TREND_AP_SECRET variables in this script.
+You will need the following licenses:
+- **A license for SmartCheck**  If you don't have a license key yet, you can get one here: <https://www.trendmicro.com/product_trials/download/index/us/168>
+- **CloudOne (Application Security) Account**  You can register for a trial here: <https://cloudone.trendmicro.com/_workload_iframe//SignUp.screen>  In CloudOne Application Security, you will need to create a "group" for the MoneyX application.  This will give you a **key** and a **secret** that you can use for the TREND_AP_KEY and TREND_AP_SECRET variables in this script.  
 
 ### Prepare the environment
 
-1. Setup an AWS Cloud9 development environment
+#### 1. Setup an AWS Cloud9 environment
   - select `Create a new EC2 instance for environment (direct access)`
   - use `t2.micro`
   - use **Ubuntu Server 18.04 LTS**
@@ -128,12 +135,12 @@ https://console.aws.amazon.com/iam/home#/roles$new?step=review&commonUseCase=EC2
 * Within Cloud9 Preferences -> AWS Settings -> Credentials -> AWS managed temporary credentials -> Disable
 -->
 
-2. In Cloud9, disable the `AWS-managed temporary credentials`  
-Click on the AWS Cloud9 tab in the Cloud9 menu bar.  The tab may also show as a cloud with a number 9 in it.  If you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible.  Go to -> Preferences (see "1") -> scroll down and expand "AWS Settings" (see "2")-> Credentials -> uncheck "AWS managed temporary credentials"  (see "3").
+#### 2. Disable the AWS-managed temporary credentials
+In the Cloud9 environment, go to the Cloud9 menu bar and click on the AWS Cloud9 tab (it shows the number 9 in a cloud icon).   If you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible.  Go to -> Preferences (see "1") -> scroll down and expand "AWS Settings" (see "2")-> Credentials -> uncheck "AWS managed temporary credentials"  (see "3").
 ![AWS Settings](images/DisableAWSManagedTemporaryCredentials.png)
 
-3. configure AWS cli
-
+#### 3. Configure AWS CLI with your keys and region
+   
 ```shell
 aws configure
 ```
@@ -160,12 +167,8 @@ see also:
 https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np
 -->
 
-4. You will need a License key for:
-- Trend Micro Cloud One Container (Image) Security, and one for
-- Trend Micro Cloud One Application Control
-You can request trial keys via your Account Manager or SE.
-
-6. In your Cloud9 environment, run the following command to clone this repository:
+#### 4. Clone this repository 
+In your Cloud9 environment, run the following command to clone this repository:
 
 ```shell
 git clone https://github.com/cvdabbeele/cloudOneOnAWS.git
@@ -174,13 +177,17 @@ git checkout
 git checkout c1cs
 ```
 
-7. Define variables for AWS, Cloud One Container Security and for Cloud One Application Security
-
+#### 5. Configure `00_define_vars.sh`    
+Copy the sample file  
 ```shell
 cp 00_define_vars.sh.sample 00_define_vars.sh
 ```
 
 Edit the `00_define_vars.sh` file with the built in editor of Cloud9 or by your prefered editor (e.g. by using vi).
+You will need a License key for:
+- Trend Micro Cloud One Container (Image) Security, and one for
+- Trend Micro Cloud One Application Control
+You can request trial keys via your Account Manager or SE.
 Enter your own configuration variables in the config file at least for
 
 - `DSSC_AC`
@@ -189,7 +196,7 @@ Enter your own configuration variables in the config file at least for
 
 The rest are preconfigured default variables which you can directly use.
 
-### Deploy the environment
+#### 6. run  `. ./up.sh` to deploy the environment 
 
 Important: don't forget the first dot :-)
 
@@ -199,7 +206,7 @@ Important: don't forget the first dot :-)
 
 This will do the following:
 
-1. Install the essential tools like `eksctl`, `jq`, etc.
+6.1. Install the essential tools like `eksctl`, `jq`, etc.
 
 ```shell
 --------------------------
@@ -224,7 +231,7 @@ installing AWS authenticator....
 100 33.6M  100 33.6M    0     0  6633k      0  0:00:05  0:00:05 --:--:-- 7094k
 ```
 
-2. Create an EKS cluster
+6.2. Create an EKS cluster
 
 ```shell
 -----------------------
@@ -273,7 +280,7 @@ NAME            REGION
 cloudone01      eu-central-1
 ```
 
-3. Install Smart Check with internal registry
+6.3. Install Smart Check with internal registry
 
 ```shell
 ------------------------------
@@ -299,7 +306,7 @@ You can login:
 --------------
 ```
 
-4. Add the internal Repository plus a demo Repository to Smart Check
+6.4. Add the internal Repository plus a demo Repository to Smart Check
 
 ```shell
 -------------------------------------------------------------
@@ -311,7 +318,7 @@ You can login:
     Adding demo repository with filter: {*photo*}
 ```
 
-5. Setup demo pipelines
+6.5. Setup demo pipelines
 
 ```shell
 -------------------------------
@@ -351,7 +358,7 @@ Creating Cloudformation Stack and Pipeline cloudone01mydvwa...
 Waiting for Cloudformation stack cloudone01mydvwaPipeline to be created.
 ```
 
-6. Git-clone 3 demo applications
+6.6. Git-clone 3 demo applications
 At the same level as the project directory (cloudOneOnAWS), an "apps" directory will be created.
 
 ```shell
@@ -493,28 +500,10 @@ If you encounter any **errors**, please check the "common issues" section at the
 
 Verify that the pipelines are being started (AWS Console -> Services:CodePipeline -> Pipelines)
 
-### Kick off 2 more builds of the MoneyX pipeline:  
-When we will demo, we will have 3 MoneyX builds available, each with different settings. 
-
-Once the initial MoneyX pipeline has finished, kick of a second deployment by running the  **pushWithHighSecurityThresholds.sh** script
-
-```shell
-./pushWithHighSecurityThresholds.sh
-```
-Again, check if the pipeline starts (this may take a minute).  Wait until it has completed. Once it has completed, kick of a third pipeline by running the  **pushWithMalware.sh** script
-
-```shell
-./pushWithMalware.sh
-```
-
 
 ### Next Step: How to Demo
 
-Checkout [howToDemo.md](howToDemo.md) for a few typical demo scenarios
-
-### Suspend / Resume
-
-The Suspens and Resume options have been removed as they did not seem to work reliably
+#### 7. Checkout [howToDemo.md](howToDemo.md) for a few typical demo scenarios  
 
 ### Tear down  
 
