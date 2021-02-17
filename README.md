@@ -112,7 +112,7 @@ You will need the following licenses:
 
 #### 1. Setup an AWS Cloud9 environment
   - select `Create a new EC2 instance for environment (direct access)`
-  - use `t2.micro`
+  - use `t3.small`
   - use **Ubuntu Server 18.04 LTS**
   - tag it to your liking (tags are good)
   - use default settings for the rest
@@ -173,8 +173,6 @@ In your Cloud9 environment, run the following command to clone this repository:
 ```shell
 git clone https://github.com/cvdabbeele/cloudOneOnAWS.git
 cd cloudOneOnAWS
-git checkout 
-git checkout c1cs
 ```
 
 #### 5. Configure `00_define_vars.sh`    
