@@ -4,6 +4,7 @@ This is a collaborative effort with mawinkler and nicgoth.
 1. UPDATES: [20201126](#20201126)  [20210129](#20210129)  
 2. [High level overview](#high-level-overview-of-steps-see-detailed-steps-in-next-section)  
 3. [Detailed Steps](#detailed-setup-instructions)
+4. [howToDemo.md](howToDemo.md) 
 
 
 ## UPDATES  
@@ -89,11 +90,11 @@ If you share an AWS account with a co-worker, make sure that:
 
 The AWS Region that you will use must have:
 
-- **one "free" VPC "slot"**
+- **one "available" VPC "slot"**
    By default, there is a soft limit of 5 VPCs per region.  This script must be able to create 1 VPC
-- **one "free" Elastic IP "slot"**
+- **one "available" Elastic IP "slot"**
    By default, there is a soft limit of 5 Elastic IPs per region.  This script must be able to create 1 Elastic IP
-- **one "free" Internet Gateway "slot"**
+- **one "available" Internet Gateway "slot"**
    By default, there is a soft limit of 5 Internet Gateways per region.  This script must be able to create 1 Internet Gateway
 
 The Cloud Formation Template to build the EKS cluster will crash if those resources cannot be created
