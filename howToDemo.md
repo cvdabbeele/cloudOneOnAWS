@@ -5,6 +5,7 @@ Update 5 Feb 2021
     - [1. Configure the Cloud One Application Security policies for MoneyX](#1-configure-the-cloud-one-application-security-policies-for-moneyx)
     - [Start two extra pipeline-instances of MoneyX](#start-two-extra-pipeline-instances-of-moneyx)
     - [Ensure to have the following browser tabs opened and authenticated.](#ensure-to-have-the-following-browser-tabs-opened-and-authenticated)
+  - [Security Gates for CI/CD pipelines](#security-gates-for-cicd-pipelines)
   - [Demo AWS pipeline integrations with SmartCheck](#demo-aws-pipeline-integrations-with-smartcheck)
   - [First pipeline walkthrough: "Risky images are not pushed to the Registry"](#first-pipeline-walkthrough-risky-images-are-not-pushed-to-the-registry)
   - [Second pipeline walkthrough: Demo runtime protection by CloudOne Application Security (C1AS)](#second-pipeline-walkthrough-demo-runtime-protection-by-cloudone-application-security-c1as)
@@ -56,6 +57,13 @@ Click it to see the 3 pipeline-intances on the MoneyX app
 - Your Cloud9 shell
 <br/><br/> 
 <br/><br/>      
+
+## Security Gates for CI/CD pipelines  
+The core of any DevOps environment is the CI/CD pipeline.
+In this demo we will show the following security gates  
+  ![securityGatesForCICDPipelines](images/securityGatesForCICDPipelines.png)  
+The Code Scanning gate may be added later.  It is/will be, based on our collaboration with Syk 
+
 
 ## Demo AWS pipeline integrations with SmartCheck
 

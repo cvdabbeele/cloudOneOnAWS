@@ -28,7 +28,9 @@ This is a collaborative effort with mawinkler and nicgoth.
 - an AWS Elastic Kubernetes Service Cluster (EKS)
 - an AWS codeCommit registry
 - three AWS codePipelines
-- Trend Micro Cloud One Container Registry Security (C1CS or "SmartCheck") and integrates it in the pipelines
+- Trend Micro "SmartCheck" and integrates it in the pipelines
+- Trend Micro Cloud One Container Security
+- Trend Micro Cloud One Application Security
 
 Then it will:
 
@@ -40,17 +42,18 @@ Then it will:
 
 This README.md describes how to deploy the demo environment
 
-Checkout the **howToDemo.md** for demo scenarios
+Checkout the [howToDemo.md](howToDemo.md) for demo scenarios
 
 - [Overview](#overview)
   - [UPDATES](#updates)
     - [20210215](#20210215)
     - [20201126](#20201126)
   - [In short, the script in this repo sets up:](#in-short-the-script-in-this-repo-sets-up)
-  - [High level overview of steps (see detailed steps in next section)](#high-level-overview-of-steps-see-detailed-steps-in-next-section)
-  - [Detailed setup instructions](#detailed-setup-instructions)
+  - [High level overview of setup](#high-level-overview-of-setup)
+  - [Detailed description for the setup](#detailed-description-for-the-setup)
     - [Requirements       -----DO READ-----](#requirements------------do-read-----)
       - [Shared AWS Accounts](#shared-aws-accounts)
+    - [AWS Service Limits](#aws-service-limits)
     - [Prepare the environment](#prepare-the-environment)
       - [1. Setup an AWS Cloud9 environment](#1-setup-an-aws-cloud9-environment)
       - [2. Disable the AWS-managed temporary credentials](#2-disable-the-aws-managed-temporary-credentials)
@@ -67,7 +70,7 @@ Checkout the **howToDemo.md** for demo scenarios
     - [Error: `fatal: unable to access 'https://git-codecommit.eu-central-1.amazonaws.com/v1/repos/<somerepo>.git/': The requested URL returned error: 403`](#error-fatal-unable-to-access-httpsgit-codecommiteu-central-1amazonawscomv1repossomerepogit-the-requested-url-returned-error-403)
 
 
-## High level overview of steps (see detailed steps in next section)
+## High level overview of setup 
 1. Setup an AWS Cloud9 environment
 2. Disable the AWS-managed temporary credentials
 3. Configure AWS CLI with your keys and region
@@ -77,26 +80,24 @@ Checkout the **howToDemo.md** for demo scenarios
 7. see [howToDemo.md](howToDemo.md) for demo scenarios
 8. run ./down.sh to tear everything down
 
-## Detailed setup instructions
+## Detailed description for the setup 
 
 ### Requirements       -----DO READ-----
 
 #### Shared AWS Accounts
 
-If you share an AWS account with a co-worker, make sure that:
+If you share an AWS account with a co-worker, make sure that you both use different project names and that one project name is not a subset of the other one: eg cloudone and cloudone01 would be bad, but cloudone01 and cloudone02 would be fine  (I know... there is room for improvement here)
 
-- you both use **different regions**
-- you both use different project names and that project name is not a subset of the other one: eg cloudone and cloudone01 would be bad, but cloudone01 and cloudone02 would be fine  (I know... there is room for improvement here)
-
-The AWS Region that you will use must have:
-
+### AWS Service Limits
+The AWS Region that you will use must have:  
 - **one "available" VPC "slot"**
-   By default, there is a soft limit of 5 VPCs per region.  This script must be able to create 1 VPC
+   By default, there is a soft limit of 5 VPCs per region.  This script must be able to create 1 VPC. 
 - **one "available" Elastic IP "slot"**
    By default, there is a soft limit of 5 Elastic IPs per region.  This script must be able to create 1 Elastic IP
 - **one "available" Internet Gateway "slot"**
-   By default, there is a soft limit of 5 Internet Gateways per region.  This script must be able to create 1 Internet Gateway
+   By default, there is a soft limit of 5 Internet Gateways per region.  This script must be able to create 1 Internet Gateway  
 
+AWS Service Limits can be increased by a simple (free) Support Request at: https://console.aws.amazon.com/support/home#/case/create -> Increase Service Levels    
 The Cloud Formation Template to build the EKS cluster will crash if those resources cannot be created
 
 The IAM User account that you will use:
@@ -104,7 +105,7 @@ The IAM User account that you will use:
 - must have **Programmatic Access** as well as **AWS Management Console Access**
 - must have **AdministratorAccess** permissions (AWS console -> Services -> IAM -> Users -> click on the user -> Permissions tab -> If AdministratorAccess is not there, then click on Add permissions and add it; or request the rights from you Admin)  The reason is that the script will not only create an EKS cluster, but also a lot of other things, like create  VPC, subnets, routetables, roles, IPs, S3 buckets, ...
 
-(trial) Licenses:
+(trial) Licenses
 You will need the following licenses:
 - **A license for SmartCheck**  If you don't have a license key yet, you can get one here: <https://www.trendmicro.com/product_trials/download/index/us/168>
 - **CloudOne (Application Security) Account**  You can register for a trial here: <https://cloudone.trendmicro.com/_workload_iframe//SignUp.screen>  In CloudOne Application Security, you will need to create a "group" for the MoneyX application.  This will give you a **key** and a **secret** that you can use for the TREND_AP_KEY and TREND_AP_SECRET variables in this script.  
