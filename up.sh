@@ -94,7 +94,7 @@ fi
 
 #adding registries
 . ./add_internal_repo.sh
-. ./add_demo_repo.sh
+#. ./add_demo_repo.sh   #this repository does no longer exist
 
 # setup AWS CodePipeline
 . ./setup_pipelines.sh
@@ -108,8 +108,12 @@ fi
 # add C1CS
 . ./add_C1CS.sh
 
-# kick off sample pipelines
-. ./relaxed_security_settings.sh
+printf '%s\n'  "installing jq" "You can now kick off sample pipeline-builds of MoneyX"
+printf '%s\n'  " e.g. by running ./pushWithHighSecurityThresholds.sh"
+printf '%s\n'  " e.g. by running ./pushWithMalware.sh"
+printf '%s\n'  " After each script, verify that the pipeline has started and give it time to complete"
+printf '%s\n'  " I you kick off another pipeline too early, it will overrule (and stop) the previous one"
+
 . ./strickt_security_settings.sh  
 
 # check environment
