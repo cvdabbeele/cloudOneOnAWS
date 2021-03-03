@@ -569,5 +569,5 @@ if [[ "${patched}" =~ "${AWS_PROJECT}EksClusterCodeBuildKubectlRole"   ]];then
 fi
 
 create_eks_pipeline ${AWS_PROJECT}${APP1}
-create_eks_pipeline ${AWS_PROJECT}${APP2}
-create_eks_pipeline ${AWS_PROJECT}${APP3}
+#create_eks_pipeline ${AWS_PROJECT}${APP2}
+#create_eks_pipeline ${AWS_PROJECT}${APP3}
