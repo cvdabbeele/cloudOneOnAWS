@@ -402,7 +402,7 @@ Resources:
                 Provider: CodeCommit
               Configuration:
                 RepositoryName: !GetAtt CodeCommitRepo.Name
-                BranchName: master
+                BranchName: main
               OutputArtifacts:
                 - Name: Sample-App
               RunOrder: 1
