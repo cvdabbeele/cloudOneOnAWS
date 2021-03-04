@@ -193,6 +193,9 @@ Enter your own configuration variables in the config file at least for
 - `DSSC_AC`
 - `TREND_AP_KEY`
 - `TREND_AP_SECRET`
+- `C1API_KEY`
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_PASSWORD`
 
 The rest are preconfigured default variables which you can directly use.
 
