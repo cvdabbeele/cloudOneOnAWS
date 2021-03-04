@@ -197,7 +197,7 @@ Enter your own configuration variables in the config file at least for
 - `DOCKERHUB_USERNAME`
 - `DOCKERHUB_PASSWORD`
 
-The rest are preconfigured default variables which you can directly use.
+The rest are preconfigured (default) variables which you do not need to change.
 
 #### 6. run  `. ./up.sh` to deploy the environment 
 
