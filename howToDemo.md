@@ -254,7 +254,7 @@ The Registration keys for CloudOne Application Security must be called per runni
  
 ## Third pipeline walk through: Demo CloudOne Container Security (Admission Control)
 - (this is the pipeline at the top of the list)
-- As before, from the AWS console, go to Services -> CodePipeline -> Pipelines -> select the moneyX pipeline (select it, don't click it) -> click on `View History` -> and this time open the pipeline-instance that has `build with malware and very flexible security checks` as the Source revisions.  Point out that this pipeline failed nad "let's investigate why it failed"
+- As before, from the AWS console, go to Services -> CodePipeline -> Pipelines -> select the moneyX pipeline (select it, don't click it) -> click on `View History` -> and this time open the pipeline-instance that has `build with malware and very flexible security checks` as the Source revisions.  Point out that this pipeline failed and "let's investigate why it failed"
 ![pipeline3](images/pipeline3.png)
 - On Pipeline execution:xxxxxxxx page, click on the `Link to execution details` link 
   ![linkToExecutionDetails](images/linkToExecutionDetails.png)  
