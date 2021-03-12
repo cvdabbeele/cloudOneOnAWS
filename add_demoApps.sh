@@ -84,7 +84,8 @@ function setupApp {
     git init
     git config --global user.name ${AWS_PROJECT}
     git config --global user.email ${AWS_PROJECT}@example.com
-    git remote add origin https://${AWS_CC_REPO_URL}.git
+    #git remote add origin https://${AWS_CC_REPO_URL}.git
+    git remote add origin https://${AWS_CC_REPO_URL}
   fi
 
 
