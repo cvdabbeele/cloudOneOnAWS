@@ -110,7 +110,7 @@ EOF
     #echo Username: $(kubectl get  secrets -o jsonpath='{ .data.userName }' deepsecurity-smartcheck-auth | base64 --decode)
     #echo Password: $(kubectl get  secrets -o jsonpath='{ .data.password }' deepsecurity-smartcheck-auth | base64 --decode)
     echo
-    printf '%s' "Waiting for SmartCheck Serivce to come online: ."
+    printf '%s' "Waiting for SmartCheck Service to come online: ."
     export DSSC_BEARERTOKEN=''
     while [[ "$DSSC_BEARERTOKEN" == '' ]];do
       sleep 10
