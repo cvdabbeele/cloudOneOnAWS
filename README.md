@@ -114,9 +114,17 @@ You will need the following licenses:
 ### Prepare the environment
 
 #### 1. Setup an AWS Cloud9 environment
+  - login to the AWS console 
+  - select the region you want to work in (from the dropdown at the right top of the screen)
+  - go to Cloud9 (either use the drop-down labelled "services" and select Cloud9, or in the search bar enter "Cloud9")
+  ![AWS Settings](images/cloud9.png)
+  - Create environment
+  - Give it a name to your liking and click "Next Step"  
+  - As indicated in the screenshot below, make the following selections
   - select `Create a new EC2 instance for environment (direct access)`
   - use `t3.small`
   - use **Ubuntu Server 18.04 LTS**
+    ![AWS Settings](images/cloud9ConfigureSettings.png)
   - tag it to your liking (tags are good)
   - use default settings for the rest
 
