@@ -359,8 +359,10 @@ for i in "${!AWS_ROLES[@]}"; do
      printf "%s\n" "AWS_POLICIES= $AWS_POLICIES"
      for j in "${!AWS_POLICIES[@]}"; do
        printf "%s\n" "  Policy $j =  ${AWS_POLICIES[$j]}"
-      aws iam detach-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
-        aws iam delete-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
+       printf "%s\n" "     Detaching Policy ${AWS_POLICIES[$j]} from Role ${AWS_ROLES[$i]} "
+       aws iam detach-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
+       printf "%s\n" "     Deleting Role-policy Policy ${AWS_POLICIES[$j]}"
+       aws iam delete-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
      done
      #printf "%s\n" "Getting instance Profiles"
      #printf "%s\n" "Analyzing Instance Profiles for Role: ${AWS_ROLES[$i]}"

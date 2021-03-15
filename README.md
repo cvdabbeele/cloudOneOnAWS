@@ -59,10 +59,11 @@ Checkout the [howToDemo.md](howToDemo.md) for demo scenarios
       - [2. Disable the AWS-managed temporary credentials](#2-disable-the-aws-managed-temporary-credentials)
       - [3. Configure AWS CLI with your keys and region](#3-configure-aws-cli-with-your-keys-and-region)
       - [4. Clone this repository](#4-clone-this-repository)
-      - [5. Configure `00_define_vars.sh`](#5-configure-00_define_varssh)
-      - [6. run  `. ./up.sh` to deploy the environment](#6-run---upsh-to-deploy-the-environment)
+      - [5. Expand the disk space of the Cloud9 environment](#5-expand-the-disk-space-of-the-cloud9-environment)
+      - [6. Configure `00_define_vars.sh`](#6-configure-00_define_varssh)
+      - [7. run  `. ./up.sh` to deploy the environment](#7-run---upsh-to-deploy-the-environment)
     - [Next Step: How to Demo](#next-step-how-to-demo)
-      - [7. Checkout howToDemo.md for a few typical demo scenarios](#7-checkout-howtodemomd-for-a-few-typical-demo-scenarios)
+      - [8. Checkout howToDemo.md for a few typical demo scenarios](#8-checkout-howtodemomd-for-a-few-typical-demo-scenarios)
     - [Tear down](#tear-down)
   - [Common issues (WIP)](#common-issues-wip)
     - [Error: Kubernetes cluster unreachable](#error-kubernetes-cluster-unreachable)
@@ -177,7 +178,18 @@ git clone https://github.com/cvdabbeele/cloudOneOnAWS.git
 cd cloudOneOnAWS
 ```
 
-#### 5. Configure `00_define_vars.sh`    
+#### 5. Expand the disk space of the Cloud9 environment
+Our Cloud9 environment only has 10Gb of disk space.  
+Let's resize it to 40GB
+Credits to @mawinkler for adapting this AWS script
+
+```
+df -h   #notice the line /dev/nvme0n1p1 says 9.7G
+./resize.sh 40
+df -h   #notice the line /dev/nvme0n1p1 now says 39G 
+```
+
+#### 6. Configure `00_define_vars.sh`    
 Copy the sample file  
 ```shell
 cp 00_define_vars.sh.sample 00_define_vars.sh
@@ -199,7 +211,7 @@ Enter your own configuration variables in the config file at least for
 
 The rest are preconfigured (default) variables which you do not need to change.
 
-#### 6. run  `. ./up.sh` to deploy the environment 
+#### 7. run  `. ./up.sh` to deploy the environment 
 
 Important: don't forget the first dot :-)
 
@@ -506,7 +518,7 @@ Verify that the pipelines are being started (AWS Console -> Services:CodePipelin
 
 ### Next Step: How to Demo
 
-#### 7. Checkout [howToDemo.md](howToDemo.md) for a few typical demo scenarios  
+#### 8. Checkout [howToDemo.md](howToDemo.md) for a few typical demo scenarios  
 
 ### Tear down  
 

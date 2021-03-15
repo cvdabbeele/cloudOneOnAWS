@@ -32,34 +32,43 @@ do
 done 
 
 printf '%s\n' "Creating a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster"
+
 export TEMPJSON=`\
 curl --silent --location --request POST 'https://cloudone.trendmicro.com/api/container/clusters' --header 'Content-Type: application/json' --header "api-secret-key: ${C1APIKEY}"  --header 'api-version: v1' --data-raw "{    \"name\": \"${AWS_PROJECT}\",
-  \"description\": \"EKS cluster added by the CloudOneOnAWS project ${AWS_PROJECT}\",
-  \"runtimeEnabled\": true }" `
-#echo $TEMPJSON | jq
+\"description\": \"EKS cluster added by the CloudOneOnAWS project ${AWS_PROJECT}\",
+\"runtimeEnabled\": $C1CS_RUNTIME }" `
+
+#eho $TEMPJSON | jq
 export C1APIKEYforCLUSTERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
 #echo  C1APIKEYforCLUSTERS = $C1APIKEYforCLUSTERS
 export C1CSCLUSTERID=`echo ${TEMPJSON}| jq -r ".id"`
 #echo C1CSCLUSTERID = $C1CSCLUSTERID
-
-export C1RUNTIMEKEY=`echo ${TEMPJSON}| jq -r ".runtimeKey"`
-echo C1RUNTIMEKEY = $C1RUNTIMEKEY
-export C1RUNTIMESECRET=`echo ${TEMPJSON}| jq -r ".runtimeSecret"`
-echo C1RUNTIMESECRET = $C1RUNTIMESECRET
-
+if [[ "${C1CS_RUNTIME}" == "true" ]]; then
+    export C1RUNTIMEKEY=`echo ${TEMPJSON}| jq -r ".runtimeKey"`
+    echo C1RUNTIMEKEY = $C1RUNTIMEKEY
+    export C1RUNTIMESECRET=`echo ${TEMPJSON}| jq -r ".runtimeSecret"`
+    echo C1RUNTIMESECRET = $C1RUNTIMESECRET
+fi
 
 ## deploy C1CS to the K8S cluster of the CloudOneOnAWS project
 printf '%s\n' "Deploying C1CS to the K8S cluster of the CloudOneOnAWS project"
-cat << EOF >overrides.addC1csToK8s.yml
-cloudOne:
-   admissionController:
-     apiKey: ${C1APIKEYforCLUSTERS}
-   runtimeSecurity:
-     enabled: true
-     apiKey: ${C1RUNTIMEKEY}
-     secret: ${C1RUNTIMESECRET}
+if [[ "${C1CS_RUNTIME}" == "true" ]]; then
+    cat << EOF >overrides.addC1csToK8s.yml
+    cloudOne:
+       admissionController:
+         apiKey: ${C1APIKEYforCLUSTERS}
+       runtimeSecurity:
+         enabled: true
+         apiKey: ${C1RUNTIMEKEY}
+         secret: ${C1RUNTIMESECRET}
 EOF
-
+else
+    cat << EOF >overrides.addC1csToK8s.yml
+    cloudOne:
+       admissionController:
+         apiKey: ${C1APIKEYforCLUSTERS}
+EOF
+fi
 helm upgrade \
      trendmicro-c1cs \
      --values overrides.addC1csToK8s.yml \

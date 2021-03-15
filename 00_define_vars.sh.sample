@@ -5,6 +5,14 @@
 printf '%s' "Defining variables... "
 #### ----------below this line are settings which MUST be customised  ----------
 #### ---------------------------------------------------------------------------
+
+# C1CS (update 20210315)
+# if you do not have access to C1CS-Runtime option (which is in preview now; March 2021), 
+# then set the following variable to "false".  
+# If the variable does not exist, it will be set to "true" (meaning you have access to C1CS-runtime)
+# this is for compatibility reasons with older versions of this script
+export C1CS_RUNTIME="false"
+
 #  AWS settings
 export AWS_PROJECT='cloudone01'    #may only contain lowercase and trailing numbers, but no "-", no "_", nor any special characters.
 export AWS_EKS_NODES='2'

@@ -5,6 +5,20 @@
 #TODO: check if we have enough limits to create a VPC (or if one for our project already exists fro a previous run of this script)
 #TODO: check if we have enough limits to create a IGW (or if one for our project already exists fro a previous run of this script
 #TODO: check if we have enough limits to create an Elastic IP  (or if one for our project already exists fro a previous run of this script)
+# aws service-quotas list-service-quotas     --service-code vpc  
+#      "ServiceCode": "vpc",
+#            "ServiceName": "Amazon Virtual Private Cloud (Amazon VPC)",
+#            "QuotaArn": "arn:aws:servicequotas:eu-central-1:517003314933:vpc/L-F678F1CE",
+#            "QuotaCode": "L-F678F1CE",
+#            "QuotaName": "VPCs per Region",
+#            "Value": 10.0,
+#            "Unit": "None",
+#            "Adjustable": true,
+#            "GlobalQuota": false
+
+
+
+
 
 printf '%s' "Importing variables... "
 . ./00_define_vars.sh
@@ -40,6 +54,9 @@ if  [ -z "$APP_GIT_URL3" ]; then echo APP_GIT_URL3 must be set && varsok=false; 
 #check Application Security settings (for runtime protection)
 if  [ -z "$TREND_AP_KEY" ]; then echo TREND_AP_KEY must be set && varsok=false; fi
 if  [ -z "$TREND_AP_SECRET" ]; then echo TREND_AP_SECRET must be set && varsok=false; fi
+
+# if C1CS_RUNTIME does not exist, assume that C1CS_RUNTIME is enabled (for compatibility reasons)
+if  [ -z "$C1CS_RUNTIME" ]; then C1CS_RUNTIME="true";  fi  
 
 if  [ "$varsok" = false ]; then
   printf '%s\n' "Please check your 00_define_vars.sh file"
@@ -108,13 +125,13 @@ fi
 # add C1CS
 . ./add_C1CS.sh
 
-printf '%s\n'  "installing jq" "You can now kick off sample pipeline-builds of MoneyX"
+printf '%s\n'  "You can now kick off sample pipeline-builds of MoneyX"
 printf '%s\n'  " e.g. by running ./pushWithHighSecurityThresholds.sh"
 printf '%s\n'  " e.g. by running ./pushWithMalware.sh"
 printf '%s\n'  " After each script, verify that the pipeline has started and give it time to complete"
 printf '%s\n'  " I you kick off another pipeline too early, it will overrule (and stop) the previous one"
 
-. ./strickt_security_settings.sh  
+#. ./strickt_security_settings.sh  
 
 # check environment
 
