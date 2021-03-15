@@ -126,7 +126,9 @@ You will need the following licenses:
   - use **Ubuntu Server 18.04 LTS**
     ![AWS Settings](images/cloud9ConfigureSettings.png)
   - tag it to your liking (tags are good)
-  - use default settings for the rest
+  - use default settings for the rest (click "Next Step" and "Create Environment")
+  - The creation of the new environment make take 2-3 minutes.  Occasionally we have seen where the enviroment could not be created.  In that case, delete it an create a new one (AWS -> Services -> Cloud9 -> My Enviroments)
+  ![AWS Settings](images/cloud9PrepapringEnvironment.png)
 
 <!--0. <not needed?>
 Create an AWS Role to allow the EKS worker nodes (EC2 instances) to connect to ECR  
@@ -147,7 +149,7 @@ https://console.aws.amazon.com/iam/home#/roles$new?step=review&commonUseCase=EC2
 -->
 
 #### 2. Disable the AWS-managed temporary credentials
-In the Cloud9 environment, go to the Cloud9 menu bar and click on the AWS Cloud9 tab (it shows the number 9 in a cloud icon).   If you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible.  Go to -> Preferences (see "1") -> scroll down and expand "AWS Settings" (see "2")-> Credentials -> uncheck "AWS managed temporary credentials"  (see "3").
+In the Cloud9 environment, go to the Cloud9 menu bar and click on the AWS Cloud9 tab (it shows the number 9 in a cloud icon).   If you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible.  Go to -> Preferences -> scroll down and expand "AWS Settings" (not AWS Configuration)-> Credentials -> uncheck "AWS managed temporary credentials"
 ![AWS Settings](images/DisableAWSManagedTemporaryCredentials.png)
 
 #### 3. Configure AWS CLI with your keys and region
