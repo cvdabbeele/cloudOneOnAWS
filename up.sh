@@ -56,7 +56,7 @@ if  [ -z "$TREND_AP_KEY" ]; then echo TREND_AP_KEY must be set && varsok=false; 
 if  [ -z "$TREND_AP_SECRET" ]; then echo TREND_AP_SECRET must be set && varsok=false; fi
 
 # if C1CS_RUNTIME does not exist, assume that C1CS_RUNTIME is enabled (for compatibility reasons)
-if  [ -z "$C1CS_RUNTIME" ]; then C1CS_RUNTIME="true";  fi  
+if  [ -z "$C1CS_RUNTIME" ]; then export C1CS_RUNTIME="true";  fi  
 
 if  [ "$varsok" = false ]; then
   printf '%s\n' "Please check your 00_define_vars.sh file"
