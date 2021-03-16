@@ -61,6 +61,7 @@ Checkout the [howToDemo.md](howToDemo.md) for demo scenarios
       - [4. Clone this repository](#4-clone-this-repository)
       - [5. Expand the disk space of the Cloud9 environment](#5-expand-the-disk-space-of-the-cloud9-environment)
       - [6. Configure `00_define_vars.sh`](#6-configure-00_define_varssh)
+      - [A note on shared AWS accounts:](#a-note-on-shared-aws-accounts)
       - [7. run  `. ./up.sh` to deploy the environment](#7-run---upsh-to-deploy-the-environment)
     - [Next Step: How to Demo](#next-step-how-to-demo)
       - [8. Checkout howToDemo.md for a few typical demo scenarios](#8-checkout-howtodemomd-for-a-few-typical-demo-scenarios)
@@ -118,7 +119,7 @@ You will need the following licenses:
   - select the region you want to work in (from the dropdown at the right top of the screen)
   - go to Cloud9 (either use the drop-down labelled "services" and select Cloud9, or in the search bar enter "Cloud9")
   ![AWS Settings](images/cloud9.png)
-  - Create environment
+  - Create an Environment
   - Give it a name to your liking and click "Next Step"  
   - As indicated in the screenshot below, make the following selections
   - select `Create a new EC2 instance for environment (direct access)`
@@ -205,7 +206,15 @@ Copy the sample file
 cp 00_define_vars.sh.sample 00_define_vars.sh
 ```
 
-Edit the `00_define_vars.sh` file with the built in editor of Cloud9 or by your prefered editor (e.g. by using vi).
+Edit the `00_define_vars.sh` file with the built in editor  
+>  ![cloud9FileEditor](images/cloud9FileEditor.png)
+
+#### A note on shared AWS accounts:
+- If you are sharing an AWS account with someone else, make sure that both of you use a different AWS_PROJECT name.  
+- Also, one project name **may not be a subset of the other**.  e.g. c1 and c1b would be bad, but c1a and c1b would all be good.
+- To make sure that you do not "see" each other's projects, pipelines, clusters, registries etc, it is best to both use a **different AWS region**  
+
+
 You will need a License key for:
 - Trend Micro Cloud One Container (Image) Security, and one for
 - Trend Micro Cloud One Application Control
