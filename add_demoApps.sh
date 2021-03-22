@@ -12,6 +12,11 @@ if  [ -z "$APP_GIT_URL2" ]; then echo APP_GIT_URL2 must be set && varsok=false; 
 if  [ -z "$APP_GIT_URL3" ]; then echo APP_GIT_URL3 must be set && varsok=false; fi
 if  [ "$varsok" = false ]; then exit 1 ; fi
 
+#setup git to default to "main" ISO "master"
+mkdir -p ~/.git-template
+echo  "ref: refs/heads/main"  > ~/.git-template/main
+git config --global init.templateDir ~/.git-template
+
 function setupApp {
   #$1=appname
   #$2=downloadURL for application on public git
@@ -93,19 +98,19 @@ function setupApp {
   printf '%s\n'  "generating a dummy change to trigger a pipeline"
   echo " " >> Dockerfile
   #. push to the git repo in AWS
-  printf "%s\n" "updating CodeCommit repository -- ---------------------------------------->main branch"
+  printf "%s\n" "updating CodeCommit repository -- ---------------------------------------->master branch"
   #read -n 1 -p "updating CodeCommit repository -- ---------------------------------------->main branch" dummyinput
   git add .
   echo 'git commit -m "commit by \"add_demoApps\""'
   git commit -m "commit by \"add_demoApps\""
-  echo 'git push --set-upstream origin main'
-  git push --set-upstream origin main
-  git push https://${AWS_CC_REPO_URL}  #--set-upstream origin main
-  printf "%s\n" "Creating main branch + updating CodeCommit repository -- ---------------------------------------->main branch"
-  echo git branch main
-  git branch main
-  echo git checkout main
-  git checkout main
+  #echo 'git push --set-upstream origin master'
+  #git push --set-upstream origin master
+  #git push https://${AWS_CC_REPO_URL}  #--set-upstream origin master
+  #printf "%s\n" "Creating main branch + updating CodeCommit repository -- ---------------------------------------->main branch"
+  #echo git branch main
+  #git branch main
+  #echo git checkout main
+  #git checkout main
   echo git push --set-upstream origin main
   git push --set-upstream origin main  
   #4. pipeline will pick it up, build an Image, send it to SmartCheck..
