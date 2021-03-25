@@ -8,6 +8,11 @@ This is a collaborative effort with mawinkler and nicgoth.
 
 
 ## UPDATES  
+### 20210325
+- added the variable `C1CS_RUNTIME` to 00_define_vars.sh.sample
+If you do not have access to C1CS-Runtime option (which is in preview now; March 2021), then set the following variable to "false".  
+If this variable does not exist, it will be set to "true" (meaning you have access to C1CS-runtime)  This is for compatibility reasons with older versions of this script
+
 ### 20210215
 1. The demo has been extended with Cloud One Container Security (both the Admission Controller and -in preview- the Runtime Security)
 2. To make a better demo experience, pre-run 3 instances of the MoneyX pipeline.  This will allow for a smoother customer demo.    
@@ -61,7 +66,6 @@ Checkout the [howToDemo.md](howToDemo.md) for demo scenarios
       - [4. Clone this repository](#4-clone-this-repository)
       - [5. Expand the disk space of the Cloud9 environment](#5-expand-the-disk-space-of-the-cloud9-environment)
       - [6. Configure `00_define_vars.sh`](#6-configure-00_define_varssh)
-      - [A note on shared AWS accounts:](#a-note-on-shared-aws-accounts)
       - [7. run  `. ./up.sh` to deploy the environment](#7-run---upsh-to-deploy-the-environment)
     - [Next Step: How to Demo](#next-step-how-to-demo)
       - [8. Checkout howToDemo.md for a few typical demo scenarios](#8-checkout-howtodemomd-for-a-few-typical-demo-scenarios)
@@ -209,26 +213,27 @@ cp 00_define_vars.sh.sample 00_define_vars.sh
 Edit the `00_define_vars.sh` file with the built in editor  
 >  ![cloud9FileEditor](images/cloud9FileEditor.png)
 
-#### A note on shared AWS accounts:
-- If you are sharing an AWS account with someone else, make sure that both of you use a different AWS_PROJECT name.  
-- Also, one project name **may not be a subset of the other**.  e.g. c1 and c1b would be bad, but c1a and c1b would all be good.
-- To make sure that you do not "see" each other's projects, pipelines, clusters, registries etc, it is best to both use a **different AWS region**  
 
-
-You will need a License key for:
-- Trend Micro Cloud One Container (Image) Security, and one for
-- Trend Micro Cloud One Application Control
-You can request trial keys via your Account Manager or SE.
-Enter your own configuration variables in the config file at least for
-
-- `DSSC_AC`
-- `TREND_AP_KEY`
-- `TREND_AP_SECRET`
-- `C1API_KEY`
+1. Update the following variables:
+- `DSSC_AC`           # your SmartCheck activation key
+- `TREND_AP_KEY`      # your AP key created in C1AS by adding a "group" for MoneyX 
+- `TREND_AP_SECRET`   # your AP secret created in C1AS by adding a "group" for MoneyX 
+- `C1API_KEY`         # API key created in C1WS (Role= Full Access)
 - `DOCKERHUB_USERNAME`
 - `DOCKERHUB_PASSWORD`
 
-The rest are preconfigured (default) variables which you do not need to change.
+2. `AWS_PROJECT` and shared AWS accounts:
+- If you are sharing an AWS account with someone else, make sure that both of you use a different AWS_PROJECT name.  
+- Also, one project name **may not be a subset of the other**.  e.g. c1 and c1b would be bad, but c1a and c1b would be good.
+- To make sure that you do not "see" each other's projects, pipelines, clusters, registries etc, it is best to both use a **different AWS region**  
+
+3. Preview of the RUNTIME-protection option of Cloud One Workload Security
+The script assumes that you have access to the C1WS-RUNTIME option.  
+If you do NOT have access to it, then add/uncomment the following line to/in your 00_define_vars.sh:  
+`export C1CS_RUNTIME="false"`
+If this line does not exist, the script will default that variable to `true`  (This is for backward compatibility with earlier versions of this script)
+  
+The rest are preconfigured (default) variables which you do not need to change.  However, you may want to change the `DSSC_PASSWORD` as well.
 
 #### 7. run  `. ./up.sh` to deploy the environment 
 

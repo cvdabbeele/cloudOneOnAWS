@@ -11,6 +11,7 @@ printf '%s' "Defining variables... "
 # then set the following variable to "false".  
 # If the variable does not exist, it will be set to "true" (meaning you have access to C1CS-runtime)
 # this is for compatibility reasons with older versions of this script
+
 export C1CS_RUNTIME="false"
 
 #  AWS settings
