@@ -43,7 +43,7 @@ Then it will:
 - scan them for vulnerabilities, malware, sensitive content etc..
 - and, if the risk is below the defined threshold:
   - push them to the ECR registry
-  - deploy them on AKS
+  - deploy them on EKS
 
 This README.md describes how to deploy the demo environment
 
@@ -51,6 +51,7 @@ Checkout the [howToDemo.md](howToDemo.md) for demo scenarios
 
 - [Overview](#overview)
   - [UPDATES](#updates)
+    - [20210325](#20210325)
     - [20210215](#20210215)
     - [20201126](#20201126)
   - [In short, the script in this repo sets up:](#in-short-the-script-in-this-repo-sets-up)
