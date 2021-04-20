@@ -30,7 +30,7 @@ export TREND_AP_SECRET='your_trend_secret_for_cloudOne_Application_Security'
 
 #Cloud One Container Security Settings (for Admission Control)
 # see https://cloudone.trendmicro.com/docs/container-security/api-key-create/
-export C1APIKEY='your_CloudOne_Container_Security_API_Key; for now you have to create this key in DSaaS aka C1WS'
+export C1APIKEY='your_CloudOne_API_Key; for now you have to create this key in DSaaS aka C1WS'
 
 # Dockerhub account information (required to do "authenticated pulls" from docker to get a higher max-pull limit)
 export DOCKERHUB_USERNAME='your username of your (free) account on hub.docker.com'

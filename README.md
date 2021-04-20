@@ -39,11 +39,13 @@ If this variable does not exist, it will be set to "true" (meaning you have acce
 
 Then it will:
 
-- build 3 containers and
-- scan them for vulnerabilities, malware, sensitive content etc..
+- build 3 containers with runtime security by C1AS
+- scan them with Smart Check for vulnerabilities, malware, sensitive content etc..
 - and, if the risk is below the defined threshold:
   - push them to the ECR registry
   - deploy them on EKS
+  - enable Admission Control with policies defines by C1CS
+  
 
 This README.md describes how to deploy the demo environment
 

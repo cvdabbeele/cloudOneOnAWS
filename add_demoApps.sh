@@ -26,7 +26,7 @@ function setupApp {
          #printf "%s\n" "Found CodeCommit Repo "${aws_cc_repos[$i]}
          AWS_CC_REPO=${aws_cc_repos[$i]}
          export AWS_CC_REPO_URL=`aws codecommit get-repository --region $AWS_REGION --repository-name ${AWS_CC_REPO} | jq -r '.repositoryMetadata.cloneUrlHttp' | sed 's/https\:\/\///'`
-         #printf "%s\n" "Found CodeCommit Repo URL ${AWS_CC_REPO_URL}"
+         printf "%s\n" "Found CodeCommit Repo URL ${AWS_CC_REPO_URL}"
          break
     else
       AWS_CC_REPO=''
@@ -93,19 +93,16 @@ function setupApp {
   printf '%s\n'  "generating a dummy change to trigger a pipeline"
   echo " " >> Dockerfile
   #. push to the git repo in AWS
-  printf "%s\n" "updating CodeCommit repository -- ---------------------------------------->master branch"
-  #read -n 1 -p "updating CodeCommit repository -- ---------------------------------------->main branch" dummyinput
   git add .
-  echo 'git commit -m "commit by \"add_demoApps\""'
-  git commit -m "commit by \"add_demoApps\""
-  echo 'git push --set-upstream origin master'
-  git push --set-upstream origin master
-  git push https://${AWS_CC_REPO_URL}  #--set-upstream origin master
-  printf "%s\n" "Creating main branch + updating CodeCommit repository -- ---------------------------------------->main branch"
-  echo git branch main
-  git branch main
-  echo git checkout main
-  git checkout main
+  echo 'git commit -m "commit by \"add demoApps\""'
+  git commit -m "commit by \"add demoApps\""
+  #echo 'git push --set-upstream origin master'
+  #git push --set-upstream origin master
+  #git push https://${AWS_CC_REPO_URL}  #--set-upstream origin master
+  #echo git branch main
+  #git branch main
+  #echo git checkout main
+  #git checkout main
   echo git push --set-upstream origin main
   git push --set-upstream origin main  
   #4. pipeline will pick it up, build an Image, send it to SmartCheck..
