@@ -96,15 +96,8 @@ function setupApp {
   git add .
   echo 'git commit -m "commit by \"add demoApps\""'
   git commit -m "commit by \"add demoApps\""
-  #echo 'git push --set-upstream origin master'
-  #git push --set-upstream origin master
-  #git push https://${AWS_CC_REPO_URL}  #--set-upstream origin master
-  #echo git branch main
-  #git branch main
-  #echo git checkout main
-  #git checkout main
-  echo git push --set-upstream origin main
-  git push --set-upstream origin main  
+  echo git push --set-upstream origin master
+  git push --set-upstream origin master
   #4. pipeline will pick it up, build an Image, send it to SmartCheck..
   cd $currentDir
 }
