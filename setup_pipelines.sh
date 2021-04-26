@@ -49,7 +49,7 @@ Parameters:
   DockerhubPassword:
     Type: String
     Description: Your DockerHub Password
-    Default: ${DOCKERHUB_PASSWORD}
+    Default: '${DOCKERHUB_PASSWORD}'
     MinLength: 1
     MaxLength: 100
 
@@ -79,7 +79,7 @@ Parameters:
     Type: String
     NoEcho: true
     Description: The password for Smartcheck user
-    Default: ${DSSC_PASSWORD}
+    Default: '${DSSC_PASSWORD}'
     MinLength: 1
     MaxLength: 100
     ConstraintDescription: You must enter a password for the Smartcheck user
@@ -103,7 +103,7 @@ Parameters:
   PreregistryPwd:
     Type: String
     Description: The password for Pre-Registry user
-    Default: ${DSSC_REGPASSWORD}
+    Default: '${DSSC_REGPASSWORD}'
     MinLength: 1
     MaxLength: 100
     ConstraintDescription: You must enter a password for the Pre-Registry user
