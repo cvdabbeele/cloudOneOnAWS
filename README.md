@@ -135,7 +135,7 @@ You will need the following licenses:
     ![AWS Settings](images/cloud9ConfigureSettings.png)
   - tag it to your liking (tags are good)
   - use default settings for the rest (click "Next Step" and "Create Environment")
-  - The creation of the new environment make take 2-3 minutes.  Occasionally we have seen where the enviroment could not be created.  In that case, delete it an create a new one (AWS -> Services -> Cloud9 -> My Enviroments)
+  - The creation of the new environment may take 2-3 minutes.  Occasionally we have seen where the enviroment could not be created.  In that case, delete it an create a new one (AWS -> Services -> Cloud9 -> My Enviroments)
   ![AWS Settings](images/cloud9PrepapringEnvironment.png)
 
 <!--0. <not needed?>

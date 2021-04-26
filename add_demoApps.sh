@@ -88,7 +88,9 @@ function setupApp {
     git remote add origin https://${AWS_CC_REPO_URL}
   fi
 
-
+  #adding AWS codecommit credential-helper to ~/.gitconfig"
+  echo "adding AWS codecommit credential-helper to ~/.gitconfig"
+  git config --global credential.helper '!aws codecommit credential-helper $@'
 
   printf '%s\n'  "generating a dummy change to trigger a pipeline"
   echo " " >> Dockerfile

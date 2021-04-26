@@ -18,6 +18,7 @@ if  [ "$varsok" = false ]; then exit 1 ; fi
 
 
 function create_pipeline_yaml {
+  #creates the git CodeRepo (but no branch, no data), CodePipeline and ECR registry
   #$1 = name of the pipeline (${AWS_PROJECT}${APP[$i]})
   LOWER1=`echo ${1} | awk '{ print tolower($0) }'`
   printf '%s\n' "Creating file: ${1}Pipeline.yml "
