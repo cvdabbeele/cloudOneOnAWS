@@ -16,8 +16,10 @@
 #            "Adjustable": true,
 #            "GlobalQuota": false
 
+
+
 # removing "aws_session_token = <blanco> " from credentials file (which throws an error if not removed)
-sed -i "/aws_session_token/d" ~/.aws/credentials 
+#sed -i "/aws_session_token/d" ~/.aws/credentials 
 
 
 printf '%s' "Importing variables... "
