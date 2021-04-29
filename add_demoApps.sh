@@ -114,6 +114,8 @@ function getUrl {
   return 0
 }
 
+printf '%s\n' "Cleaning up Apps directory"
+rm -rf ../apps 
 printf '%s\n' "Deploying $APP1 (from $APP_GIT_URL1)"
 printf '%s\n' "---------------------------------------------"
 setupApp ${APP1} ${APP_GIT_URL1}
