@@ -433,7 +433,7 @@ function create_eks_pipeline {
 #$1 = name of the pipeline (${AWS_PROJECT}${APP[$i]})
 LOWER1=`echo ${1} | awk '{ print tolower($0) }'`
 
-#check of pipeline exists
+#if pipeline exists, delete it
 aws_pipeline_exists="false"
 aws_pipelines=( `aws codepipeline list-pipelines --output json --region $AWS_REGION| jq -r '.pipelines[].name'` )
 aws_pipeline=''
@@ -442,11 +442,12 @@ for i in "${!aws_pipelines[@]}"; do
   if [[ "${aws_pipelines[$i]}" =~ "${1}Pipeline" ]]; then
       aws_pipeline_exists="true"
       aws_pipeline=${aws_pipelines[$i]}
+      DUMMY=`aws codepipeline delete-pipeline --name ${aws_pipeline}`
       break
   fi
 done
 
-#check if ECR repo exists
+# if ECR repo exists, delete it
 aws_ecr_repo_exists="false"
 aws_ecr_repos=(`aws ecr describe-repositories --region ${AWS_REGION} | jq -r '.repositories[].repositoryName'`)
 aws_ecr_repo=''
@@ -456,13 +457,14 @@ for i in "${!aws_ecr_repos[@]}"; do
   if [[ "${aws_ecr_repos[$i]}" =~ "${1}" ]]; then
       #printf "%s\n" "Matching ECR repository found: ${aws_ecr_repo}"
       aws_ecr_repo_exists="true"
+      DUMMY=`aws ecr delete-repository --repository-name ${aws_ecr_repo} --region ${AWS_REGION} --force`
       break
   else
      aws_ecr_repo=''
   fi
 done
 
-#check if CodeCommit repo exists
+# if CodeCommit repo exists, delete it
 aws_cc_repo_exists="false"
 aws_cc_repos=(`aws codecommit list-repositories --region $AWS_REGION | jq -r '.repositories[].repositoryName'`)
 export aws_cc_repo=''
@@ -474,90 +476,39 @@ for i in "${!aws_cc_repos[@]}"; do
       export AWS_CC_REPO_URL=`aws codecommit get-repository --region $AWS_REGION --repository-name ${aws_cc_repo} | jq -r '.repositoryMetadata.cloneUrlHttp' | sed 's/https\:\/\///'`
       #printf "%s\n" "Found CodeCommit Repo URL ${AWS_CC_REPO_URL}"
       aws_cc_repo_exists="true"
+      DUMMY=`aws codecommit delete-repository --repository-name ${aws_cc_repo} --region ${AWS_REGION}`
       break
   else
     export aws_cc_repo=''
   fi
 done
 
-#check if Cloudformation Stack exists.
+#if Cloudformation Stack exists. delete it
 aws_pipeline_stack_exists="false"
 aws_pipeline_stack=""
 aws_pipeline_stacks=(`aws cloudformation describe-stacks --output json --region $AWS_REGION| jq -r '.Stacks[].StackName'` )
 for i in "${!aws_pipeline_stacks[@]}"; do
   # printf "%s\n" "stack $i =  ${aws_pipeline_stacks[$i]}"
   if [[ "${aws_pipeline_stacks[$i]}" =~ "${1}Pipeline" ]]; then
-     aws_pipeline_stack_exists="true"
-     aws_pipeline_stack=${aws_pipeline_stacks[$i]}
-     aws_pipeline_stack_status=`aws cloudformation describe-stacks --stack-name ${aws_pipeline_stacks[$i]}  --output json --region $AWS_REGION| jq -r '.Stacks[].StackStatus'`
-     #printf "%s\n" "Found stack ${aws_pipeline_stack} with status: ${aws_pipeline_stack_status}"
-     break
-  fi
-done
-
-#if pipeline exists and ECR repo exists, and , CodeCommit repo exists, and StackStatus is CREATE_COMPLETE, reuse them
-toCreateNewEnvironment="true"
-if [[ "${aws_pipeline_exists}" = "true" &&  "${aws_ecr_repo_exists}" = "true" &&  "${aws_cc_repo_exists}" = "true" && "${aws_pipeline_stack_status}" = "CREATE_COMPLETE" ]]; then
-    printf "%s\n" "Reusing existing: CodeCommit repository ${aws_cc_repo}, ECR repository ${aws_ecr_repo}, Pipeline ${1} and Pipeline Cloudformation stack ${aws_pipeline_stack}"
-    toCreateNewEnvironment="false"
-else
-  if [[ "${aws_pipeline_exists}" = "false" &&  "${aws_ecr_repo_exists}" = "false" &&  "${aws_cc_repo_exists}" = "false" && "${aws_pipeline_stack_exists}" = "false" ]]; then
-    printf '%s\n'  "No environment found:"
-    printf '%s\n'  "--------------------------"
-    printf '%s\n'  "   CodeCommit repo: ${aws_cc_repo} exists = ${aws_cc_repo_exists}"
-    printf '%s\n'  "   CloudFormation stack: ${aws_pipeline_stack} status = ${aws_pipeline_stack_status}"
-    printf '%s\n'  "   CodePipeline: ${aws_pipeline} exists = ${aws_pipeline_exists}"
-    printf '%s\n'  "   ECR repo: ${aws_ecr_repo} exists = ${aws_ecr_repo_exists}"
-    printf "%s\n" "creating: CodeCommit repository ${aws_cc_repo}, ECR repository ${aws_ecr_repo}, Pipeline ${1} and Cloudformation stack ${aws_pipeline_stack}"
-    toCreateNewEnvironment="true"
-  else
-    #we have an inconsistent environement.
-    #if old stack exists -> delete it
-    printf '%s\n'  "Inconsistent environment found for ${1}:"
-    printf '%s\n'  "-------------------------------------------------"
-    printf '%s\n'  "   CodeCommit repo: ${aws_cc_repo} exists = ${aws_cc_repo_exists}"
-    printf '%s\n'  "   CloudFormation stack: ${aws_pipeline_stack} status = ${aws_pipeline_stack_status}"
-    printf '%s\n'  "   CodePipeline: ${aws_pipeline} exists = ${aws_pipeline_exists}"
-    printf '%s\n'  "   ECR repo: ${aws_ecr_repo} exists = ${aws_ecr_repo_exists}"
-
+    aws_pipeline_stack_exists="true"
+    aws_pipeline_stack=${aws_pipeline_stacks[$i]}
+    aws_pipeline_stack_status=`aws cloudformation describe-stacks --stack-name ${aws_pipeline_stacks[$i]}  --output json --region $AWS_REGION| jq -r '.Stacks[].StackStatus'`
+    #printf "%s\n" "Found stack ${aws_pipeline_stack} with status: ${aws_pipeline_stack_status}"
     if [[ "${aws_pipeline_stack_exists}" = "true" ]]; then
       printf '%s \n' "Cleaning up old Cloudformation Stack: ${aws_pipeline_stack}"
       aws cloudformation delete-stack --stack-name ${aws_pipeline_stack} --region ${AWS_REGION}
       aws cloudformation wait stack-delete-complete --stack-name ${aws_pipeline_stack}  --region ${AWS_REGION}
     fi
-
-    #if old pipeline exists -> delete it
-    if [[ "${aws_pipeline_exists}" = "true" ]]; then
-      printf "%s\n" "Cleaning up old pipeline ${aws_pipeline}Pipeline"
-      aws codepipeline delete-pipeline --name ${aws_pipeline}
-    fi
-
-    #if old ecr repo exists -> delete it
-    if [[ "${aws_ecr_repo_exists}" = "true" ]]; then
-      aws_ecr_repo=`echo ${1} | awk '{ print tolower($0) }'`
-      printf "%s\n" "Cleaning up old ECR repository: ${aws_ecr_repo}"
-      DUMMY=`aws ecr delete-repository --repository-name ${aws_ecr_repo} --region ${AWS_REGION} --force`
-    fi
-
-    #if old cc repo exists -> delete it
-    if [[ "${aws_cc_repo_exists}" = "true" ]]; then
-      aws_cc_repo=`echo ${1} | awk '{ print tolower($0) }'`
-      printf "%s\n" "Cleaning up old CodeCommit repository: ${aws_cc_repo}"
-      DUMMY=`aws codecommit delete-repository --repository-name ${aws_cc_repo} --region ${AWS_REGION}`
-    fi
-    sleep 20  #make sure that stack is totally gone
+    break
   fi
-fi
+done
 
-
-if [[ "${toCreateNewEnvironment}" = "true" ]]; then
 #creating new pipeline/stack
   create_pipeline_yaml ${1}
   printf '%s\n' "Creating Cloudformation Stack and Pipeline ${1}"...
   DUMMY=`aws cloudformation create-stack --stack-name ${1}Pipeline --region ${AWS_REGION}  --template-body file://${1}Pipeline.yml  --capabilities CAPABILITY_IAM`
   printf '%s\n' "Waiting for Cloudformation stack ${1}Pipeline to be created. "
   DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${1}Pipeline  --region ${AWS_REGION}`
-fi
 }  #end of function
 
 ROLE="    - rolearn: arn:aws:iam::$ACCOUNT_ID:role/${AWS_PROJECT}EksClusterCodeBuildKubectlRole\n      username: build\n      groups:\n        - system:masters"
