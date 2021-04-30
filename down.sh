@@ -182,6 +182,8 @@ for i in "${!aws_eks_clusters[@]}"; do
   fi
 done
 
+# deleting apps directory
+rm -rf ../apps 
 
 # Cleaning up project VPC, starting with its dependencies
 aws_vpc_ids=(`aws ec2 describe-vpcs | jq -r ".Vpcs[].VpcId"`)
