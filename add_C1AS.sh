@@ -1,11 +1,10 @@
-printf '%s\n' "----------------------------------"
-printf '%s\n' " Adding CLoudOneWorkloadSecurity"
-printf '%s\n' "----------------------------------"
+printf '%s\n' "--------------"
+printf '%s\n' " Adding C1AS"
+printf '%s\n' "--------------"
 
 
 function create_c1as_group {
 # parm = ${1} = name of the app"
-# parm = ${2} = number of the app"
 
 # Creating groups
 
@@ -37,12 +36,29 @@ curl --silent --location --request POST "https://cloudone.trendmicro.com/api/app
 `)
 
 
-declare -x APP${2}KEY=`echo "$TEMPJSON" | jq   -r ".credentials.key"`
-declare -x APP${2}SECRET=`echo "$TEMPJSON" | jq   -r ".credentials.secret"`
+APPKEY=`echo "$TEMPJSON" | jq   -r ".credentials.key"`
+APPSECRET=`echo "$TEMPJSON" | jq   -r ".credentials.secret"`
 
-} #end of function
+
+} 
+#end of function
+
 
 
 create_c1as_group $APP1 1
+APP1KEY=$APPKEY
+APP1SECRET=$APPSECRET
+echo APP1KEY=$APP1KEY
+echo APP1SECRET=$APP1SECRET
+
 create_c1as_group $APP2 2
+APP2KEY=$APPKEY
+APP2SECRET=$APPSECRET
+echo APP2KEY=$APP2KEY
+echo APP2SECRET=$APP2SECRET
+
 create_c1as_group $APP3 3
+APP3KEY=$APPKEY
+APP3SECRET=$APPSECRET
+echo APP3KEY=$APP3KEY
+echo APP3SECRET=$APP3SECRET
