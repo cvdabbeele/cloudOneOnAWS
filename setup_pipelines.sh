@@ -25,12 +25,19 @@ function create_pipeline_yaml {
   LOWER1=`echo ${1} | awk '{ print tolower($0) }'`
   printf '%s\n' "Creating file: ${1}Pipeline.yml "
   ecr_repo_name=`echo ${1}| awk '{print tolower($0)}'`
+
+echo "============> \${1}=${1}"
+echo "============> \${2}=${2}"
+
   TEMPVAR=APP${2}KEY
+  echo "TEMPVAR=${TEMPVAR}"
   TREND_AP_KEY=${!TEMPVAR}
-  echo TREND_AP_KEY=${TREND_AP_KEY}
-  TEMPVAR=APP${2}SECRET
-  TREND_AP_SECRET=${!TEMPVAR}
-  echo TREND_AP_SECRET=${TREND_AP_SECRET}
+  echo "TREND_AP_KEY=${TREND_AP_KEY}"
+
+  TEMPVAR2=APP${2}SECRET
+  echo "TEMPVAR2=${TEMPVAR2}"
+  TREND_AP_SECRET=${!TEMPVAR2}
+  echo "TREND_AP_SECRET=${TREND_AP_SECRET}"
 
 
 
@@ -442,8 +449,8 @@ EOF
 }
 
 function create_eks_pipeline {
-#$1 = name of the pipeline
 #$1 = name of the pipeline (${AWS_PROJECT}${APP[$i]})
+#$2 = number of the app
 LOWER1=`echo ${1} | awk '{ print tolower($0) }'`
 
 #if pipeline exists, delete it
@@ -517,11 +524,12 @@ for i in "${!aws_pipeline_stacks[@]}"; do
 done
 
 #creating new pipeline/stack
-  create_pipeline_yaml ${1}
+  create_pipeline_yaml ${1} ${2}
   printf '%s\n' "Creating Cloudformation Stack and Pipeline ${1}"...
   DUMMY=`aws cloudformation create-stack --stack-name ${1}Pipeline --region ${AWS_REGION}  --template-body file://${1}Pipeline.yml  --capabilities CAPABILITY_IAM`
   printf '%s\n' "Waiting for Cloudformation stack ${1}Pipeline to be created. "
   DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${1}Pipeline  --region ${AWS_REGION}`
+
 }  #end of function
 
 ROLE="    - rolearn: arn:aws:iam::$ACCOUNT_ID:role/${AWS_PROJECT}EksClusterCodeBuildKubectlRole\n      username: build\n      groups:\n        - system:masters"
@@ -535,6 +543,6 @@ if [[ "${patched}" =~ "${AWS_PROJECT}EksClusterCodeBuildKubectlRole"   ]];then
     kubectl patch configmap/aws-auth -n kube-system --patch "$(cat /tmp/aws-auth-patch.yml)"
 fi
 
-create_eks_pipeline ${AWS_PROJECT}${APP1}
-create_eks_pipeline ${AWS_PROJECT}${APP2}
-create_eks_pipeline ${AWS_PROJECT}${APP3}
+create_eks_pipeline ${AWS_PROJECT}${APP1} 1
+create_eks_pipeline ${AWS_PROJECT}${APP2} 2
+create_eks_pipeline ${AWS_PROJECT}${APP3} 3
