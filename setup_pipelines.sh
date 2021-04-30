@@ -26,11 +26,14 @@ function create_pipeline_yaml {
   printf '%s\n' "Creating file: ${1}Pipeline.yml "
   ecr_repo_name=`echo ${1}| awk '{print tolower($0)}'`
   TEMPVAR=APP${2}KEY
-  APPKEY=${!TEMPVAR}
-  echo APPKEY=${APPKEY}
+  TREND_AP_KEY=${!TEMPVAR}
+  echo TREND_AP_KEY=${TREND_AP_KEY}
   TEMPVAR=APP${2}SECRET
-  APPSECRET=${!TEMPVAR}
-  echo APPSECRET=${APPSECRET}
+  TREND_AP_SECRET=${!TEMPVAR}
+  echo TREND_AP_SECRET=${TREND_AP_SECRET}
+
+
+
 
 
 cat << EOF >${1}Pipeline.yml
@@ -137,7 +140,7 @@ Parameters:
   AppSecKey:
     Type: String
     Description: The registration key for Cloud One Application Security
-    Default: '${APPKEY}'
+    Default: '${TREND_AP_KEY}'
     MinLength: 1
     MaxLength: 50
     ConstraintDescription: Do not change this
@@ -145,7 +148,7 @@ Parameters:
   AppSecSecret:
     Type: String
     Description: The registration secret for Cloud One Application Security
-    Default: '${APPSECRET}'
+    Default: '${TREND_AP_SECRET}'
     MinLength: 1
     MaxLength: 50
     ConstraintDescription: Do not change this
