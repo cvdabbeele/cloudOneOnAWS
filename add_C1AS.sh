@@ -45,7 +45,6 @@ declare -x APP${2}SECRET=`echo "$TEMPJSON" | jq   -r ".credentials.secret"`
 } #end of function
 
 
-AWS_PROJECT="project1"
 create_c1as_group dummytest1 1
 create_c1as_group dummytest2 2
 create_c1as_group dummytest3 3

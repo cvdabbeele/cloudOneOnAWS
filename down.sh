@@ -80,6 +80,24 @@ if [[ "${helm_c1cs}" == "trendmicro-c1cs" ]]; then
   helm delete trendmicro-c1cs -n c1cs
 fi
 
+# remove this projects groups from c1as
+TEMPJSON=(`\
+curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/application/accounts/groups' --header 'Content-Type: application/json' --header "api-secret-key: ${C1APIKEY}" --header 'api-version: v1' `)
+
+C1ASGROUPS=(`echo "$TEMPJSON" | jq   -r ".[].name"`)
+C1ASGROUPIDS=(`echo "$TEMPJSON" | jq   -r ".[].group_id"`)
+
+for i in "${!C1ASGROUPS[@]}"
+do
+  printf "%s\n" "C1AS: found group ${C1ASGROUPS[$i]} with ID ${C1ASGROUPIDS[$i]}"
+  if [[ "${C1ASGROUPS[$i]}" == "${AWS_PROJECT^^}-${1^^}" ]]; 
+  #if [[ "${C1ASGROUPS[$i]}" == "${AWS_PROJECT^^}" ]]; 
+  then
+    printf "%s\n" "Deleting Group object ${AWS_PROJECT^^}-${1^^} in C1AS"
+    curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/application/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "api-secret-key: ${C1APIKEY}" --header 'api-version: v1' 
+  fi
+done 
+
 #remove smartcheck 
 printf '%s\n' "Deleting Smart Check"
 helm_smartcheck=`helm list -n ${DSSC_NAMESPACE}  -o json | jq -r '.[].name'`
