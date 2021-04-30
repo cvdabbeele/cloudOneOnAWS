@@ -39,77 +39,13 @@ curl --silent --location --request POST "https://cloudone.trendmicro.com/api/app
 `)
 
 
-declare APP${2}KEY=`echo "$TEMPJSON" | jq   -r ".credentials.key"`
-temp=APP${2}KEY
-echo xxxxxxxxxxxxxxxxx ${temp}=${!temp}
-declare APP${2}SECRET=`echo "$TEMPJSON" | jq   -r ".credentials.secret"`
-temp=APP${2}SECRET
-echo xxxxxxxxxxxxxxxxx  ${temp}=${!temp}
+declare -x APP${2}KEY=`echo "$TEMPJSON" | jq   -r ".credentials.key"`
+declare -x APP${2}SECRET=`echo "$TEMPJSON" | jq   -r ".credentials.secret"`
 
 } #end of function
-
 
 
 AWS_PROJECT="project1"
 create_c1as_group dummytest1 1
 create_c1as_group dummytest2 2
 create_c1as_group dummytest3 3
-
-
-
-
-# ${APP1}
-echo returned from function
-APP1_key=$APPKEY
-echo APP1_key=$APP1_key
-
-APP1_secret=$APPSECRET
-echo APP1_secret=$APP1_secret
-
-
-create_c1as_group dummytest2
-# ${APP1}
-echo returned from function
-APP2_key=$APPKEY
-echo APP2_key=$APP2_key
-
-APP2_secret=$APPSECRET
-echo APP2_secret=$APP2_secret
-
-
-create_c1as_group dummytest3
-# ${APP1}
-echo returned from function
-APP3_key=$APPKEY
-echo APP3_key=$APP3_key
-
-APP3_secret=$APPSECRET
-echo APP3_secret=$APP3_secret
-
-
-echo 'all together-----------------------------------------------------' 
-# ${APP1}
-echo APP1_key=$APP1_key
-echo APP1_secret=$APP1_secret
-echo APP2_key=$APP2_key
-echo APP2_secret=$APP2_secret
-echo APP3_key=$APP3_key
-echo APP3_secret=$APP3_secret
-
-
-#. create_c1as_group  ${APP2}
-#. create_c1as_group  ${APP3}
-
-#simmulating an array (as arrays could not be exported)
-for i in {1..3}; do 
-  #echo in the loop $i
-  CURRENTAPP=APP${i}
-  create_c1as_group $CURRENTAPP ${i}
-  echo returned from function APP${i}
-  
-  #echo currentapp = APP$i
-  CURRENTAPPKEY=APP${i}KEY
-  echo $CURRENTAPPKEY=${!CURRENTAPPKEY}
-  #echo APP1_secret=${APP{$i}_secret
-done
-
