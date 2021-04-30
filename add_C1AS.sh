@@ -4,10 +4,8 @@ printf '%s\n' "----------------------------------"
 
 
 function create_c1as_group {
-
-echo "in function"
-echo "with parm = ${1} = name of the app"
-echo "with parm = ${2} = number of the app"
+# parm = ${1} = name of the app"
+# parm = ${2} = number of the app"
 
 # Creating groups
 
@@ -23,7 +21,7 @@ C1ASGROUPIDS=(`echo "$TEMPJSON" | jq   -r ".[].group_id"`)
 
 for i in "${!C1ASGROUPS[@]}"
 do
-  printf "%s\n" "C1AS: found group ${C1ASGROUPS[$i]} with ID ${C1ASGROUPIDS[$i]}"
+  #printf "%s\n" "C1AS: found group ${C1ASGROUPS[$i]} with ID ${C1ASGROUPIDS[$i]}"
   if [[ "${C1ASGROUPS[$i]}" == "${AWS_PROJECT^^}-${1^^}" ]]; 
   #if [[ "${C1ASGROUPS[$i]}" == "${AWS_PROJECT^^}" ]]; 
   then
@@ -45,6 +43,6 @@ declare -x APP${2}SECRET=`echo "$TEMPJSON" | jq   -r ".credentials.secret"`
 } #end of function
 
 
-create_c1as_group dummytest1 1
-create_c1as_group dummytest2 2
-create_c1as_group dummytest3 3
+create_c1as_group $APP1 1
+create_c1as_group $APP2 2
+create_c1as_group $APP3 3
