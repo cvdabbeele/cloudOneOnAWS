@@ -111,7 +111,7 @@ function getUrl {
   if [ ! -z "$fqdn" ]; then
     printf '%s\n' "App \"${1}\" has been deployed to EKS and can be reached at http(s)://${fqdn}:${port}"
   fi
-  return 0
+#  return 0
 }
 
 printf '%s\n' "Cleaning up Apps directory"

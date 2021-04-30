@@ -115,6 +115,9 @@ fi
 . ./add_internal_repo.sh
 #. ./add_demo_repo.sh   #this repository does no longer exist
 
+# create groups in C1AS
+. ./add_C1AS
+
 # setup AWS CodePipeline
 . ./setup_pipelines.sh
   

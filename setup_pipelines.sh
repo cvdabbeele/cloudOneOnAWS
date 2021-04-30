@@ -35,14 +35,14 @@ Parameters:
   CodeCommitRepoName:
     Type: String
     Description: The project name, also the CodeCommit Repository name
-    Default: ${1}
+    Default: '${1}'
     MinLength: 1
     MaxLength: 100
 
   DockerhubUsername:
     Type: String
     Description: Your DockerHub username
-    Default: ${DOCKERHUB_USERNAME}
+    Default: '${DOCKERHUB_USERNAME}'
     MinLength: 1
     MaxLength: 100
 
@@ -56,21 +56,21 @@ Parameters:
   EcrRepoName:
     Type: String
     Description: The name of the ECR Repository
-    Default: ${ecr_repo_name}
+    Default: '${ecr_repo_name}'
     MinLength: 1
     MaxLength: 100
 
   SmartcheckHost:
     Type: String
     Description: Smartcheck host URL
-    Default: ${DSSC_HOST}
+    Default: '${DSSC_HOST}'
     MinLength: 1
     MaxLength: 500
     ConstraintDescription: You must enter a Smartcheck host URL
 
   SmartcheckUser:
     Type: String
-    Default: ${DSSC_USERNAME}
+    Default: '${DSSC_USERNAME}'
     Description: The user for Smartcheck
     MinLength: 1
     MaxLength: 100
@@ -87,7 +87,7 @@ Parameters:
   PreregistryHost:
     Type: String
     Description: Smartcheck host URL
-    Default: ${DSSC_HOST}
+    Default: '${DSSC_HOST}'
     MinLength: 1
     MaxLength: 500
     ConstraintDescription: You must enter a Smartcheck host URL
@@ -95,7 +95,7 @@ Parameters:
   PreregistryUser:
     Type: String
     Description: The user for Pre-Registry
-    Default: ${DSSC_REGUSER}
+    Default: '${DSSC_REGUSER}'
     MinLength: 1
     MaxLength: 100
     ConstraintDescription: You must enter a user for the Pre-Registry
@@ -111,7 +111,7 @@ Parameters:
   KubectlRoleName:
     Type: String
     Description: The Role for the deployments on EKS
-    Default: ${AWS_PROJECT}EksClusterCodeBuildKubectlRole
+    Default: '${AWS_PROJECT}EksClusterCodeBuildKubectlRole'
     MinLength: 1
     MaxLength: 500
     ConstraintDescription: Do not change this
@@ -119,7 +119,7 @@ Parameters:
   EksClusterName:
     Type: String
     Description: The name of the EKS cluster
-    Default: ${AWS_PROJECT}
+    Default: '${AWS_PROJECT}'
     MinLength: 1
     MaxLength: 50
     ConstraintDescription: Do not change this
@@ -127,7 +127,7 @@ Parameters:
   AppSecKey:
     Type: String
     Description: The registration key for Cloud One Application Security
-    Default: ${TREND_AP_KEY}
+    Default: '${TREND_AP_KEY}'
     MinLength: 1
     MaxLength: 50
     ConstraintDescription: Do not change this
@@ -135,7 +135,7 @@ Parameters:
   AppSecSecret:
     Type: String
     Description: The registration secret for Cloud One Application Security
-    Default: ${TREND_AP_SECRET}
+    Default: '${TREND_AP_SECRET}'
     MinLength: 1
     MaxLength: 50
     ConstraintDescription: Do not change this
@@ -143,7 +143,7 @@ Parameters:
   AwsAccessKey:
       Type: String
       Description: The AWS access key for SmartCheck to retrieve the images from ECR
-      Default: ${AWS_ACCESS_KEY_ID}
+      Default: '${AWS_ACCESS_KEY_ID}'
       MinLength: 1
       MaxLength: 50
       ConstraintDescription: Do not change this
@@ -151,7 +151,7 @@ Parameters:
   AwsSecretAccessKey:
         Type: String
         Description: The AWS secret access key for SmartCheck to retrieve the images from ECR
-        Default: ${AWS_SECRET_ACCESS_KEY}
+        Default: '${AWS_SECRET_ACCESS_KEY}'
         MinLength: 1
         MaxLength: 50
         ConstraintDescription: Do not change this
