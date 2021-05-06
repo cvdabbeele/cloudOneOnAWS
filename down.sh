@@ -195,7 +195,7 @@ for i in "${!aws_vpc_ids[@]}"; do
   if [[ ${aws_vpc_tags} =~ ${AWS_PROJECT} ]];then
     printf "%s\n" "Found VPC belonging to project: ${aws_vpc_ids[$i]}"
     aws_attachment_ids=(`aws ec2 describe-network-interfaces --filters Name=vpc-id,Values=${aws_vpc_ids[$i]} | jq -r '.NetworkInterfaces[].Attachment.AttachmentId'`)
-      printf "%s\n" "Found aws_attachment_ids: ${aws_attachment_ids[@]}"
+      printf "%s\n" "Found Network attachment_ids: ${aws_attachment_ids[@]}"
     for j in "${!aws_attachment_ids[@]}"; do
         printf "%s\n" "Found attachment ID ${aws_attachment_ids[$j]}"
       if [[ "${aws_attachment_ids[$j]}" != "null" &&  "${aws_attachment_ids[$j]}" != "" ]];then
@@ -268,9 +268,12 @@ for i in "${!aws_vpc_ids[@]}"; do
     printf "%s\n" "Checking dependencies of VPC: ${aws_vpc_ids[$i]}"
     vpc=${aws_vpc_ids[$i]}
     printf "%s\n" "Checking dependencies of VPC: $vpc"
+    #TO DO delete ENIs first
+      aws ec2 describe-network-interfaces --filters 'Name=vpc-id,Values='$vpc | grep NetworkInterfaceId | jq
+
     aws ec2 describe-internet-gateways --filters 'Name=attachment.vpc-id,Values='$vpc | grep InternetGatewayId
     aws ec2 describe-subnets --filters 'Name=vpc-id,Values='$vpc | grep SubnetId
-    aws ec2 describe-route-tables --filters 'Name=vpc-id,Values='$vpc | grep RouteTableId
+    RTASSOCIATIONID=$(aws ec2 describe-route-tables --filters 'Name=vpc-id,Values='$vpc | jq -r ".RouteTables[].RouteTableAssociationId")
     aws ec2 describe-network-acls --filters 'Name=vpc-id,Values='$vpc | grep NetworkAclId
     aws ec2 describe-vpc-peering-connections --filters 'Name=requester-vpc-info.vpc-id,Values='$vpc | grep VpcPeeringConnectionId
     aws ec2 describe-vpc-endpoints --filters 'Name=vpc-id,Values='$vpc | grep VpcEndpointId
@@ -279,8 +282,7 @@ for i in "${!aws_vpc_ids[@]}"; do
     aws ec2 describe-instances --filters 'Name=vpc-id,Values='$vpc | grep InstanceId
     aws ec2 describe-vpn-connections --filters 'Name=vpc-id,Values='$vpc | grep VpnConnectionId
     aws ec2 describe-vpn-gateways --filters 'Name=attachment.vpc-id,Values='$vpc | grep VpnGatewayId
-    aws ec2 describe-network-interfaces --filters 'Name=vpc-id,Values='$vpc | grep NetworkInterfaceId
-
+  
 
     printf "%s\n" "Deleting VPC: ${aws_vpc_ids[$i]}  (hopefully)"
     aws ec2 delete-vpc --vpc-id ${aws_vpc_ids[$i]}

@@ -43,6 +43,13 @@ export DSSC_PASSWORD='Tr3ndm1cr0!'     #DO CHANGE THIS do NOT use any "\" in the
 
 #### ----------below this line are default settings which may be customised (optionally) ----------
 #### -------------------------------------------------------------------------------------------------------
+# Tags (you may customise these tags to your liking; both the Key and the Value)
+# Other than these, one more tag is added.  That third keypair is for use by the script only
+export TAGKEY1="owner"           # or use anything you like, except c1OnAws
+export TAGVALUE1="${C9_USER}"   # or anything you like; ${C9_USER} is a predefined Cloud9 variable
+export TAGKEY2="user"            # or anything you like, except c1OnAws
+export TAGVALUE2="somethingHere" # or anythig you like
+
 # Deep Security Smart Check) settings (for pre-runtime scanning)
 export DSSC_NAMESPACE='smartcheck' #Namespace to deploy SmartCheck'
 export DSSC_USERNAME='administrator'

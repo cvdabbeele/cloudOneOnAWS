@@ -85,23 +85,69 @@ export AWS_REGION=`aws configure get region`
 #sed -n 's/aws_session_token = //g' ~/.aws/credentials
 
 rolefound="false"
+export ROLE_NAME=${AWS_PROJECT}EksClusterCodeBuildKubectlRole
+export INSTANCE_PROFILE_NAME=${ROLE_NAME}
 AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
 for i in "${!AWS_ROLES[@]}"; do
-  if [[ "${AWS_ROLES[$i]}" = "${AWS_PROJECT}EksClusterCodeBuildKubectlRole" ]]; then
+  if [[ "${AWS_ROLES[$i]}" = "${ROLE_NAME}" ]]; then
      printf "%s\n" "Reusing existing EksClusterCodeBuildKubectlRole: ${AWS_ROLES[$i]} "
+     #dummy=$(aws iam delete-role-policy  --role-name ${ROLE_NAME} --policy-name $(aws iam list-role-policies --role-name $ROLE_NAME | jq -r ".PolicyNames[]"))
+     #dummy=$(aws iam  delete-role --role-name ${ROLE_NAME})
      rolefound="true"
+     break
   fi
 done
-if [[ "${rolefound}" = "false" ]]; then
-  printf "%s\n" "Creating Role ${AWS_PROJECT}EksClusterCodeBuildKubectlRole"
-  export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
-  TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:root\" }, \"Action\": \"sts:AssumeRole\" } ] }"
-  #TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Resource\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:role/*\" }, \"Action\": \"sts:AssumeRole\" } ] }"
-  echo '{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": "eks:Describe*", "Resource": "*" } ] }' > /tmp/iam-role-policy
-  aws iam create-role --role-name ${AWS_PROJECT}EksClusterCodeBuildKubectlRole --assume-role-policy-document "$TRUST" --output text --query 'Role.Arn'
-  aws iam put-role-policy --role-name ${AWS_PROJECT}EksClusterCodeBuildKubectlRole --policy-name eks-describe --policy-document file:///tmp/iam-role-policy
-fi
 
+if [[ "${rolefound}" = "false" ]]; then
+    printf "%s\n" "Creating Role ${ROLE_NAME}"
+    export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
+    ####export iam-role-policy=$(maketemp)
+    TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:root\" }, \"Action\": \"sts:AssumeRole\" } ] }"
+    ####echo '{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": "eks:Describe*", "Resource": "*" } ] }' > ${iam-role-policy}
+    export ROLEJSON=$(aws iam create-role --role-name ${ROLE_NAME} --assume-role-policy-document "$TRUST" --output json)
+    export ROLEID=`echo $ROLEJSON | jq -r ".Role.RoleId"`
+    export ROLEARN=`echo $ROLEJSON | jq -r ".Role.Arn"`
+
+
+# create the Policy for EC2 to Assume the Role
+EC2ASSUMEROLE="{
+  \"Version\": \"2012-10-17\",
+  \"Statement\": [
+    {
+      \"Effect\": \"Allow\",
+      \"Principal\": {
+        \"Service\": \"ec2.amazonaws.com\"
+      },
+      \"Action\": \"sts:AssumeRole\"
+    }
+  ]
+}"
+
+    # create the Role with Policy
+    aws iam create-role --role-name ${ROLE_NAME} --assume-role-policy-document "${EC2ASSUMEROLE}" --output text --query 'Role.Arn'
+    ###TODO aws ec2 create-tags --resources ${ROLEID} --tags Key=Name,Value=${AWS_PROJECT} Key=${TAGKEY1},Value=${TAGVALUE1} Key=${TAGKEY2},Value=${TAGVALUE2}
+    #An error occurred (InvalidID) when calling the CreateTags operation: The ID 'AROAXQX6MQ3247ABS4DXY' is not valid
+
+
+    aws iam attach-role-policy --role-name ${ROLE_NAME} --policy-arn "arn:aws:iam::aws:policy/AdministratorAccess"
+    aws iam create-instance-profile --instance-profile-name ${INSTANCE_PROFILE_NAME}
+    aws iam add-role-to-instance-profile --role-name ${ROLE_NAME} --instance-profile-name ${INSTANCE_PROFILE_NAME}
+
+    # Query the instance ID of our Cloud9 environment
+    INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+
+    #assign role to ec2
+    aws iam put-role-policy --role-name ${ROLE_NAME} --policy-name eks-describe --policy-document file:///tmp/iam-role-policy
+
+    # Attach the IAM role to an existing EC2 instance
+    aws ec2 associate-iam-instance-profile --instance-id ${INSTANCE_ID} --iam-instance-profile Name=${INSTANCE_PROFILE_NAME}
+
+    # remove AWS credentials and validate the role
+    aws sts get-caller-identity --query Arn | grep ekscluster-admin -q && echo "IAM role valid" || echo "IAM role NOT valid"
+    export AWS_ACCESS_KEY_ID=""
+    export AWS_SECRET_ACCESS_KEY=""
+
+  fi
 # install tools
 . ./install_tools.sh
 
