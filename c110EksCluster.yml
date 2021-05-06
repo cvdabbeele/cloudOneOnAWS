@@ -3,7 +3,7 @@
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 metadata:
-  name: c107
+  name: c110
   region: eu-central-1
   tags:
     user: chris

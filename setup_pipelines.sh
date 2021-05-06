@@ -131,7 +131,7 @@ Parameters:
   KubectlRoleName:
     Type: String
     Description: The Role for the deployments on EKS
-    Default: '${AWS_PROJECT}EksClusterCodeBuildKubectlRole'
+    Default: '${ROLE_NAME}'
     MinLength: 1
     MaxLength: 500
     ConstraintDescription: Do not change this
@@ -160,21 +160,21 @@ Parameters:
     MaxLength: 50
     ConstraintDescription: Do not change this
 
-  AwsAccessKey:
-      Type: String
-      Description: The AWS access key for SmartCheck to retrieve the images from ECR
-      Default: '${AWS_ACCESS_KEY_ID}'
-      MinLength: 1
-      MaxLength: 50
-      ConstraintDescription: Do not change this
+  #AwsAccessKey:
+  #    Type: String
+  #    Description: The AWS access key for SmartCheck to retrieve the images from ECR
+  #    Default: '${AWS_ACCESS_KEY_ID}'
+  #    MinLength: 1
+  #    MaxLength: 50
+  #    ConstraintDescription: Do not change this
 
-  AwsSecretAccessKey:
-        Type: String
-        Description: The AWS secret access key for SmartCheck to retrieve the images from ECR
-        Default: '${AWS_SECRET_ACCESS_KEY}'
-        MinLength: 1
-        MaxLength: 50
-        ConstraintDescription: Do not change this
+#  AwsSecretAccessKey:
+#        Type: String
+#        Description: The AWS secret access key for SmartCheck to retrieve the images from ECR
+#        Default: '${AWS_SECRET_ACCESS_KEY}'
+#        MinLength: 1
+#        MaxLength: 50
+#        ConstraintDescription: Do not change this
         
 Metadata:
   AWS::CloudFormation::Interface:
@@ -197,8 +197,8 @@ Metadata:
           - EksClusterName
           - AppSecKey
           - AppSecSecret
-          - AwsAccessKey
-          - AwsSecretAccessKey
+          #- AwsAccessKey
+          #- AwsSecretAccessKey
           - DockerhubUsername
           - DockerhubPassword
 
@@ -232,10 +232,10 @@ Metadata:
         default: Application Security Key
       AppSecSecret:
         default: Application Security Secret
-      AwsAccesskey:
-        default: AWS_ACCESS_KEY_ID
-      AwsSecretAccessKey:
-        default: AWS_SECRET_ACCESS_KEY
+      #AwsAccesskey:
+      #  default: AWS_ACCESS_KEY_ID
+      #AwsSecretAccessKey:
+      #  default: AWS_SECRET_ACCESS_KEY
 Resources:
   EcrDockerRepository:
     Type: AWS::ECR::Repository
@@ -398,10 +398,10 @@ Resources:
             Value: !Ref AppSecKey
           - Name: APPSEC_SECRET
             Value: !Ref AppSecSecret
-          - Name: AwsAccessKey
-            Value: !Ref AwsAccessKey
-          - Name: AwsSecretAccessKey
-            Value: !Ref AwsSecretAccessKey
+          #- Name: AwsAccessKey
+          #  Value: !Ref AwsAccessKey
+          #- Name: AwsSecretAccessKey
+          #  Value: !Ref AwsSecretAccessKey
 
       Name: PreScanBuild${1}
       Description: Pre-scan container image with Smartcheck and push to registry
@@ -533,11 +533,11 @@ done
 
 }  #end of function
 
-ROLE="    - rolearn: arn:aws:iam::$ACCOUNT_ID:role/${AWS_PROJECT}EksClusterCodeBuildKubectlRole\n      username: build\n      groups:\n        - system:masters"
+ROLE="    - rolearn: arn:aws:iam::$ACCOUNT_ID:role/${ROLE_NAME}\n      username: build\n      groups:\n        - system:masters"
 
 kubectl get -n kube-system configmap/aws-auth -o yaml | awk "/mapRoles: \|/{print;print \"$ROLE\";next}1" > /tmp/aws-auth-patch.yml
 patched=`kubectl get -n kube-system configmap/aws-auth -o yaml`
-if [[ "${patched}" =~ "${AWS_PROJECT}EksClusterCodeBuildKubectlRole"   ]];then
+if [[ "${patched}" =~ "${ROLE_NAME}"   ]];then
     printf "%s\n" "aws-auth configmap already patched for ${AWS_PROJECT}"
   else
     printf "%s\n" "Patching aws-auth configmap for ${AWS_PROJECT}"

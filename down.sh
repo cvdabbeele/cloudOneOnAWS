@@ -370,34 +370,34 @@ done
 #rm -rf ~/environment/${APP1}/
 
 
-printf "%s\n" "Deleting Roles and Instance-Profiles"
-AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
-for i in "${!AWS_ROLES[@]}"; do
-  if [[ "${AWS_ROLES[$i]}" =~ "${AWS_PROJECT}" ]]; then
-     printf "%s\n" "Role $i =  ${AWS_ROLES[$i]}.........."
-     #printf "%s\n" "Getting AWS_POLICIES"
-     AWS_POLICIES=(`aws iam list-role-policies --role-name ${AWS_ROLES[$i]} | jq -r '.PolicyNames[]'`)
-      #              aws iam list-role-policies --role-name ${AWS_ROLES[$i]}
-     printf "%s\n" "AWS_POLICIES= $AWS_POLICIES"
-     for j in "${!AWS_POLICIES[@]}"; do
-       printf "%s\n" "  Policy $j =  ${AWS_POLICIES[$j]}"
-       printf "%s\n" "     Detaching Policy ${AWS_POLICIES[$j]} from Role ${AWS_ROLES[$i]} "
-       aws iam detach-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
-       printf "%s\n" "     Deleting Role-policy Policy ${AWS_POLICIES[$j]}"
-       aws iam delete-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
-     done
-     #printf "%s\n" "Getting instance Profiles"
-     #printf "%s\n" "Analyzing Instance Profiles for Role: ${AWS_ROLES[$i]}"
-     AWS_PROFILES=(`aws iam list-instance-profiles-for-role --role-name ${AWS_ROLES[$i]} | jq -r '.InstanceProfiles[].InstanceProfileName'`)
-     printf "%s\n" "AWS_PROFILES = $AWS_PROFILES"
-     for k in "${!AWS_PROFILES[@]}"; do
-       printf "%s\n" "  Profile $k =  ${AWS_PROFILES[$k]}"
-       aws iam remove-role-from-instance-profile --role-name ${AWS_ROLES[$i]} --instance-profile-name ${AWS_PROFILES[$j]}
-       aws iam delete-instance-profile --instance-profile-name ${AWS_PROFILES[$j]}
-     done
-     aws iam delete-role  --role-name ${AWS_ROLES[$i]}
-  fi
-done
+#printf "%s\n" "Deleting Roles and Instance-Profiles"
+#AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
+#for i in "${!AWS_ROLES[@]}"; do
+#  if [[ "${AWS_ROLES[$i]}" =~ "${AWS_PROJECT}" ]]; then
+#     printf "%s\n" "Role $i =  ${AWS_ROLES[$i]}.........."
+#     #printf "%s\n" "Getting AWS_POLICIES"
+#     AWS_POLICIES=(`aws iam list-role-policies --role-name ${AWS_ROLES[$i]} | jq -r '.PolicyNames[]'`)
+#      #              aws iam list-role-policies --role-name ${AWS_ROLES[$i]}
+#     printf "%s\n" "AWS_POLICIES= $AWS_POLICIES"
+#     for j in "${!AWS_POLICIES[@]}"; do
+#       printf "%s\n" "  Policy $j =  ${AWS_POLICIES[$j]}"
+#       printf "%s\n" "     Detaching Policy ${AWS_POLICIES[$j]} from Role ${AWS_ROLES[$i]} "
+#       aws iam detach-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
+#       printf "%s\n" "     Deleting Role-policy Policy ${AWS_POLICIES[$j]}"
+#       aws iam delete-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
+#     done
+#     #printf "%s\n" "Getting instance Profiles"
+#     #printf "%s\n" "Analyzing Instance Profiles for Role: ${AWS_ROLES[$i]}"
+#     AWS_PROFILES=(`aws iam list-instance-profiles-for-role --role-name ${AWS_ROLES[$i]} | jq -r '.InstanceProfiles[].InstanceProfileName'`)
+#     printf "%s\n" "AWS_PROFILES = $AWS_PROFILES"
+#     for k in "${!AWS_PROFILES[@]}"; do
+#       printf "%s\n" "  Profile $k =  ${AWS_PROFILES[$k]}"
+#       aws iam remove-role-from-instance-profile --role-name ${AWS_ROLES[$i]} --instance-profile-name ${AWS_PROFILES[$j]}
+#       aws iam delete-instance-profile --instance-profile-name ${AWS_PROFILES[$j]}
+#     done
+#     aws iam delete-role  --role-name ${AWS_ROLES[$i]}
+#  fi
+#done
 #aws iam list-roles | jq -r '.Roles[].RoleName ' | grep cloudone
 
 #TODO: delete Policy

@@ -85,18 +85,22 @@ export AWS_REGION=`aws configure get region`
 #sed -n 's/aws_session_token = //g' ~/.aws/credentials
 
 rolefound="false"
-export ROLE_NAME=${AWS_PROJECT}EksClusterCodeBuildKubectlRole
+#export ROLE_NAME=${AWS_PROJECT}EksClusterCodeBuildKubectlRole
+export ROLE_NAME=C_1_onAwsEksClusterCodeBuildKubectlRole
 export INSTANCE_PROFILE_NAME=${ROLE_NAME}
-AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
+AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' `)
 for i in "${!AWS_ROLES[@]}"; do
   if [[ "${AWS_ROLES[$i]}" = "${ROLE_NAME}" ]]; then
-     printf "%s\n" "Reusing existing EksClusterCodeBuildKubectlRole: ${AWS_ROLES[$i]} "
+     echo ${AWS_ROLES[$i]}
+     printf "%s\n" "Reusing existing C1onAwsEksClusterCodeBuildKubectlRole: ${AWS_ROLES[$i]} "
      #dummy=$(aws iam delete-role-policy  --role-name ${ROLE_NAME} --policy-name $(aws iam list-role-policies --role-name $ROLE_NAME | jq -r ".PolicyNames[]"))
      #dummy=$(aws iam  delete-role --role-name ${ROLE_NAME})
      rolefound="true"
      break
   fi
 done
+echo "rolefound =" $rolefound
+
 
 if [[ "${rolefound}" = "false" ]]; then
     printf "%s\n" "Creating Role ${ROLE_NAME}"
@@ -143,9 +147,10 @@ EC2ASSUMEROLE="{
     aws ec2 associate-iam-instance-profile --instance-id ${INSTANCE_ID} --iam-instance-profile Name=${INSTANCE_PROFILE_NAME}
 
     # remove AWS credentials and validate the role
+    rm -vf ${HOME}/.aws/credentials
     aws sts get-caller-identity --query Arn | grep ekscluster-admin -q && echo "IAM role valid" || echo "IAM role NOT valid"
-    export AWS_ACCESS_KEY_ID=""
-    export AWS_SECRET_ACCESS_KEY=""
+    #export AWS_ACCESS_KEY_ID=""
+    #export AWS_SECRET_ACCESS_KEY=""
 
   fi
 # install tools
