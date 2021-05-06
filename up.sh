@@ -86,7 +86,7 @@ export AWS_REGION=`aws configure get region`
 
 rolefound="false"
 #export ROLE_NAME=${AWS_PROJECT}EksClusterCodeBuildKubectlRole
-export ROLE_NAME="C_1n_onAwsEksClusterCodeBuildKubectlRole"
+export ROLE_NAME="C_1o_onAwsEksClusterCodeBuildKubectlRole"
 export INSTANCE_PROFILE_NAME=${ROLE_NAME}_IP
 AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' `)
 for i in "${!AWS_ROLES[@]}"; do
@@ -140,8 +140,9 @@ EC2ASSUMEROLE="{
     
     echo "creating instance profile"
     aws iam create-instance-profile --instance-profile-name ${INSTANCE_PROFILE_NAME}
-    sleep 30
-    echo " adding role to instance profile"
+    echo "allowing creating instance profile time to complete"
+    sleep 10
+    echo " adding role to instance profile" 
     aws iam add-role-to-instance-profile --role-name ${ROLE_NAME} --instance-profile-name ${INSTANCE_PROFILE_NAME}
 
     # Query the instance ID of our Cloud9 environment
