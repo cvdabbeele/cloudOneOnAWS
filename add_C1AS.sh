@@ -46,17 +46,11 @@ APPSECRET=`echo "$TEMPJSON" | jq   -r ".credentials.secret"`
 create_c1as_group $APP1 1
 APP1KEY=$APPKEY
 APP1SECRET=$APPSECRET
-echo "APP1KEY========================$APP1KEY"
-echo "APP1SECRET=====================$APP1SECRET"
 
 create_c1as_group $APP2 2
 APP2KEY=$APPKEY
 APP2SECRET=$APPSECRET
-echo "APP2KEY========================$APP2KEY"
-echo "APP2SECRET=====================$APP2SECRET"
 
 create_c1as_group $APP3 3
 APP3KEY=$APPKEY
 APP3SECRET=$APPSECRET
-echo "APP3KEY========================$APP3KEY"
-echo "APP3SECRET=====================$APP3SECRET"

@@ -26,6 +26,6 @@ cloudonemydvwaPipeline.yml
 cloudonetroopersPipeline.yml
 k8s.crt
 k8s.key
-overrides.yml
+overrides*.yml
 req.conf
 

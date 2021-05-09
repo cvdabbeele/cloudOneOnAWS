@@ -37,12 +37,18 @@ kind: ClusterConfig
 metadata:
   name: ${AWS_PROJECT}
   region: ${AWS_REGION}
+  tags:
+    ${TAGKEY1}: ${TAGVALUE1}
+    ${TAGKEY2}: ${TAGVALUE2}
 managedNodeGroups:
   - name: nodegroup
     desiredCapacity: ${AWS_EKS_NODES}
     iam:
       withAddonPolicies:
         albIngress: true
+    tags:
+      ${TAGKEY1}: ${TAGVALUE1}
+      ${TAGKEY2}: ${TAGVALUE2}
 EOF
     start_time="$(date -u +%s)"
     printf '%s\n' "Creating a ${AWS_EKS_NODES}-node eks cluster named: ${AWS_PROJECT} in region ${AWS_REGION}"

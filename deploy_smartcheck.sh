@@ -96,6 +96,13 @@ certificate:
     name: k8s-certificate
     certificate: tls.crt
     privateKey: tls.key
+vulnerabilityScan:
+  requests:
+    cpu: 1000m
+    memory: 3Gi
+  limits:
+    cpu: 1000m
+    memory: 3Gi
 EOF
 
     printf '%s\n' "Deploying SmartCheck Helm chart... "

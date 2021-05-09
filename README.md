@@ -1,6 +1,6 @@
 # Overview
 
-This is a collaborative effort with mawinkler and nicgoth.
+This is based on input from mawinkler and nicgoth.
 1. UPDATES: [20201126](#20201126)  [20210129](#20210129)  
 2. [High level overview](#high-level-overview-of-steps-see-detailed-steps-in-next-section)  
 3. [Detailed Steps](#detailed-setup-instructions)
@@ -14,6 +14,21 @@ How to create a PAT:
 https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token  
 How to use the PAT:  
 Afterwards, whenever GitHub prompts you for a "password", repy with your PAT  
+## UPDATES  
+### 20210505
+#### Most important changes  
+- 00_define_variables.sh.sample
+```
+    # Tags (you may customise these tags to your liking; both the Key and the Value)
+    # Other than these, one more tag is added.  That third keypair is for use by the script only
+    export TAGKEY1="owner"           # or use anything you like, except c1OnAws
+    export TAGVALUE1="${C9_USER}"   # or anything you like; ${C9_USER} is a predefined Cloud9 variable
+    export TAGKEY2="user"            # or anything you like, except c1OnAws
+    export TAGVALUE2="somethingHere" # or anythig you like
+```
+- up.sh  
+    Once the script is running, it wil create a Role and assign more permanent priviliges to the EC2/Cloud9 instance.  
+    It will then remove the AWS credentials from `aws configure`
 
 
 ### 20210325
@@ -28,7 +43,8 @@ If this variable does not exist, it will be set to "true" (meaning you have acce
   - a second one with very high thresholds.  This pipeline will build the image, push it to the registry and even deploy a (very) vulnerable container from it.  Here we can ***demo runtime protection with Cloud One Application Security**.  This pipeline-instance will be started by running "./pushWithHighSecurityThresholds.sh"
   - a third pipeline instance where we include malware (eicar) in the MoneyX app. This pipeline-instance will build the image, push it to the registry (because we have also set high security thresholds here), and it will try to deploy a container from it.  Here the **admission controller of Cloud On Container Security** will kick in and prevent the deployment of the container.  This pipeline-instance should be started by running "./pushWithMalware.sh"  
   See the updated **howToDemo.md** document in this repo
-3. Removed **pause.sh** and **resume.sh** because they have shown to be unreliable.  
+3. Removed **pause.sh** and **resume.sh** because they have shown to be unreliable.    
+
 ### 20201126  
 1. You now need to enter your DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD in the 00_define_vars.sh file (may be a free account).  To deal with docker image pull rate-limits, the buildscipts of the Apps will now do authenticated pulls (to https://hub.docker.com) from the AWS pipeline.  This script passes along those variables to the buildspec.yml files
   For more info on the Dockerhub pull rate limits, see: https://www.docker.com/increase-rate-limits  Image Pulls for unauthenticated connections are now capped to 100 and for connections authenticated with a free account, they are capped to 200.  Both pull rates are for the last 6 hours (sliding window).  Paid dockerhub subscriptions have no pull rate limit.
@@ -600,3 +616,4 @@ So please rerun
 ```
 
 Afterwards you will be able to commit changes to your CodeCommit repositories.
+ 

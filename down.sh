@@ -195,7 +195,7 @@ for i in "${!aws_vpc_ids[@]}"; do
   if [[ ${aws_vpc_tags} =~ ${AWS_PROJECT} ]];then
     printf "%s\n" "Found VPC belonging to project: ${aws_vpc_ids[$i]}"
     aws_attachment_ids=(`aws ec2 describe-network-interfaces --filters Name=vpc-id,Values=${aws_vpc_ids[$i]} | jq -r '.NetworkInterfaces[].Attachment.AttachmentId'`)
-      printf "%s\n" "Found aws_attachment_ids: ${aws_attachment_ids[@]}"
+      printf "%s\n" "Found Network attachment_ids: ${aws_attachment_ids[@]}"
     for j in "${!aws_attachment_ids[@]}"; do
         printf "%s\n" "Found attachment ID ${aws_attachment_ids[$j]}"
       if [[ "${aws_attachment_ids[$j]}" != "null" &&  "${aws_attachment_ids[$j]}" != "" ]];then
@@ -268,9 +268,12 @@ for i in "${!aws_vpc_ids[@]}"; do
     printf "%s\n" "Checking dependencies of VPC: ${aws_vpc_ids[$i]}"
     vpc=${aws_vpc_ids[$i]}
     printf "%s\n" "Checking dependencies of VPC: $vpc"
+    #TO DO delete ENIs first
+      aws ec2 describe-network-interfaces --filters 'Name=vpc-id,Values='$vpc | grep NetworkInterfaceId | jq
+
     aws ec2 describe-internet-gateways --filters 'Name=attachment.vpc-id,Values='$vpc | grep InternetGatewayId
     aws ec2 describe-subnets --filters 'Name=vpc-id,Values='$vpc | grep SubnetId
-    aws ec2 describe-route-tables --filters 'Name=vpc-id,Values='$vpc | grep RouteTableId
+    RTASSOCIATIONID=$(aws ec2 describe-route-tables --filters 'Name=vpc-id,Values='$vpc | jq -r ".RouteTables[].RouteTableAssociationId")
     aws ec2 describe-network-acls --filters 'Name=vpc-id,Values='$vpc | grep NetworkAclId
     aws ec2 describe-vpc-peering-connections --filters 'Name=requester-vpc-info.vpc-id,Values='$vpc | grep VpcPeeringConnectionId
     aws ec2 describe-vpc-endpoints --filters 'Name=vpc-id,Values='$vpc | grep VpcEndpointId
@@ -279,8 +282,7 @@ for i in "${!aws_vpc_ids[@]}"; do
     aws ec2 describe-instances --filters 'Name=vpc-id,Values='$vpc | grep InstanceId
     aws ec2 describe-vpn-connections --filters 'Name=vpc-id,Values='$vpc | grep VpnConnectionId
     aws ec2 describe-vpn-gateways --filters 'Name=attachment.vpc-id,Values='$vpc | grep VpnGatewayId
-    aws ec2 describe-network-interfaces --filters 'Name=vpc-id,Values='$vpc | grep NetworkInterfaceId
-
+  
 
     printf "%s\n" "Deleting VPC: ${aws_vpc_ids[$i]}  (hopefully)"
     aws ec2 delete-vpc --vpc-id ${aws_vpc_ids[$i]}
@@ -368,34 +370,34 @@ done
 #rm -rf ~/environment/${APP1}/
 
 
-printf "%s\n" "Deleting Roles and Instance-Profiles"
-AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
-for i in "${!AWS_ROLES[@]}"; do
-  if [[ "${AWS_ROLES[$i]}" =~ "${AWS_PROJECT}" ]]; then
-     printf "%s\n" "Role $i =  ${AWS_ROLES[$i]}.........."
-     #printf "%s\n" "Getting AWS_POLICIES"
-     AWS_POLICIES=(`aws iam list-role-policies --role-name ${AWS_ROLES[$i]} | jq -r '.PolicyNames[]'`)
-      #              aws iam list-role-policies --role-name ${AWS_ROLES[$i]}
-     printf "%s\n" "AWS_POLICIES= $AWS_POLICIES"
-     for j in "${!AWS_POLICIES[@]}"; do
-       printf "%s\n" "  Policy $j =  ${AWS_POLICIES[$j]}"
-       printf "%s\n" "     Detaching Policy ${AWS_POLICIES[$j]} from Role ${AWS_ROLES[$i]} "
-       aws iam detach-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
-       printf "%s\n" "     Deleting Role-policy Policy ${AWS_POLICIES[$j]}"
-       aws iam delete-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
-     done
-     #printf "%s\n" "Getting instance Profiles"
-     #printf "%s\n" "Analyzing Instance Profiles for Role: ${AWS_ROLES[$i]}"
-     AWS_PROFILES=(`aws iam list-instance-profiles-for-role --role-name ${AWS_ROLES[$i]} | jq -r '.InstanceProfiles[].InstanceProfileName'`)
-     printf "%s\n" "AWS_PROFILES = $AWS_PROFILES"
-     for k in "${!AWS_PROFILES[@]}"; do
-       printf "%s\n" "  Profile $k =  ${AWS_PROFILES[$k]}"
-       aws iam remove-role-from-instance-profile --role-name ${AWS_ROLES[$i]} --instance-profile-name ${AWS_PROFILES[$j]}
-       aws iam delete-instance-profile --instance-profile-name ${AWS_PROFILES[$j]}
-     done
-     aws iam delete-role  --role-name ${AWS_ROLES[$i]}
-  fi
-done
+#printf "%s\n" "Deleting Roles and Instance-Profiles"
+#AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
+#for i in "${!AWS_ROLES[@]}"; do
+#  if [[ "${AWS_ROLES[$i]}" =~ "${AWS_PROJECT}" ]]; then
+#     printf "%s\n" "Role $i =  ${AWS_ROLES[$i]}.........."
+#     #printf "%s\n" "Getting AWS_POLICIES"
+#     AWS_POLICIES=(`aws iam list-role-policies --role-name ${AWS_ROLES[$i]} | jq -r '.PolicyNames[]'`)
+#      #              aws iam list-role-policies --role-name ${AWS_ROLES[$i]}
+#     printf "%s\n" "AWS_POLICIES= $AWS_POLICIES"
+#     for j in "${!AWS_POLICIES[@]}"; do
+#       printf "%s\n" "  Policy $j =  ${AWS_POLICIES[$j]}"
+#       printf "%s\n" "     Detaching Policy ${AWS_POLICIES[$j]} from Role ${AWS_ROLES[$i]} "
+#       aws iam detach-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
+#       printf "%s\n" "     Deleting Role-policy Policy ${AWS_POLICIES[$j]}"
+#       aws iam delete-role-policy --role-name ${AWS_ROLES[$i]} --policy-name ${AWS_POLICIES[$j]}
+#     done
+#     #printf "%s\n" "Getting instance Profiles"
+#     #printf "%s\n" "Analyzing Instance Profiles for Role: ${AWS_ROLES[$i]}"
+#     AWS_PROFILES=(`aws iam list-instance-profiles-for-role --role-name ${AWS_ROLES[$i]} | jq -r '.InstanceProfiles[].InstanceProfileName'`)
+#     printf "%s\n" "AWS_PROFILES = $AWS_PROFILES"
+#     for k in "${!AWS_PROFILES[@]}"; do
+#       printf "%s\n" "  Profile $k =  ${AWS_PROFILES[$k]}"
+#       aws iam remove-role-from-instance-profile --role-name ${AWS_ROLES[$i]} --instance-profile-name ${AWS_PROFILES[$j]}
+#       aws iam delete-instance-profile --instance-profile-name ${AWS_PROFILES[$j]}
+#     done
+#     aws iam delete-role  --role-name ${AWS_ROLES[$i]}
+#  fi
+#done
 #aws iam list-roles | jq -r '.Roles[].RoleName ' | grep cloudone
 
 #TODO: delete Policy
