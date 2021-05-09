@@ -22,6 +22,13 @@
 #sed -i "/aws_session_token/d" ~/.aws/credentials 
 
 
+#Check the shell
+if [ -z "$BASH_VERSION" ]; then
+    echo -e "Error: this script requires the BASH shell!"
+    exit 1
+fi
+
+
 printf '%s' "Importing variables... "
 . ./00_define_vars.sh
 
@@ -99,6 +106,7 @@ if [[ "${rolefound}" = "false" ]]; then
   #TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Resource\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:role/*\" }, \"Action\": \"sts:AssumeRole\" } ] }"
   echo '{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": "eks:Describe*", "Resource": "*" } ] }' > /tmp/iam-role-policy
   aws iam create-role --role-name ${AWS_PROJECT}EksClusterCodeBuildKubectlRole --assume-role-policy-document "$TRUST" --output text --query 'Role.Arn'
+  
   aws iam put-role-policy --role-name ${AWS_PROJECT}EksClusterCodeBuildKubectlRole --policy-name eks-describe --policy-document file:///tmp/iam-role-policy
 fi
 
