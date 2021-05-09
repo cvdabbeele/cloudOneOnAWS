@@ -8,6 +8,9 @@ This is a collaborative effort with mawinkler and nicgoth.
 
 
 ## UPDATES 
+If this is your first time here, you can skip the "updates" section.  All changes are included in the documentation.    
+If you are a repeat visitor, then please check the updates below.  
+
 ### 202105 
 1. At August 13, 2021, GitHub stops authentication with Username/Password.  You must create a Personal Access Token (PAT).  For more info see: https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/.
 How to create a PAT:   
