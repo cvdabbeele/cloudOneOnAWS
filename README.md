@@ -7,7 +7,14 @@ This is a collaborative effort with mawinkler and nicgoth.
 4. [howToDemo.md](howToDemo.md) 
 
 
-## UPDATES  
+## UPDATES 
+### 202105 
+1. At August 13, 2021, GitHub stops authentication with Username/Password.  You must create a Personal Access Token (PAT).  For more info see: https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/.
+How to create a PAT:   
+https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token  
+How to use the PAT:  
+Afterwards, whenever GitHub prompts you for a "password", repy with your PAT
+
 ### 20210325
 - added the variable `C1CS_RUNTIME` to 00_define_vars.sh.sample
 If you do not have access to C1CS-Runtime option (which is in preview now; March 2021), then set the following variable to "false".  
@@ -53,6 +60,7 @@ Checkout the [howToDemo.md](howToDemo.md) for demo scenarios
 
 - [Overview](#overview)
   - [UPDATES](#updates)
+    - [202105](#202105)
     - [20210325](#20210325)
     - [20210215](#20210215)
     - [20201126](#20201126)
