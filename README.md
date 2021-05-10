@@ -164,6 +164,12 @@ Our Cloud9 environment only has 10Gb of disk space.
 Let's resize it to 40GB
 Credits to @mawinkler for adapting this AWS script
 
+```
+df -h   #notice the line /dev/nvme0n1p1 says 9.7G
+./resize.sh 40
+df -h   #notice the line /dev/nvme0n1p1 now says 39G 
+```
+
 #### 3. Disable the AWS-managed temporary credentials
 In the Cloud9 environment, go to the Cloud9 menu bar and click on the AWS Cloud9 tab (it shows the number 9 in a cloud icon).   If you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible.  Go to -> Preferences -> scroll down and expand "AWS Settings" (not AWS Configuration)-> Credentials -> uncheck "AWS managed temporary credentials"
 ![AWS Settings](images/DisableAWSManagedTemporaryCredentials.png)
@@ -202,13 +208,6 @@ In your Cloud9 environment, run the following command to clone this repository:
 ```shell
 git clone https://github.com/cvdabbeele/cloudOneOnAWS.git
 cd cloudOneOnAWS
-```
-
-
-```
-df -h   #notice the line /dev/nvme0n1p1 says 9.7G
-./resize.sh 40
-df -h   #notice the line /dev/nvme0n1p1 now says 39G 
 ```
 
 #### 6. Configure `00_define_vars.sh`    
