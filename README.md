@@ -67,10 +67,10 @@ Checkout the [howToDemo.md](howToDemo.md) for demo scenarios
     - [AWS Service Limits](#aws-service-limits)
     - [Prepare the environment](#prepare-the-environment)
       - [1. Setup an AWS Cloud9 environment](#1-setup-an-aws-cloud9-environment)
-      - [2. Disable the AWS-managed temporary credentials](#2-disable-the-aws-managed-temporary-credentials)
-      - [3. Configure AWS CLI with your keys and region](#3-configure-aws-cli-with-your-keys-and-region)
-      - [4. Clone this repository](#4-clone-this-repository)
-      - [5. Expand the disk space of the Cloud9 environment](#5-expand-the-disk-space-of-the-cloud9-environment)
+      - [2. Expand the disk space of the Cloud9 environment](#2-expand-the-disk-space-of-the-cloud9-environment)
+      - [3. Disable the AWS-managed temporary credentials](#3-disable-the-aws-managed-temporary-credentials)
+      - [4. Configure AWS CLI with your keys and region](#4-configure-aws-cli-with-your-keys-and-region)
+      - [5. Clone this repository](#5-clone-this-repository)
       - [6. Configure `00_define_vars.sh`](#6-configure-00_define_varssh)
       - [7. run  `. ./up.sh` to deploy the environment](#7-run---upsh-to-deploy-the-environment)
     - [Next Step: How to Demo](#next-step-how-to-demo)
@@ -159,11 +159,16 @@ https://console.aws.amazon.com/iam/home#/roles$new?step=review&commonUseCase=EC2
 * Within Cloud9 Preferences -> AWS Settings -> Credentials -> AWS managed temporary credentials -> Disable
 -->
 
-#### 2. Disable the AWS-managed temporary credentials
+#### 2. Expand the disk space of the Cloud9 environment
+Our Cloud9 environment only has 10Gb of disk space.  
+Let's resize it to 40GB
+Credits to @mawinkler for adapting this AWS script
+
+#### 3. Disable the AWS-managed temporary credentials
 In the Cloud9 environment, go to the Cloud9 menu bar and click on the AWS Cloud9 tab (it shows the number 9 in a cloud icon).   If you don't see the menu bar as indicated in the screenshot below, hover the mouse over the top of the window. The menu bar should roll down and become visible.  Go to -> Preferences -> scroll down and expand "AWS Settings" (not AWS Configuration)-> Credentials -> uncheck "AWS managed temporary credentials"
 ![AWS Settings](images/DisableAWSManagedTemporaryCredentials.png)
 
-#### 3. Configure AWS CLI with your keys and region
+#### 4. Configure AWS CLI with your keys and region
    
 ```shell
 aws configure
@@ -191,7 +196,7 @@ see also:
 https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np
 -->
 
-#### 4. Clone this repository 
+#### 5. Clone this repository 
 In your Cloud9 environment, run the following command to clone this repository:
 
 ```shell
@@ -199,10 +204,6 @@ git clone https://github.com/cvdabbeele/cloudOneOnAWS.git
 cd cloudOneOnAWS
 ```
 
-#### 5. Expand the disk space of the Cloud9 environment
-Our Cloud9 environment only has 10Gb of disk space.  
-Let's resize it to 40GB
-Credits to @mawinkler for adapting this AWS script
 
 ```
 df -h   #notice the line /dev/nvme0n1p1 says 9.7G
