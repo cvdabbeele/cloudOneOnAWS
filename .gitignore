@@ -9,6 +9,7 @@ backup-*/
 *.bak
 *.pem
 *.key
+*.crt
 *.code-workspace
 .remote-sync.json
 

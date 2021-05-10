@@ -133,8 +133,8 @@ You will need the following licenses:
   - Give it a name to your liking and click "Next Step"  
   - As indicated in the screenshot below, make the following selections
   - select `Create a new EC2 instance for environment (direct access)`
-  - use `t3.small`
-  - use **Ubuntu Server 18.04 LTS**
+  - use `t3.small`  (!)
+  - use `Ubuntu Server 18.04 LTS`  (!)
     ![AWS Settings](images/cloud9ConfigureSettings.png)
   - tag it to your liking (tags are good)
   - use default settings for the rest (click "Next Step" and "Create Environment")
