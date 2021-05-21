@@ -26,9 +26,6 @@ Afterwards, whenever GitHub prompts you for a "password", repy with your PAT
     export TAGKEY2="user"            # or anything you like, except c1OnAws
     export TAGVALUE2="somethingHere" # or anythig you like
 ```
-- up.sh  
-    Once the script is running, it wil create a Role and assign more permanent priviliges to the EC2/Cloud9 instance.  
-    It will then remove the AWS credentials from `aws configure`
 
 
 ### 20210325

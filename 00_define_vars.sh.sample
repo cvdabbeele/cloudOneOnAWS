@@ -1,6 +1,6 @@
 # version 1.1
 #changes: (202105)
-# new variables:
+# new variables (see below):
 # export TAGKEY1="owner"    # could also use "user"
 # export TAGVALUE1="chrisV" # your username or anything you want
 
