@@ -147,8 +147,6 @@ printf '%s\n'  " I you kick off another pipeline too early, it will overrule (an
 
 #. ./strickt_security_settings.sh  
 
-# check environment
-
 # create report
 #still need to ensure that either "latest" gets scanned or that $TAG gets exported from the pipeline
 # plus: data on Snyk findings is not visible in the report

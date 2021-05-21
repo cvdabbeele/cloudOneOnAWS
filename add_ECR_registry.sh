@@ -3,7 +3,7 @@
 printf '%s\n' "--------------------------------------------------------"
 printf '%s\n' " Adding ECR repository to Cloud One Container Security "
 printf '%s\n' "--------------------------------------------------------"
-. ./cloudOneCredentials.txt
+
 varsok=true
 if  [ -z "${DSSC_USERNAME}" ]; then echo DSSC_USERNAME must be set && varsok=false; fi
 if  [ -z "${DSSC_PASSWORD}" ]; then echo DSSC_PASSWORD must be set && varsok=false; fi

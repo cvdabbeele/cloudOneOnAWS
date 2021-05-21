@@ -70,8 +70,6 @@ export DSSC_REGUSER='administrator'
 ####----------do not edit below this line (unless you really know what you are doing)------
 ####---------------------------------------------------------------------------------------
 
-export TAGSTRING="Key=Name,Value=${AWS_PROJECT} Key=${TAGKEY1},Value=${TAGVALUE1} Key=${TAGKEY2},Value=${TAGVALUE2}"
-
 # APPS  #those apps have been tested and work
 # using distinct variables as exporting arrays in bash is still troublesome
 export APP_GIT_URL1='https://github.com/cvdabbeele/c1-app-sec-moneyx.git'
@@ -83,3 +81,7 @@ export APP_GIT_URL3='https://github.com/cvdabbeele/mydvwa.git'
 export APP1=`echo ${APP_GIT_URL1} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
 export APP2=`echo ${APP_GIT_URL2} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
 export APP3=`echo ${APP_GIT_URL3} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
+
+#systemTAGs; do not change  (mainly used to cleanup the environment)
+export TAGKEY0="c1onaws"    
+export TAGVALUE0="${AWS_PROJECT}" 

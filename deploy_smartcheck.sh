@@ -11,7 +11,6 @@ HELM_DEPLOYMENTS=
 if [[ "`helm list -n ${DSSC_NAMESPACE} -o json | jq -r '.[].name'`" =~ 'deepsecurity-smartcheck' ]];
   then
     printf '%s\n' "Reusing existing Smart Check deployment"
-    cat cloudOneCredentials.txt
   else
     #get certificate for internal registry
     #-------------------------------------
@@ -145,10 +144,5 @@ EOF
     printf '%s \n' "     user: ${DSSC_USERNAME}"
     printf '%s \n' "     passw: ${DSSC_PASSWORD}"
     printf '%s \n' "--------------"
-
-    #saving vars
-    printf '%s \n' "export DSSC_HOST=${DSSC_HOST}" > cloudOneCredentials.txt
-    printf '%s \n' "export DSSC_USERNAME=${DSSC_USERNAME}" >> cloudOneCredentials.txt
-    printf '%s \n' "export DSSC_PASSWORD=${DSSC_PASSWORD}" >> cloudOneCredentials.txt
 
 fi

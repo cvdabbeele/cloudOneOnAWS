@@ -183,7 +183,8 @@ for i in "${!aws_eks_clusters[@]}"; do
 done
 
 # deleting apps directory
-rm -rf ../apps 
+echo Deleting: ~/environment/apps
+rm -rf ~/environment/apps
 
 # Cleaning up project VPC, starting with its dependencies
 aws_vpc_ids=(`aws ec2 describe-vpcs | jq -r ".Vpcs[].VpcId"`)
@@ -365,10 +366,6 @@ done
 [ -e k8s.key ] && rm k8s.key
 [ -e k8s.crt ] && rm k8s.crt
 [ -e overrides.yml ] && rm overrides.yml
-[ -e cloudOneCredentials ] && rm cloudOneCredentials
-#echo About to delete ~/environment/${APP1}/
-#rm -rf ~/environment/${APP1}/
-
 
 #printf "%s\n" "Deleting Roles and Instance-Profiles"
 #AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)

@@ -3,7 +3,6 @@
 printf '%s\n' "-------------------------------------------------------------"
 printf '%s\n' " Adding internal repository to SmartCheck  "
 printf '%s\n' "-------------------------------------------------------------"
-. cloudOneCredentials.txt
 
 varsok=true
 if  [ -z "${DSSC_USERNAME}" ]; then echo DSSC_USERNAME must be set && varsok=false; fi
