@@ -32,10 +32,10 @@ EOF
     fi
 
     printf '%s' "Creating certificate for loadballancer..."
-    openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout k8s.key -out k8s.crt -subj "/CN=*.${AWS_REGION}.elb.amazonaws.com" -extensions san -config work/req.conf
+    openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout work/k8s.key -out work/k8s.crt -subj "/CN=*.${AWS_REGION}.elb.amazonaws.com" -extensions san -config work/req.conf
 
     printf '%s' "Creating secret with keys in Kubernetes..."
-    kubectl create secret tls k8s-certificate --cert=k8s.crt --key=k8s.key --dry-run=true -n ${DSSC_NAMESPACE} -o yaml | kubectl apply -f -
+    kubectl create secret tls k8s-certificate --cert=work/k8s.crt --key=work/k8s.key --dry-run=true -n ${DSSC_NAMESPACE} -o yaml | kubectl apply -f -
 
 
     # Create overrides.yml

@@ -145,7 +145,7 @@ printf '%s\n'  "You can now kick off sample pipeline-builds of MoneyX"
 printf '%s\n'  " e.g. by running ./pushWithHighSecurityThresholds.sh"
 printf '%s\n'  " e.g. by running ./pushWithMalware.sh"
 printf '%s\n'  " After each script, verify that the pipeline has started and give it time to complete"
-printf '%s\n'  " I you kick off another pipeline too early, it will overrule (and stop) the previous one"
+printf '%s\n'  " If you kick off another pipeline too early, it will overrule (and stop) the previous one"
 
 #. ./strickt_security_settings.sh  
 

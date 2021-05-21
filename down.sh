@@ -167,7 +167,7 @@ for i in "${!aws_eks_clusters[@]}"; do
   if [[ "${aws_eks_clusters[$i]}" =~ "${AWS_PROJECT}" ]]; then
        printf "%s\n" "  Deleting EKS cluster: ${AWS_PROJECT}"
        printf "%s\n" "  Please be patient, this can take up to 30 minutes... (started at:`date`)"
-      if [ -s  "${AWS_PROJECT}EksCluster.yml" ]; then
+      if [ -s  "work\${AWS_PROJECT}EksCluster.yml" ]; then
         #eksctl delete cluster -f ${AWS_PROJECT}EksCluster.yml
         starttime=`date +%s`
         eksctl delete cluster ${AWS_PROJECT} --wait

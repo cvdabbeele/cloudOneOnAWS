@@ -334,10 +334,10 @@ Resources:
       RepositoryName: !Ref CodeCommitRepoName
       #Code:
       #  BranchName: main
-    tags:
-      ${TAGKEY0}: ${TAGVALUE0}
-      ${TAGKEY1}: ${TAGVALUE1}
-      ${TAGKEY2}: ${TAGVALUE2}
+    #tags:
+    #  ${TAGKEY0}: ${TAGVALUE0}
+    #  ${TAGKEY1}: ${TAGVALUE1}
+    #  ${TAGKEY2}: ${TAGVALUE2}
   PreScanBuild${1}:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -393,10 +393,10 @@ Resources:
       ArtifactStore:
         Type: S3
         Location: !Ref CodePipelineArtifactBucket
-      tags:
-        ${TAGKEY0}: ${TAGVALUE0}
-        ${TAGKEY1}: ${TAGVALUE1}
-        ${TAGKEY2}: ${TAGVALUE2}
+      #tags:
+      #  ${TAGKEY0}: ${TAGVALUE0}
+      #  ${TAGKEY1}: ${TAGVALUE1}
+      #  ${TAGKEY2}: ${TAGVALUE2}
       Stages:
         - Name: Source
           Actions:
@@ -518,10 +518,10 @@ toCreateNewEnvironment="true"
     #if old stack exists -> delete it
     printf '%s\n'  "Deleting old environment for ${1}:"
     printf '%s\n'  "-------------------------------------------------"
-    printf '%s\n'  "   CodeCommit repo: ${aws_cc_repo} exists = ${aws_cc_repo_exists}"
-    printf '%s\n'  "   CloudFormation stack: ${aws_pipeline_stack} status = ${aws_pipeline_stack_status}"
-    printf '%s\n'  "   CodePipeline: ${aws_pipeline} exists = ${aws_pipeline_exists}"
-    printf '%s\n'  "   ECR repo: ${aws_ecr_repo} exists = ${aws_ecr_repo_exists}"
+    #printf '%s\n'  "   CodeCommit repo: ${aws_cc_repo} exists = ${aws_cc_repo_exists}"
+    #printf '%s\n'  "   CloudFormation stack: ${aws_pipeline_stack} status = ${aws_pipeline_stack_status}"
+    #printf '%s\n'  "   CodePipeline: ${aws_pipeline} exists = ${aws_pipeline_exists}"
+    #printf '%s\n'  "   ECR repo: ${aws_ecr_repo} exists = ${aws_ecr_repo_exists}"
 
     if [[ "${aws_pipeline_stack_exists}" = "true" ]]; then
       printf '%s \n' "Cleaning up old Cloudformation Stack: ${aws_pipeline_stack}"
@@ -579,10 +579,11 @@ create_eks_pipeline ${AWS_PROJECT}${APP2}
 create_eks_pipeline ${AWS_PROJECT}${APP3}
 
 
-printf '%s\n' "Waiting for Cloudformation stack ${1}Pipeline to be created. "
+printf '%s\n' "Waiting for Cloudformation stack ${AWS_PROJECT}${APP1}Pipeline to be created. "
 DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${AWS_PROJECT}${APP1}Pipeline  --region ${AWS_REGION}`
-printf '%s\n' "Waiting for Cloudformation stack ${1}Pipeline to be created. "
+printf '%s\n' "Waiting for Cloudformation stack ${AWS_PROJECT}${APP2}Pipeline to be created. "
 DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${AWS_PROJECT}${APP2}Pipeline  --region ${AWS_REGION}`
-printf '%s\n' "Waiting for Cloudformation stack ${1}Pipeline to be created. "
+printf '%s\n' "Waiting for Cloudformation stack ${AWS_PROJECT}${APP3}Pipeline to be created. "
 DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${AWS_PROJECT}${APP3}Pipeline  --region ${AWS_REGION}`
 
+#read -t 15 -p "press ctrl-c to break within 15 seconds"
