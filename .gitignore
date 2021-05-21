@@ -11,7 +11,7 @@ backup-*/
 *.key
 *.code-workspace
 .remote-sync.json
-
+*.yml
 
 00_define_vars.sh
 00_define_vars.txt
@@ -28,4 +28,3 @@ k8s.crt
 k8s.key
 overrides*.yml
 req.conf
-

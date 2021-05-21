@@ -1,7 +1,0 @@
-    cloudOne:
-       admissionController:
-         apiKey: 1sqK0fq3bxA9DpCNqIOjnDWyQO3
-       runtimeSecurity:
-         enabled: true
-         apiKey: f0937369-a4da-4001-a704-975e22aa900e
-         secret: 44b15158-fdbd-4243-b981-e0534436194d
