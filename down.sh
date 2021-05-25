@@ -178,26 +178,11 @@ for i in "${!aws_eks_clusters[@]}"; do
   if [[ "${aws_eks_clusters[$i]}" =~ "${AWS_PROJECT}" ]]; then
        printf "%s\n" "  Deleting EKS cluster: ${AWS_PROJECT}"
        printf "%s\n" "  Please be patient, this can take up to 30 minutes... (started at:`date`)"
-<<<<<<< HEAD
        starttime=`date +%s`
        eksctl delete cluster ${AWS_PROJECT} --wait
        sleep 30  #giving the delete cluster process a bit more time
        endtime=`date +%s`
        printf '%s\n' "  Elapsed time: $((($endtime-$starttime)/60)) minutes"
-=======
-      if [ -s  "work\${AWS_PROJECT}EksCluster.yml" ]; then
-        #eksctl delete cluster -f ${AWS_PROJECT}EksCluster.yml
-        starttime=`date +%s`
-        eksctl delete cluster ${AWS_PROJECT} --wait
-        sleep 30  #giving the delete cluster process a bit more time
-        endtime=`date +%s`
-        printf '%s\n' "  Elapsed time: $((($endtime-$starttime)/60)) minutes"
-      else
-        printf '%s \n' "  PANIC: eks cluster with name ${AWS_PROJECT} exists, but file \"${AWS_PROJECT}EksCluster.yml\" does not"
-        printf '%s \n' "This situation should not exist.  Manual cleanup is required"
-      fi
-       printf "%s\n" "Please be patient, this can take up to 30 minutes... (started at:`date`)"
->>>>>>> 5d3b91c09a56c180751c0e3ae20c52eb8ea79230
   fi
 done
 
