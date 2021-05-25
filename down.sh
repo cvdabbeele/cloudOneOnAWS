@@ -28,7 +28,7 @@ curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/cont
 
 for i in "${!C1CSCLUSTERS[@]}"
 do
-  printf "%s\n" "C1CS: deleting cluster ${C1CSCLUSTERS[$i]}"
+  printf "%s\n" "C1CS: Removing cluster ${C1CSCLUSTERS[$i]}"
   curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/container/clusters/${C1CSCLUSTERS[$i]}" \
 --header 'Content-Type: application/json' \
 --header "api-secret-key: ${C1APIKEY}"  \
@@ -46,7 +46,7 @@ curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/cont
 
 for i in "${!C1CSPOLICIES[@]}"
 do
-  printf "%s\n" "C1CS: deleting policy ${C1CSPOLICIES[$i]}"
+  printf "%s\n" "C1CS: Removing policy ${C1CSPOLICIES[$i]}"
   curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/container/policies/${C1CSPOLICIES[$i]}" \
 --header 'Content-Type: application/json' \
 --header "api-secret-key: ${C1APIKEY}"  \
@@ -64,7 +64,7 @@ curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/cont
 
 for i in "${!C1CSSCANNERS[@]}"
 do
-  printf "%s\n" "C1CS: deleting scanner ${C1CSSCANNERS[$i]}"
+  printf "%s\n" "C1CS: Removing scanner ${C1CSSCANNERS[$i]}"
   curl --silent --location --request DELETE "https://cloudone.trendmicro.com/api/container/scanners/${C1CSSCANNERS[$i]}" \
 --header 'Content-Type: application/json' \
 --header "api-secret-key: ${C1APIKEY}"  \
@@ -152,6 +152,17 @@ for i in "${!aws_stacks[@]}"; do
   if [[ "${aws_stacks[$i]}" =~ "${AWS_PROJECT}"  && "${aws_stacks[$i]}" =~ "Pipeline" ]]; then
     printf "%s \n" "  Deleting CloudFormation Pipeline Stack  ${aws_stacks[$i]}"
     aws cloudformation delete-stack --stack-name ${aws_stacks[$i]} --region ${AWS_REGION}
+  fi
+done
+printf "\n"
+
+# Waiting for Cloudformation Stacks to be deleted
+aws_stack=""
+aws_stacks=(`aws cloudformation describe-stacks --output json --region $AWS_REGION| jq -r '.Stacks[].StackName'` )
+for i in "${!aws_stacks[@]}"; do
+  #printf "%s\n" "stack $i =  ${aws_stacks[$i]}"
+  if [[ "${aws_stacks[$i]}" =~ "${AWS_PROJECT}"  && "${aws_stacks[$i]}" =~ "Pipeline" ]]; then
+    printf "%s \n" "  Deleting CloudFormation Pipeline Stack  ${aws_stacks[$i]}"
     aws cloudformation wait stack-delete-complete --stack-name ${aws_stacks[$i]}  --region ${AWS_REGION}
   fi
 done
@@ -167,18 +178,11 @@ for i in "${!aws_eks_clusters[@]}"; do
   if [[ "${aws_eks_clusters[$i]}" =~ "${AWS_PROJECT}" ]]; then
        printf "%s\n" "  Deleting EKS cluster: ${AWS_PROJECT}"
        printf "%s\n" "  Please be patient, this can take up to 30 minutes... (started at:`date`)"
-      if [ -s  "${AWS_PROJECT}EksCluster.yml" ]; then
-        #eksctl delete cluster -f ${AWS_PROJECT}EksCluster.yml
-        starttime=`date +%s`
-        eksctl delete cluster ${AWS_PROJECT} --wait
-        sleep 30  #giving the delete cluster process a bit more time
-        endtime=`date +%s`
-        printf '%s\n' "  Elapsed time: $((($endtime-$starttime)/60)) minutes"
-      else
-        printf '%s \n' "  PANIC: eks cluster with name ${AWS_PROJECT} exists, but file \"${AWS_PROJECT}EksCluster.yml\" does not"
-        printf '%s \n' "This situation should not exist.  Manual cleanup is required"
-      fi
-       printf "%s\n" "Please be patient, this can take up to 30 minutes... (started at:`date`)"
+       starttime=`date +%s`
+       eksctl delete cluster ${AWS_PROJECT} --wait
+       sleep 30  #giving the delete cluster process a bit more time
+       endtime=`date +%s`
+       printf '%s\n' "  Elapsed time: $((($endtime-$starttime)/60)) minutes"
   fi
 done
 
@@ -186,6 +190,8 @@ done
 rm -rf ../apps 
 
 # Cleaning up project VPC, starting with its dependencies
+# Note: idealy the VPC should have been deleted with the EKS cluster, in reality this sometimes fails
+# the below is a failsave attempt to cleanup any remains
 aws_vpc_ids=(`aws ec2 describe-vpcs | jq -r ".Vpcs[].VpcId"`)
 #find Project VPCs
 for i in "${!aws_vpc_ids[@]}"; do
