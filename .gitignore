@@ -12,6 +12,8 @@ backup-*/
 *.code-workspace
 .remote-sync.json
 *.yml
+.DS_Store
+
 
 00_define_vars.sh
 00_define_vars.txt
