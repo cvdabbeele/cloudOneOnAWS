@@ -53,7 +53,7 @@ fi
 ## deploy C1CS to the K8S cluster of the CloudOneOnAWS project
 printf '%s\n' "Deploying C1CS to the K8S cluster of the CloudOneOnAWS project"
 if [[ "${C1CS_RUNTIME}" == "true" ]]; then
-    cat << EOF >overrides.addC1csToK8s.yml
+    cat << EOF >work/overrides.addC1csToK8s.yml
     cloudOne:
        admissionController:
          apiKey: ${C1APIKEYforCLUSTERS}
@@ -63,7 +63,7 @@ if [[ "${C1CS_RUNTIME}" == "true" ]]; then
          secret: ${C1RUNTIMESECRET}
 EOF
 else
-    cat << EOF >overrides.addC1csToK8s.yml
+    cat << EOF >work/overrides.addC1csToK8s.yml
     cloudOne:
        admissionController:
          apiKey: ${C1APIKEYforCLUSTERS}
@@ -71,7 +71,7 @@ EOF
 fi
 helm upgrade \
      trendmicro-c1cs \
-     --values overrides.addC1csToK8s.yml \
+     --values work/overrides.addC1csToK8s.yml \
      --namespace c1cs \
      --install \
      --create-namespace \
@@ -116,7 +116,7 @@ echo $C1CSSCANNERID
 
 ## add C1CS to smartcheck
 printf '%s\n' "add C1CS to smartcheck"
-cat << EOF >overrides.smartcheck.yml
+cat << EOF >work/overrides.smartcheck.yml
 cloudOne:
      apiKey: ${C1APIKEYforSCANNERS}
 EOF
@@ -124,7 +124,7 @@ EOF
 helm upgrade \
           deepsecurity-smartcheck \
           --reuse-values \
-          --values overrides.smartcheck.yml \
+          --values work/overrides.smartcheck.yml \
           -n ${DSSC_NAMESPACE} \
           https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz
 

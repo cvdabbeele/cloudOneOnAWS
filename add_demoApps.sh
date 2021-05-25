@@ -2,8 +2,7 @@
 printf '%s\n' "---------------------"
 printf '%s\n' " Adding Demo-apps "
 printf '%s\n' "---------------------"
-# Sourcing variables
-. ./cloudOneCredentials.txt
+
 #checking required variables
 varsok=true
 if  [ -z "$AWS_REGION" ]; then echo AWS_REGION must be set && varsok=false; fi

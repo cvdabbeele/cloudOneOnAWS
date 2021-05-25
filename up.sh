@@ -106,10 +106,12 @@ if [[ "${rolefound}" = "false" ]]; then
   TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:root\" }, \"Action\": \"sts:AssumeRole\" } ] }"
   #TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Resource\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:role/*\" }, \"Action\": \"sts:AssumeRole\" } ] }"
   echo '{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": "eks:Describe*", "Resource": "*" } ] }' > /tmp/iam-role-policy
-  aws iam create-role --role-name ${AWS_PROJECT}EksClusterCodeBuildKubectlRole --assume-role-policy-document "$TRUST" --output text --query 'Role.Arn'
+  aws iam create-role --role-name ${AWS_PROJECT}EksClusterCodeBuildKubectlRole   --tags Key=${TAGKEY0},Value=${TAGVALUE0} Key=${TAGKEY1},Value=${TAGVALUE1} Key=${TAGKEY2},Value=${TAGVALUE2} --assume-role-policy-document "$TRUST" --output text --query 'Role.Arn'
   aws iam put-role-policy --role-name ${AWS_PROJECT}EksClusterCodeBuildKubectlRole --policy-name eks-describe --policy-document file:///tmp/iam-role-policy
 fi
 
+
+mkdir -p work
 
 # install tools
 . ./install_tools.sh
@@ -143,11 +145,9 @@ printf '%s\n'  "You can now kick off sample pipeline-builds of MoneyX"
 printf '%s\n'  " e.g. by running ./pushWithHighSecurityThresholds.sh"
 printf '%s\n'  " e.g. by running ./pushWithMalware.sh"
 printf '%s\n'  " After each script, verify that the pipeline has started and give it time to complete"
-printf '%s\n'  " I you kick off another pipeline too early, it will overrule (and stop) the previous one"
+printf '%s\n'  " If you kick off another pipeline too early, it will overrule (and stop) the previous one"
 
 #. ./strickt_security_settings.sh  
-
-# check environment
 
 # create report
 #still need to ensure that either "latest" gets scanned or that $TAG gets exported from the pipeline
