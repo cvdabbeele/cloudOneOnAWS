@@ -328,7 +328,7 @@ for i in "${!aws_stacks[@]}"; do
     starttime=`date +%s`
     printf "%s\n" "Please be patient, this can take up to 30 minutes... (started at:`date`)"
     aws cloudformation delete-stack --stack-name ${aws_stacks[$i]} --region ${AWS_REGION}
-    aws cloudformation wait stack-delete-complete --stack-name ${aws_stacks[$i]}  --region ${AWS_REGION}
+    #aws cloudformation wait stack-delete-complete --stack-name ${aws_stacks[$i]}  --region ${AWS_REGION}
     endtime=`date +%s`
     printf '%s\n' "Elapsed time: $((($endtime-$starttime)/60)) minutes"
   fi
@@ -340,10 +340,10 @@ aws_stacks=(`aws cloudformation describe-stacks --output json --region $AWS_REGI
 for i in "${!aws_stacks[@]}"; do
   # printf "%s\n" "stack $i =  ${aws_stacks[$i]}"
   if [[ "${aws_stacks[$i]}" =~ "eksctl-${AWS_PROJECT}-cluster" ]]; then
-    printf "%s\n" "Deleting CloudFormation Stack:  ${aws_stacks[$i]}"
+    printf "%s\n" "Waiting for CloudFormation Stack deletion to complete:  ${aws_stacks[$i]}"
     starttime=`date +%s`
     printf "%s\n" "Please be patient, this can take up to 30 minutes... (started at:`date`)"
-    aws cloudformation delete-stack --stack-name ${aws_stacks[$i]} --region ${AWS_REGION}
+    #aws cloudformation delete-stack --stack-name ${aws_stacks[$i]} --region ${AWS_REGION}
     aws cloudformation wait stack-delete-complete --stack-name ${aws_stacks[$i]}  --region ${AWS_REGION}
     endtime=`date +%s`
     printf '%s\n' "Elapsed time: $((($endtime-$starttime)/60)) minutes"

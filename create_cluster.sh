@@ -55,7 +55,8 @@ EOF
     printf '%s\n' "Creating a ${AWS_EKS_NODES}-node eks cluster named: ${AWS_PROJECT} in region ${AWS_REGION}"
     printf '%s\n' "This may take up to 20 minutes... (started at:`date`)"
     starttime=`date +%s`
-    eksctl create cluster -f work/${AWS_PROJECT}EksCluster.yml
+    eksctl create cluster -f work/${AWS_PROJECT}EksCluster.yml   #non-fargate EKS cluster
+    #eksctl create cluster --name=${AWS_PROJECT}.fargate --fargate --tags Key=${TAGKEY0},Value=${TAGVALUE0} Key=${TAGKEY1},Value=${TAGVALUE1} Key=${TAGKEY2},Value=${TAGVALUE2}  #EKS cluster with Fargate profile
     #printf '%s\n' "Waiting for Cloudformation stack \"managed-smartcheck-cluster\" to be created."
     #aws cloudformation wait stack-create-complete --stack-name eksctl-managed-smartcheck-cluster  --region $AWS_REGION
     #printf '%s\n' "Waiting for Cloudformation stack \"managed-smartcheck-nodegroup-nodegroup\" to be created.  This may take a while"
