@@ -24,7 +24,7 @@ for i in "${!aws_clusters[@]}"; do
       break
   fi
 done
-
+ 
 if [[ "${aws_cluster_exists}" = "true" ]]; then
     printf "%s\n" "Reusing existing cluster  ${AWS_PROJECT}"
 else
