@@ -5,16 +5,15 @@ echo WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP
 echo WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP 
 
 
-IMAGE_NAME=IMAGE_NAME=${1}
-TAG=latest
+export IMAGE_NAME=IMAGE_NAME=${1}
+export TAG=latest
 
-SMARTCHECK_HOST=`kubectl get services proxy -n smartcheck -o json | jq -r ".status.loadBalancer.ingress[].hostname"`
-IMAGE_NAME=wordpress
-TAG="latest"
-SMARTCHECK_USER=`grep -i "export DSSC_USERNAME"  00_define_vars.sh | awk -F  "=" '{print $2}' | sed "s/'//g" | sed "s/#.*//g" |sed "s/[ \t]*$//"`
-SMARTCHECK_PWD=`grep -i "export DSSC_PASSWORD"  00_define_vars.sh | awk -F  "=" '{print $2}' | sed "s/'//g" | sed "s/#.*//g" |sed "s/[ \t]*$//"`
-PRE_SCAN_USER=`grep -i "export DSSC_REGUSER"  00_define_vars.sh   | awk -F  "=" '{print $2}' | sed "s/'//g" | sed "s/#.*//g"|sed "s/[ \t]*$//"`
-PRE_SCAN_PWD=`grep -i "export DSSC_REGPASSWORD" 00_define_vars.sh | awk -F  "=" '{print $2}' | sed "s/'//g" | sed "s/#.*//g" |sed "s/[ \t]*$//"`
+export SMARTCHECK_HOST=`kubectl get services proxy -n smartcheck -o json | jq -r ".status.loadBalancer.ingress[].hostname"`
+export TAG="latest"
+export SMARTCHECK_USER=`grep -i "export DSSC_USERNAME"  00_define_vars.sh | awk -F  "=" '{print $2}' | sed "s/'//g" | sed "s/#.*//g" |sed "s/[ \t]*$//"`
+export SMARTCHECK_PWD=`grep -i "export DSSC_PASSWORD"  00_define_vars.sh | awk -F  "=" '{print $2}' | sed "s/'//g" | sed "s/#.*//g" |sed "s/[ \t]*$//"`
+export PRE_SCAN_USER=`grep -i "export DSSC_REGUSER"  00_define_vars.sh   | awk -F  "=" '{print $2}' | sed "s/'//g" | sed "s/#.*//g"|sed "s/[ \t]*$//"`
+export PRE_SCAN_PWD=`grep -i "export DSSC_REGPASSWORD" 00_define_vars.sh | awk -F  "=" '{print $2}' | sed "s/'//g" | sed "s/#.*//g" |sed "s/[ \t]*$//"`
 
 # echo SMARTCHECK_HOST=xxx${SMARTCHECK_HOST}xxx
 # echo SMARTCHECK_USER=xxx${SMARTCHECK_USER}xxx
