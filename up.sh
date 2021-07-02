@@ -1,7 +1,5 @@
 #!/bin/bash
-# import variables
-# check for variabels
-#-----------------------
+
 #TODO: check if we have enough limits to create a VPC (or if one for our project already exists fro a previous run of this script)
 #TODO: check if we have enough limits to create a IGW (or if one for our project already exists fro a previous run of this script
 #TODO: check if we have enough limits to create an Elastic IP  (or if one for our project already exists fro a previous run of this script)
@@ -22,20 +20,11 @@
 #sed -i "/aws_session_token/d" ~/.aws/credentials 
 
 
-#Check the shell
-if [ -z "$BASH_VERSION" ]; then
-    echo -e "Error: this script requires the BASH shell!"
-    exit 1
-fi
-
 # install tools
 . ./tools.sh
 
 printf '%s' "Importing variables... "
 . ./00_define_vars.sh
-
-printf '%s\n'  "installing jq"
-sudo apt-get install jq -y
 
 export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
 
@@ -76,24 +65,6 @@ if  [ "$varsok" = false ]; then
 fi
 printf '%s\n' "OK"
 
-printf '%s\n' "--------------------------"
-printf '%s\n' "Setting up Project ${AWS_PROJECT} "
-printf '%s\n' "--------------------------"
-
-#get AWS variables
-export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
-export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
-export AWS_REGION=`aws configure get region`
-
-#TMP=`cat ~/.aws/config | grep key`
-#if [[ ! ${TMP} =~ "key" ]]
-#then
-#  cat ~/.aws/credentials | grep key >> ~/.aws/config
-#fi
-#sed -n 's/aws_session_token = //g' ~/.aws/config
-#sed -n 's/aws_session_token = //g' ~/.aws/credentials
-
-
 rolefound="false"
 AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
 for i in "${!AWS_ROLES[@]}"; do
@@ -115,22 +86,21 @@ fi
 
 mkdir -p work
 
-
-#create cluster
-. ./create_cluster.sh
+# create cluster
+. ./eks_cluster.sh
 
 # deploy SmartCheck
-. ./deploy_smartcheck.sh
+. ./smartcheck.sh
 
-#adding registries
-. ./add_internal_repo.sh
+# add registries
+. ./internal_repo.sh
 #. ./add_demo_repo.sh   #this repository does no longer exist
 
 # create groups in C1AS
-. ./add_C1AS.sh
+. ./C1AS.sh
 
 # setup AWS CodePipeline
-. ./setup_pipelines.sh
+. ./pipelines.sh
   
 # add ECR registry to SmartCheck
 . ./add_ECR_registry.sh

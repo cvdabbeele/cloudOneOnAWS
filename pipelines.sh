@@ -1,7 +1,7 @@
 #!/bin/bash
-printf '%s\n' "-------------------------------"
-printf '%s\n' "Creating CodeBuild pipelines "
-printf '%s\n' "-------------------------------"
+printf '%s\n' "--------------------------------------"
+printf '%s\n' "     Creating CodeBuild pipelines     "
+printf '%s\n' "--------------------------------------"
 
 varsok=true
 if  [ -z "${DSSC_USERNAME}" ]; then echo DSSC_USERNAME must be set  && varsok=false; fi
@@ -570,7 +570,7 @@ patched=`kubectl get -n kube-system configmap/aws-auth -o yaml`
 if [[ "${patched}" =~ "${AWS_PROJECT}EksClusterCodeBuildKubectlRole"   ]];then
     printf "%s\n" "aws-auth configmap already patched for ${AWS_PROJECT}"
   else
-    printf "%s\n" "Patching aws-auth configmap for ${AWS_PROJECT}"
+    printf "%s" "Patching aws-auth configmap for ${AWS_PROJECT}... "
     kubectl patch configmap/aws-auth -n kube-system --patch "$(cat work/aws-auth-patch.yml)"
 fi
 

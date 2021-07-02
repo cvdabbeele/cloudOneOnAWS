@@ -1,20 +1,14 @@
-printf '%s\n' "--------------"
-printf '%s\n' " Adding C1AS"
-printf '%s\n' "--------------"
+printf '%s\n' "---------------------"
+printf '%s\n' "     Adding C1AS     "
+printf '%s\n' "---------------------"
 
 
 function create_c1as_group {
 # parm = ${1} = name of the app"
-
 # Creating groups
-
-## groupname = ${AWS_PROJECT}${APP[$i]})
-
-# if a group object for this project already exists in c1as, then delete it 
-#AWS_PROJECT="test2"
+# if a group object for this project-app already exists in c1as, then delete it first
 TEMPJSON=(`\
 curl --silent --location --request GET 'https://cloudone.trendmicro.com/api/application/accounts/groups' --header 'Content-Type: application/json' --header "api-secret-key: ${C1APIKEY}" --header 'api-version: v1' `)
-
 C1ASGROUPS=(`echo "$TEMPJSON" | jq   -r ".[].name"`)
 C1ASGROUPIDS=(`echo "$TEMPJSON" | jq   -r ".[].group_id"`)
 

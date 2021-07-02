@@ -1,7 +1,7 @@
 #!/bin/bash
-printf '%s \n'  "-----------------------"
-printf '%s \n'  " Creating EKS cluster"
-printf '%s \n'  "-----------------------"
+printf '%s \n'  "-----------------------------------------"
+printf '%s \n'  "     Creating / Checking EKS cluster     "
+printf '%s \n'  "-----------------------------------------"
 
 # Check required variables
 varsok=true
