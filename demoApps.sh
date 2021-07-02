@@ -1,7 +1,7 @@
 #!/bin/bash
-printf '%s\n' "---------------------"
-printf '%s\n' " Adding Demo-apps "
-printf '%s\n' "---------------------"
+printf '%s\n' "--------------------------"
+printf '%s\n' "     Adding Demo-apps     "
+printf '%s\n' "--------------------------"
 
 #checking required variables
 varsok=true
@@ -66,39 +66,39 @@ function setupApp {
   #echo ${2}
   #echo dirname= $dirname
   #clone from public git if not already done so
-  if [ -d "${dirname}" ]; then
-     printf '%s\n' "Directory ../apps/${dirname} exists.  Not downloading app again"
-  else
-     printf '%s\n' "Importing ${dirname} from public git"
-     git clone ${2}
-     printf '%s\n' "Deleting ${dirname}/.git directory (.git from github)"
+  ###if [ -d "${dirname}" ]; then
+  ###   printf '%s\n' "Directory ../apps/${dirname} exists.  Not downloading app again"
+  ###else
+     printf '%s\n' "Cloning ${dirname} from public git"
+     git clone ${2} 2>/dev/null
+     #printf '%s\n' "Deleting ${dirname}/.git directory (.git from github)"
      rm -rf ${dirname}/.git
-  fi
+  ###fi
   cd ../apps/$dirname
   # removing the link to github as this will be linked to the AWS CodeCommit
-  if [ -d ".git" ]; then
-    printf '%s\n'  ".git directory found, skipping git init"
-  else
-    printf '%s\n'  "initializing git for CodeCommit"
+  ###if [ -d ".git" ]; then
+  ###  printf '%s\n'  ".git directory found, skipping git init"
+  ###else
+    printf '%s\n'  "Initializing git for CodeCommit"
     git init
     git config --global user.name ${AWS_PROJECT}
     git config --global user.email ${AWS_PROJECT}@example.com
     #git remote add origin https://${AWS_CC_REPO_URL}.git
     git remote add origin https://${AWS_CC_REPO_URL}
-  fi
+  ###fi
 
   #adding AWS codecommit credential-helper to ~/.gitconfig"
-  echo "adding AWS codecommit credential-helper to ~/.gitconfig"
+  echo "Adding AWS codecommit credential-helper to ~/.gitconfig"
   git config --global credential.helper '!aws codecommit credential-helper $@'
 
-  printf '%s\n'  "generating a dummy change to trigger a pipeline"
+  printf '%s\n'  "Generating a dummy change to trigger a pipeline"
   echo " " >> Dockerfile
   #. push to the git repo in AWS
-  git add .
-  echo 'git commit -m "commit by \"add demoApps\""'
-  git commit -m "commit by \"add demoApps\""
-  echo git push --set-upstream origin master
-  git push --set-upstream origin master
+  git add .  2>/dev/null
+  printf '%s\n'  "Committing with tag \"add demoApps\""
+  git commit -m "commit by \"add demoApps\""    2>/dev/null
+  printf '%s\n'  "Pushing ${dirname} to CodeCommit"    
+  git push --set-upstream origin master          2>/dev/null
   #4. pipeline will pick it up, build an Image, send it to SmartCheck..
   cd $currentDir
 }
@@ -113,16 +113,17 @@ function getUrl {
 #  return 0
 }
 
-printf '%s\n' "Cleaning up Apps directory"
-rm -rf ../apps 
-printf '%s\n' "Deploying $APP1 (from $APP_GIT_URL1)"
-printf '%s\n' "---------------------------------------------"
+# If exists, delete old Apps directory
+[ -d "/home/ubuntu/environment/appsxx"/ ] && printf '%s\n' "Cleaning up old Apps directory" && rm -rf ../apps 
+
+printf '%s\n' "Deploying ${APP1}"
+printf '%s\n' "---------------"
 setupApp ${APP1} ${APP_GIT_URL1}
-printf '%s\n' "Deploying $APP2 (from $APP_GIT_URL2)"
-printf '%s\n' "---------------------------------------------"
+printf '%s\n' "Deploying ${APP2}"
+printf '%s\n' "---------------"
 setupApp ${APP2} ${APP_GIT_URL2}
-printf '%s\n' "Deploying $APP3 (from $APP_GIT_URL3)"
-printf '%s\n' "---------------------------------------------"
+printf '%s\n' "Deploying ${APP3}"
+printf '%s\n' "---------------"
 setupApp ${APP3} ${APP_GIT_URL3}
 #exit
 #optionally (if the app makes it through the scanning)

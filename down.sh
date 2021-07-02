@@ -76,7 +76,7 @@ done
 printf '%s\n' "C1CS: Removing from EKS cluster"
 helm_c1cs=`helm list -n c1cs -o json | jq -r '.[].name'`
 if [[ "${helm_c1cs}" == "trendmicro-c1cs" ]]; then
-  printf "%s\n" "Unistalling C1CS"
+  printf "%s" "Uninstalling C1CS... "
   helm delete trendmicro-c1cs -n c1cs
 fi
 
@@ -99,22 +99,21 @@ do
 done 
 
 #remove smartcheck 
-printf '%s\n' "Deleting Smart Check"
 helm_smartcheck=`helm list -n ${DSSC_NAMESPACE}  -o json | jq -r '.[].name'`
 if [[ "${helm_smartcheck}" =~ "deepsecurity-smartcheck" ]]; then
-  printf "%s\n" "Uninstalling smartcheck "
+  printf "%s" "Uninstalling smartcheck... "
   helm delete deepsecurity-smartcheck -n ${DSSC_NAMESPACE}
 fi
 
 #delete services
-printf "%s\n" "Removing Services from EKS cluster "
+printf "%s" "Removing Services from EKS cluster...  "
 for i in `kubectl get services -o json | jq -r '.items[].metadata.name'`
 do
   kubectl delete service $i
 done
 
 #delete deployed apps
-printf "%s\n" "Removing Deployments from EKS cluster"
+printf "%s" "Removing Deployments from EKS cluster... "
 for i in `kubectl get deployments  -o json | jq -r '.items[].metadata.name'`
 do
   kubectl delete deployment $i
@@ -150,7 +149,7 @@ aws_stacks=(`aws cloudformation describe-stacks --output json --region $AWS_REGI
 for i in "${!aws_stacks[@]}"; do
   #printf "%s\n" "stack $i =  ${aws_stacks[$i]}"
   if [[ "${aws_stacks[$i]}" =~ "${AWS_PROJECT}"  && "${aws_stacks[$i]}" =~ "Pipeline" ]]; then
-    printf "%s \n" "  Deleting CloudFormation Pipeline Stack  ${aws_stacks[$i]}"
+    printf "%s \n" "Deleting CloudFormation Pipeline Stack ${aws_stacks[$i]}"
     aws cloudformation delete-stack --stack-name ${aws_stacks[$i]} --region ${AWS_REGION}
   fi
 done
@@ -162,7 +161,7 @@ aws_stacks=(`aws cloudformation describe-stacks --output json --region $AWS_REGI
 for i in "${!aws_stacks[@]}"; do
   #printf "%s\n" "stack $i =  ${aws_stacks[$i]}"
   if [[ "${aws_stacks[$i]}" =~ "${AWS_PROJECT}"  && "${aws_stacks[$i]}" =~ "Pipeline" ]]; then
-    printf "%s \n" "  Deleting CloudFormation Pipeline Stack  ${aws_stacks[$i]}"
+    printf "%s \n" "Waiting for CloudFormation Pipeline Stack ${aws_stacks[$i]} to be deleted"
     aws cloudformation wait stack-delete-complete --stack-name ${aws_stacks[$i]}  --region ${AWS_REGION}
   fi
 done
@@ -176,8 +175,8 @@ aws_eks_clusters=(`eksctl get clusters -o json | jq -r '.[].metadata.name'`)
 for i in "${!aws_eks_clusters[@]}"; do
   #printf "%s" "cluster $i =  ${aws_eks_clusters[$i]}.........."
   if [[ "${aws_eks_clusters[$i]}" =~ "${AWS_PROJECT}" ]]; then
-       printf "%s\n" "  Deleting EKS cluster: ${AWS_PROJECT}"
-       printf "%s\n" "  Please be patient, this can take up to 30 minutes... (started at:`date`)"
+       printf "%s\n" "Deleting EKS cluster: ${AWS_PROJECT}"
+       printf "%s\n" "Please be patient, this can take up to 30 minutes... (started at:`date`)"
        starttime=`date +%s`
        eksctl delete cluster ${AWS_PROJECT} --wait
        sleep 30  #giving the delete cluster process a bit more time
@@ -187,7 +186,7 @@ for i in "${!aws_eks_clusters[@]}"; do
 done
 
 # deleting apps directory
-echo Deleting: ~/environment/apps
+printf "%s\n" "Deleting: ~/environment/apps"
 rm -rf ~/environment/apps
 
 # Cleaning up project VPC, starting with its dependencies
@@ -358,7 +357,7 @@ for i in "${!buckets[@]}"; do
   #printf '%s\n' "Bucket ${i} = ${buckets[${i}]}"
   if [[ "${buckets[${i}]}" =~ "codepipelineartifact" &&  "${buckets[${i}]}" =~ "${AWS_PROJECT}" ]]; then
       printf "%s\n"  "Deleting codepipelineartifactbucket: ${buckets[${i}]}"
-      aws s3 rb s3://${buckets[${i}]} --force
+      aws s3 rb s3://${buckets[${i}]} --force  2>/dev/null
       #aws s3api  delete-bucket  --bucket ${buckets[$i]}  --region ${AWS_REGION}
   fi
 done

@@ -24,7 +24,7 @@ do
 done 
 
 PAYLOAD="{ \"name\": \"${AWS_PROJECT^^}-${1^^}\"  }"
-printf "%s\n" "Creating Group object ${AWS_PROJECT^^}-${1^^} in C1AS"
+printf "%s\n" "(Re-)creating Group object ${AWS_PROJECT^^}-${1^^} in C1AS"
 TEMPJSON=(`\
 curl --silent --location --request POST "https://cloudone.trendmicro.com/api/application/accounts/groups/"   --header 'Content-Type: application/json' --header "api-secret-key: ${C1APIKEY}" --header 'api-version: v1'  --data-raw "${PAYLOAD}" \
 `)

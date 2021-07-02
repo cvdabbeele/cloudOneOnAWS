@@ -19,14 +19,14 @@ aws_clusters=( `eksctl get clusters -o json| jq '.[].metadata.name'` )
 for i in "${!aws_clusters[@]}"; do
   #printf "%s" "cluster $i =  ${aws_clusters[$i]}.........."
   if [[ "${aws_clusters[$i]}" =~ "${AWS_PROJECT}" ]]; then
-      printf "%s\n" "Reusing existing EKS cluster:  ${AWS_PROJECT}"
+      #printf "%s\n" "Reusing existing EKS cluster:  ${AWS_PROJECT}"
       aws_cluster_exists="true"
       break
   fi
 done
 
 if [[ "${aws_cluster_exists}" = "true" ]]; then
-    printf "%s\n" "Reusing existing cluster  ${AWS_PROJECT}"
+    printf "%s\n" "Reusing existing EKS cluster  ${AWS_PROJECT}"
 else
     printf '%s\n' "Creating file: work/${AWS_PROJECT}EksCluster.yml..."
     cat << EOF > work/${AWS_PROJECT}EksCluster.yml

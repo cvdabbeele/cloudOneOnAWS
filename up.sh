@@ -23,7 +23,7 @@
 # install tools
 . ./tools.sh
 
-printf '%s' "Importing variables... "
+# import variables
 . ./00_define_vars.sh
 
 export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
@@ -103,13 +103,13 @@ mkdir -p work
 . ./pipelines.sh
   
 # add ECR registry to SmartCheck
-. ./add_ECR_registry.sh
+. ./ECR_registry.sh
 
 # add the demo apps
-. ./add_demoApps.sh
+. ./demoApps.sh
 
 # add C1CS
-. ./add_C1CS.sh
+. ./C1CS.sh
 
 printf '%s\n'  "You can now kick off sample pipeline-builds of MoneyX"
 printf '%s\n'  " e.g. by running ./pushWithHighSecurityThresholds.sh"
