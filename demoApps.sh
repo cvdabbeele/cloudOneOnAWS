@@ -80,7 +80,7 @@ function setupApp {
   ###  printf '%s\n'  ".git directory found, skipping git init"
   ###else
     printf '%s\n'  "Initializing git for CodeCommit"
-    git init  2>/dev/null
+    git init  1>/dev/null 2>/dev/null
     git config --global user.name ${AWS_PROJECT}
     git config --global user.email ${AWS_PROJECT}@example.com
     #git remote add origin https://${AWS_CC_REPO_URL}.git
@@ -88,7 +88,7 @@ function setupApp {
   ###fi
 
   #adding AWS codecommit credential-helper to ~/.gitconfig"
-  rintf '%s\n' "Adding AWS codecommit credential-helper to ~/.gitconfig"
+  printf '%s\n' "Adding AWS codecommit credential-helper to ~/.gitconfig"
   git config --global credential.helper '!aws codecommit credential-helper $@'
 
   printf '%s\n'  "Generating a dummy change to trigger a pipeline"
@@ -116,14 +116,11 @@ function getUrl {
 # If exists, delete old Apps directory
 [ -d "/home/ubuntu/environment/appsxx"/ ] && printf '%s\n' "Cleaning up old Apps directory" && rm -rf ../apps 
 
-printf '%s\n' "Deploying ${APP1}"
-printf '%s\n' "---------------"
+
 setupApp ${APP1} ${APP_GIT_URL1}
-printf '%s\n' "Deploying ${APP2}"
-printf '%s\n' "---------------"
+
 setupApp ${APP2} ${APP_GIT_URL2}
-printf '%s\n' "Deploying ${APP3}"
-printf '%s\n' "---------------"
+
 setupApp ${APP3} ${APP_GIT_URL3}
 #exit
 #optionally (if the app makes it through the scanning)
