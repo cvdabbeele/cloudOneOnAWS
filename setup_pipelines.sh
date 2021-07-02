@@ -578,7 +578,8 @@ create_eks_pipeline ${AWS_PROJECT}${APP1}
 create_eks_pipeline ${AWS_PROJECT}${APP2}
 create_eks_pipeline ${AWS_PROJECT}${APP3}
 
-
+printf '%s\n'  "Waiting for Cloudformation stacks to complete:"
+printf '%s\n'  "----------------------------------------------"
 printf '%s\n' "Waiting for Cloudformation stack ${AWS_PROJECT}${APP1}Pipeline to be created. "
 DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${AWS_PROJECT}${APP1}Pipeline  --region ${AWS_REGION}`
 printf '%s\n' "Waiting for Cloudformation stack ${AWS_PROJECT}${APP2}Pipeline to be created. "

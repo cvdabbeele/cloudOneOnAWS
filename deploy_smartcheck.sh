@@ -137,11 +137,11 @@ EOF
     printf '%s \n' "Doing initial (required) password change"
     DUMMY=`curl -s -k -X POST https://${DSSC_HOST}/api/users/${DSSC_USERID}/password -H "Content-Type: application/json"  -H "Api-Version: 2018-05-01" -H "cache-control: no-cache" -H "authorization: Bearer ${DSSC_BEARERTOKEN}" -d "{  \"oldPassword\": \"${DSSC_TEMPPW}\", \"newPassword\": \"${DSSC_PASSWORD}\"  }"`
 
-    printf '%s \n' "You can login: "
-    printf '%s \n' "--------------"
+    printf '%s \n' "Deploying Smart Check at: "
+    printf '%s \n' "---------------------------"
     printf '%s \n' "     URL: https://${DSSC_HOST}"
     printf '%s \n' "     user: ${DSSC_USERNAME}"
     printf '%s \n' "     passw: ${DSSC_PASSWORD}"
-    printf '%s \n' "--------------"
+    printf '%s \n' "---------------------------"
 
 fi

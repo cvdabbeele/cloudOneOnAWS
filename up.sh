@@ -28,6 +28,8 @@ if [ -z "$BASH_VERSION" ]; then
     exit 1
 fi
 
+# install tools
+. ./tools.sh
 
 printf '%s' "Importing variables... "
 . ./00_define_vars.sh
@@ -113,8 +115,6 @@ fi
 
 mkdir -p work
 
-# install tools
-. ./install_tools.sh
 
 #create cluster
 . ./create_cluster.sh
