@@ -1,8 +1,8 @@
 #!/bin/bash
 #printf "Checking required variables..."
-printf '%s\n' "---------------------------------------------------"
-printf '%s\n' "     (re-) Adding ECR repository to SmartCheck     "
-printf '%s\n' "---------------------------------------------------"
+printf '%s\n' "--------------------------------------------------"
+printf '%s\n' "     (re-)Adding ECR repository to SmartCheck     "
+printf '%s\n' "--------------------------------------------------"
 
 varsok=true
 if  [ -z "${DSSC_USERNAME}" ]; then echo DSSC_USERNAME must be set && varsok=false; fi

@@ -75,7 +75,7 @@ helm upgrade \
      --namespace c1cs \
      --install \
      --create-namespace \
-     https://github.com/trendmicro/cloudone-container-security-helm/archive/master.tar.gz  2>/dev/null
+     https://github.com/trendmicro/cloudone-container-security-helm/archive/master.tar.gz  1>/dev/null 2>/dev/null
 
 # Creating a Scanner
 ## Creating a Scanner object in C1Cs and get an API key to grant C1CS rights to push scanresults to C1CS
@@ -112,10 +112,6 @@ export C1APIKEYforSCANNERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
 #echo  $C1APIKEYforSCANNERS
 export C1CSSCANNERID=`echo ${TEMPJSON}| jq -r ".id"`
 #echo $C1CSSCANNERID
-
-
-## add C1CS to smartcheck
-printf '%s\n' "Adding C1CS to smartcheck"
 cat << EOF >work/overrides.smartcheck.yml
 cloudOne:
      apiKey: ${C1APIKEYforSCANNERS}
@@ -126,7 +122,7 @@ helm upgrade \
           --reuse-values \
           --values work/overrides.smartcheck.yml \
           -n ${DSSC_NAMESPACE} \
-          https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz 2>/dev/null
+          https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz  1>/dev/null 2>/dev/null
 
 # Creating an Admission Policy
 # remove this project's Policy from c1cs
@@ -208,12 +204,11 @@ export POLICYID=`curl --silent --location --request POST 'https://cloudone.trend
 
 
 # AssignAdmission Policy to Cluster
-curl --request POST \
+ADMISSION_POLICY_ID=`curl --silent --request POST \
   --url https://cloudone.trendmicro.com/api/container/clusters/${C1CSCLUSTERID} \
   --header "api-secret-key: ${C1APIKEY}" \
   --header 'content-type: application/json' \
-  --data "{\"description\":\"EKS cluster added and Policy Assigned by the CloudOneOnAWS project ${AWS_PROJECT}\",\"policyID\":\"${POLICYID}\"}" | jq
-
+  --data "{\"description\":\"EKS cluster added and Policy Assigned by the CloudOneOnAWS project ${AWS_PROJECT}\",\"policyID\":\"${POLICYID}\"}" | jq -r ".policyID"`
 
 # testing C1CS (admission control)
 # --------------------------------

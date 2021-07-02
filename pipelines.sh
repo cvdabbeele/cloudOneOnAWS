@@ -505,8 +505,8 @@ toCreateNewEnvironment="true"
 #    toCreateNewEnvironment="false"
 #else
   if [[ "${aws_pipeline_exists}" = "false" &&  "${aws_ecr_repo_exists}" = "false" &&  "${aws_cc_repo_exists}" = "false" && "${aws_pipeline_stack_exists}" = "false" ]]; then
-    printf '%s\n'  "Creating environment:"
-    printf '%s\n'  "---------------------"
+    #printf '%s\n'  "Creating environment:"
+    #printf '%s\n'  "---------------------"
     #printf '%s\n'  "   CodeCommit repo: ${aws_cc_repo} exists = ${aws_cc_repo_exists}"
     #printf '%s\n'  "   CloudFormation stack: ${aws_pipeline_stack} status = ${aws_pipeline_stack_status}"
     #printf '%s\n'  "   CodePipeline: ${aws_pipeline} exists = ${aws_pipeline_exists}"

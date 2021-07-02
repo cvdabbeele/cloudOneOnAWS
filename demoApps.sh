@@ -1,7 +1,7 @@
 #!/bin/bash
-printf '%s\n' "--------------------------"
-printf '%s\n' "     Adding Demo-apps     "
-printf '%s\n' "--------------------------"
+printf '%s\n' "-------------------------------"
+printf '%s\n' "     (re-)Adding Demo-apps     "
+printf '%s\n' "-------------------------------"
 
 #checking required variables
 varsok=true
@@ -80,7 +80,7 @@ function setupApp {
   ###  printf '%s\n'  ".git directory found, skipping git init"
   ###else
     printf '%s\n'  "Initializing git for CodeCommit"
-    git init
+    git init  2>/dev/null
     git config --global user.name ${AWS_PROJECT}
     git config --global user.email ${AWS_PROJECT}@example.com
     #git remote add origin https://${AWS_CC_REPO_URL}.git
@@ -88,7 +88,7 @@ function setupApp {
   ###fi
 
   #adding AWS codecommit credential-helper to ~/.gitconfig"
-  echo "Adding AWS codecommit credential-helper to ~/.gitconfig"
+  rintf '%s\n' "Adding AWS codecommit credential-helper to ~/.gitconfig"
   git config --global credential.helper '!aws codecommit credential-helper $@'
 
   printf '%s\n'  "Generating a dummy change to trigger a pipeline"
@@ -96,9 +96,9 @@ function setupApp {
   #. push to the git repo in AWS
   git add .  2>/dev/null
   printf '%s\n'  "Committing with tag \"add demoApps\""
-  git commit -m "commit by \"add demoApps\""    2>/dev/null
+  git commit -m "commit by \"add demoApps\""    1>/dev/null 2>/dev/null 
   printf '%s\n'  "Pushing ${dirname} to CodeCommit"    
-  git push --set-upstream origin master          2>/dev/null
+  git push --set-upstream origin master         1>/dev/null 2>/dev/null
   #4. pipeline will pick it up, build an Image, send it to SmartCheck..
   cd $currentDir
 }
