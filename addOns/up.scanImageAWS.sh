@@ -5,7 +5,7 @@ printf '%s\n' "--------------------------"
 
 printf '%s\n' "(re-)Defining variables"
 . ../00_define_vars.sh
-
+printf '%s\n' ""
 declare -a IMAGES && IMAGES=()  #declare an empty the array
 declare -a IMAGES_FLATENED  && IMAGES_FLATENED=()  
 declare -A IMAGE_TAGS && IMAGE_TAGS=()   #ASSOCIATIVE Array (!)
@@ -14,7 +14,7 @@ export DSSC_HOST=`kubectl get services proxy -n smartcheck  --output JSON | jq -
 REGISTRY_HOST="`aws sts get-caller-identity | jq -r '.Account'`.dkr.ecr.`aws configure get region`.amazonaws.com"  
 echo REGISTRY_HOST=${REGISTRY_HOST}
 
-dummy=`echo ${DOCKERHUB_PASSWORD}xx | docker login --username ${DOCKERHUB_USERNAME} --password-stdin 2>/dev/null`
+dummy=`echo ${DOCKERHUB_PASSWORD}| docker login --username ${DOCKERHUB_USERNAME} --password-stdin 2>/dev/null`
 if [[ "$dummy" != "Login Succeeded" ]];then
    echo "Failed to login to Docker Hub"
    return "Failed to login to Docker Hub"
