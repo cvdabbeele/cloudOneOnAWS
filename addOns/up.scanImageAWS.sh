@@ -14,10 +14,10 @@ DSSC_HOST=`kubectl get services proxy -n smartcheck  --output JSON | jq -r '.sta
 
 echo REGISTRY_HOST=${REGISTRY_HOST}
 
-dummy=`echo ${DOCKERHUB_PASSWORD} | docker login --username ${DOCKERHUB_USERNAME} --password-stdin 2>/dev/null`
+dummy=`echo ${DOCKERHUB_PASSWORD}xx | docker login --username ${DOCKERHUB_USERNAME} --password-stdin 2>/dev/null`
 if [[ "$dummy" != "Login Succeeded" ]];then
-   echo "Failed to login to ECR"
-   break 
+   echo "Failed to login to Docker Hub"
+   exit 
 fi
 
 if [ -z "${1}" ];then
@@ -44,7 +44,12 @@ for((i=0;i<${LENGTH};++i)) do
     dummy=`aws ecr create-repository --repository-name ${IMAGES_FLATENED[${i}]} --query repository.repositoryArn `
 
     # login to ECR
-    dummy=`aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${REGISTRY_HOST}/${IMAGES_FLATENED[$i]}`
+    dummy=`aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${REGISTRY_HOST}/${IMAGES_FLATENED[$i]} 2>/dev/null`
+    if [[ "$dummy" != "Login Succeeded" ]];then
+        echo "Failed to login to ECR"
+        break 
+    fi
+
 
     echo "(re)TAGGING ${IMAGES[$i]}:${IMAGE_TAG}   to   ${REGISTRY_HOST}/${IMAGES_FLATENED[$i]}:${IMAGE_TAG}" 
     docker tag ${IMAGES[$i]}:${IMAGE_TAG} ${REGISTRY_HOST}/${IMAGES_FLATENED[$i]}:${IMAGE_TAG}
