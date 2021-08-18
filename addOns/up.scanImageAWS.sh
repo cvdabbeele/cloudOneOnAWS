@@ -4,7 +4,7 @@ printf '%s\n' "     Scan Immage(-s)      "
 printf '%s\n' "--------------------------"
 
 printf '%s\n' "(re-)Defining variables"
-. ./00_define_vars.sh
+. ../00_define_vars.sh
 
 declare -a IMAGES && IMAGES=()  #declare an empty the array
 declare -a IMAGES_FLATENED  && IMAGES_FLATENED=()  
