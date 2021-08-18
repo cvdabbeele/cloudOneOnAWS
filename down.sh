@@ -106,9 +106,10 @@ if [[ "${helm_smartcheck}" =~ "deepsecurity-smartcheck" ]]; then
 fi
 
 #delete services
-printf "%s" "Removing Services from EKS cluster...  "
+printf "%s\n" "Removing Services from EKS cluster"
 for i in `kubectl get services -o json | jq -r '.items[].metadata.name'`
 do
+  printf "%s\n" "... "
   kubectl delete service $i
 done
 

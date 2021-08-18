@@ -91,7 +91,7 @@ function setupApp {
   printf '%s\n' "Adding AWS codecommit credential-helper to ~/.gitconfig"
   git config --global credential.helper '!aws codecommit credential-helper $@'
 
-  printf '%s\n'  "Generating a dummy change to trigger a pipeline"
+  printf '%s\n'  "Generating a dummy change to trigger an intial build through the pipeline"
   echo " " >> Dockerfile
   #. push to the git repo in AWS
   git add .  2>/dev/null
