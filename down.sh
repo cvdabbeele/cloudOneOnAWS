@@ -177,7 +177,8 @@ for i in "${!aws_eks_clusters[@]}"; do
   #printf "%s" "cluster $i =  ${aws_eks_clusters[$i]}.........."
   if [[ "${aws_eks_clusters[$i]}" =~ "${AWS_PROJECT}" ]]; then
        printf "%s\n" "Deleting EKS cluster: ${AWS_PROJECT}"
-       printf "%s\n" "Please be patient, this can take up to 30 minutes... (started at:`date`)"
+       printf "%s\n" "Waiting for EKS cluster to be deleted. "
+       printf "%s\n" "   Please be patient, this can take up to 30 minutes... (started at:`date`)"
        starttime=`date +%s`
        eksctl delete cluster ${AWS_PROJECT} --wait
        sleep 30  #giving the delete cluster process a bit more time

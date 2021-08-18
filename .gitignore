@@ -2,6 +2,7 @@
 .env
 work/
 tmp/
+images/
 backup-*/
 *.old
 *.zip
