@@ -9,8 +9,8 @@ printf '%s\n' "(re-)Defining variables"
 declare -a IMAGES && IMAGES=()  #declare an empty the array
 declare -a IMAGES_FLATENED  && IMAGES_FLATENED=()  
 declare -A IMAGE_TAGS && IMAGE_TAGS=()   #ASSOCIATIVE Array (!)
-AWS_REGION=`aws configure get region`
-DSSC_HOST=`kubectl get services proxy -n smartcheck  --output JSON | jq -r '.status.loadBalancer.ingress[].hostname'`
+export AWS_REGION=`aws configure get region`
+export DSSC_HOST=`kubectl get services proxy -n smartcheck  --output JSON | jq -r '.status.loadBalancer.ingress[].hostname'`
 
 echo REGISTRY_HOST=${REGISTRY_HOST}
 
@@ -28,9 +28,9 @@ else
 fi
 
 #create an ECR repository 
-LENGTH=${#IMAGES[@]}
+export LENGTH=${#IMAGES[@]}
 #LENGTH=2
-IMAGE_TAG="latest"
+export IMAGE_TAG="latest"
 
 for((i=0;i<${LENGTH};++i)) do
     IMAGES_FLATENED[${i}]=`echo ${IMAGES[$i]} | sed 's/\///'| sed 's/-//'`
@@ -57,7 +57,7 @@ for((i=0;i<${LENGTH};++i)) do
     echo "PUSHING to ${REGISTRY_HOST}/${IMAGES_FLATENED[$i]}:${IMAGE_TAG}"
     docker push ${REGISTRY_HOST}/${IMAGES_FLATENED[$i]}:${IMAGE_TAG}
 
-    IMAGE_TAG2=`openssl rand -hex 4`
+    export IMAGE_TAG2=`openssl rand -hex 4`
     echo "(re)TAGGING ${IMAGES[$i]}:${IMAGE_TAG}   to   ${REGISTRY_HOST}/${IMAGES_FLATENED[$i]}:${IMAGE_TAG2}" 
     docker tag ${IMAGES[$i]}:${IMAGE_TAG} ${REGISTRY_HOST}/${IMAGES_FLATENED[$i]}:${IMAGE_TAG2}
 
