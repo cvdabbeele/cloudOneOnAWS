@@ -14,6 +14,12 @@ export DSSC_HOST=`kubectl get services proxy -n smartcheck  --output JSON | jq -
 REGISTRY_HOST="`aws sts get-caller-identity | jq -r '.Account'`.dkr.ecr.`aws configure get region`.amazonaws.com"  
 echo REGISTRY_HOST=${REGISTRY_HOST}
 
+git clone https://github.com/mawinkler/vulnerability-management.git
+
+
+
+
+
 dummy=`echo ${DOCKERHUB_PASSWORD}| docker login --username ${DOCKERHUB_USERNAME} --password-stdin 2>/dev/null`
 if [[ "$dummy" != "Login Succeeded" ]];then
    echo "Failed to login to Docker Hub"
@@ -29,7 +35,7 @@ fi
 
 #create an ECR repository 
 export LENGTH=${#IMAGES[@]}
-#LENGTH=2
+LENGTH=2
 export IMAGE_TAG="latest"
 
 for((i=0;i<${LENGTH};++i)) do
@@ -82,10 +88,30 @@ for((i=0;i<${LENGTH};++i)) do
             --smartcheck-password="${DSSC_PASSWORD}" \
             --image-pull-auth="{\"username\":\"AWS\",\"password\":\"`aws ecr get-login-password --region ${AWS_REGION}`\"}" \
             --insecure-skip-tls-verify
-echo "-----------------------------"
+    cat <<EOF >./vulnerability-management/cloudone-image-security/scan-report/config.yml
+dssc:
+  service: "${DSSC_HOST}"
+  username: "${DSSC_USERNAME}"
+  password: "${DSSC_PASSWORD}"
+
+repository:
+  name: "${IMAGES_FLATENED[$i]}"
+  image_tag: "${IMAGE_TAG}"
+
+criticalities:
+  - defcon1
+  - critical
+  - high
+  - medium
+EOF
+
+    CURRENTDIR=`pwd`
+    cd ./vulnerability-management/cloudone-image-security/scan-report
+    python3 ./scan-report.py 
+    cd ${CURRENTDIR}
+    mv ./vulnerability-management/cloudone-image-security/scan-report/report*.pdf  ./
+    echo "-----------------------------"
 done
-
-
 
 
 
