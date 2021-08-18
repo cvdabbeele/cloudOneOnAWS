@@ -35,7 +35,7 @@ fi
 
 #create an ECR repository 
 export LENGTH=${#IMAGES[@]}
-LENGTH=2
+#LENGTH=2
 export IMAGE_TAG="latest"
 
 for((i=0;i<${LENGTH};++i)) do
