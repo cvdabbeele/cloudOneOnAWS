@@ -17,7 +17,7 @@ echo REGISTRY_HOST=${REGISTRY_HOST}
 dummy=`echo ${DOCKERHUB_PASSWORD}xx | docker login --username ${DOCKERHUB_USERNAME} --password-stdin 2>/dev/null`
 if [[ "$dummy" != "Login Succeeded" ]];then
    echo "Failed to login to Docker Hub"
-   exit 
+   return "Failed to login to Docker Hub"
 fi
 
 if [ -z "${1}" ];then
