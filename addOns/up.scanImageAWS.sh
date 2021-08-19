@@ -11,13 +11,10 @@ declare -a IMAGES_FLATENED  && IMAGES_FLATENED=()
 declare -A IMAGE_TAGS && IMAGE_TAGS=()   #ASSOCIATIVE Array (!)
 export AWS_REGION=`aws configure get region`
 export DSSC_HOST=`kubectl get services proxy -n smartcheck  --output JSON | jq -r '.status.loadBalancer.ingress[].hostname'`
-REGISTRY_HOST="`aws sts get-caller-identity | jq -r '.Account'`.dkr.ecr.`aws configure get region`.amazonaws.com"  
+exportREGISTRY_HOST="`aws sts get-caller-identity | jq -r '.Account'`.dkr.ecr.`aws configure get region`.amazonaws.com"  
 echo REGISTRY_HOST=${REGISTRY_HOST}
 
 git clone https://github.com/mawinkler/vulnerability-management.git
-
-
-
 
 
 dummy=`echo ${DOCKERHUB_PASSWORD}| docker login --username ${DOCKERHUB_USERNAME} --password-stdin 2>/dev/null`
@@ -33,10 +30,14 @@ else
   IMAGES=(${1})
 fi
 
-#create an ECR repository 
 export LENGTH=${#IMAGES[@]}
 #LENGTH=2
 export IMAGE_TAG="latest"
+
+
+
+
+
 
 for((i=0;i<${LENGTH};++i)) do
     IMAGES_FLATENED[${i}]=`echo ${IMAGES[$i]} | sed 's/\///'| sed 's/-//'`
@@ -77,7 +78,6 @@ for((i=0;i<${LENGTH};++i)) do
 #printf '%s\n' "Break script here"
 #read -s -n 1
 
-    #  --image-pull-auth=\''{"aws":{"region":"'$AWS_REGION'","accessKeyID":"'$AWS_ACCESS_KEY_ID'","secretAccessKey":"'$AWS_SECRET_ACCESS_KEY'"}}'\' \
 
     echo "calling smartcheck-scan-action"
     docker run --rm --read-only --cap-drop ALL -v /var/run/docker.sock:/var/run/docker.sock --network host \
@@ -88,6 +88,7 @@ for((i=0;i<${LENGTH};++i)) do
             --smartcheck-password="${DSSC_PASSWORD}" \
             --image-pull-auth="{\"username\":\"AWS\",\"password\":\"`aws ecr get-login-password --region ${AWS_REGION}`\"}" \
             --insecure-skip-tls-verify
+            
     cat <<EOF >./vulnerability-management/cloudone-image-security/scan-report/config.yml
 dssc:
   service: "${DSSC_HOST}"
