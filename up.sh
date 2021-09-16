@@ -14,8 +14,6 @@
 #            "Adjustable": true,
 #            "GlobalQuota": false
 
-
-
 # removing "aws_session_token = <blanco> " from credentials file (which throws an error if not removed)
 #sed -i "/aws_session_token/d" ~/.aws/credentials 
 
@@ -25,6 +23,7 @@
 
 # import variables
 . ./00_define_vars.sh
+PROJECTDIR=`pwd` 
 
 export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
 
@@ -60,7 +59,7 @@ if  [ -z "$C1CS_RUNTIME" ]; then export C1CS_RUNTIME="true";  fi
 
 if  [ "$varsok" = false ]; then
   printf '%s\n' "Please check your 00_define_vars.sh file"
-  read -t 15 -p "exiting script in 15 seconds"
+  read -t 60 -p "exiting script in 60 seconds"
   exit
 fi
 printf '%s\n' "OK"
