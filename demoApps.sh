@@ -34,7 +34,7 @@ function setupApp {
 
   if [[ "${AWS_CC_REPO}" = '' ]]; then
     printf '%s \n' "PANIC:  Could not find the CodeCommit repository: ${AWS_CC_REPO}. Run \"up.sh\" again."
-    exit
+    read -p "Press CTRL-C to exit script"
   fi
 
 
@@ -56,7 +56,7 @@ function setupApp {
   done
   if [[ "${AWS_ECR_REPO}" = '' ]]; then
       printf '%s \n' "PANIC:  Could not find the ECR repository: ${AWS_ECR_REPO}. Run \"up.sh\" again."
-      exit
+      read -p "Press CTRL-C to exit script"
   fi
 
   mkdir -p  ../apps

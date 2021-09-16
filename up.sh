@@ -23,10 +23,11 @@
 
 # import variables
 . ./00_define_vars.sh
+
+# set additional variables based on aws configure
 PROJECTDIR=`pwd` 
-
 export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
-
+export AWS_REGION=`aws configure get region`
 
 varsok=true
 # Check AWS settings
