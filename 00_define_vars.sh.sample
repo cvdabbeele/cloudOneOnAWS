@@ -11,6 +11,7 @@ printf '%s\n' "-------------------------------"
 #changes: (202110)
 # new variables (see below):
 # export C1URL="https://cloudone.trendmicro.com"
+# export C1AUTHHEADER="api-secret-key: ${C1APIKEY}"
 
 #enter your configuration variables in this file
 #save it without the .sample extension
@@ -29,6 +30,7 @@ printf '%s' "Defining variables... "
 
 export C1CS_RUNTIME="false"
 export C1URL="https://cloudone.trendmicro.com"
+export C1AUTHHEADER="api-secret-key: ${C1APIKEY}"
 
 #  AWS settings
 export AWS_PROJECT='cloudone01'    #may only contain lowercase and trailing numbers, but no "-", no "_", nor any special characters.
