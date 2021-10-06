@@ -10,8 +10,12 @@ printf '%s\n' "-------------------------------"
 # version 1.2
 #changes: (202110)
 # new variables (see below):
+# export C1AUTH="could be accountbased (=account&username-based authenticated to C1) or emailbased(=authenticated to C1 with email address)"
+# export C1REGION="could be us-1,in-1, gb-1, jp-1, de-1,au-1; only used when $C1AUTH=email "
+# export C1APIKEY='your_CloudOne_API_Key; either created in C1WS (in case of legacy auth.) or in C1 (in case of email auth.)'
 # export C1URL="https://cloudone.trendmicro.com"
 # export C1AUTHHEADER="api-secret-key: ${C1APIKEY}"
+
 
 #enter your configuration variables in this file
 #save it without the .sample extension
@@ -21,6 +25,15 @@ printf '%s' "Defining variables... "
 #### ---------------------------------------------------------------------------
 #### ----------below this line are settings which MUST be customised  ----------
 #### ---------------------------------------------------------------------------
+
+# update 202110
+export C1AUTH="could be accountbased (=account&username-based authenticated to C1) or emailbased(=authenticated to C1 with email address)"
+export C1REGION="could be us-1,in-1, gb-1, jp-1, de-1,au-1; only used when $C1AUTH=email "
+export C1APIKEY='your_CloudOne_API_Key; either created in C1WS (in case of legacy auth.) or in C1 (in case of email auth.)'
+export C1URL="https://cloudone.trendmicro.com"
+export C1AUTHHEADER="api-secret-key: ${C1APIKEY}"
+
+
 
 # C1CS (update 20210315)
 # if you do not have access to C1CS-Runtime option (which is in preview now; March 2021), 
