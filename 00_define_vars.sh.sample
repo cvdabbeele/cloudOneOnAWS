@@ -7,6 +7,10 @@ printf '%s\n' "-------------------------------"
 # new variables (see below):
 # export TAGKEY1="owner"    # could also use "user"
 # export TAGVALUE1="chrisV" # your username or anything you want
+# version 1.2
+#changes: (202110)
+# new variables (see below):
+# export C1URL="https://cloudone.trendmicro.com"
 
 #enter your configuration variables in this file
 #save it without the .sample extension
@@ -24,6 +28,7 @@ printf '%s' "Defining variables... "
 # this is for compatibility reasons with older versions of this script
 
 export C1CS_RUNTIME="false"
+export C1URL="https://cloudone.trendmicro.com"
 
 #  AWS settings
 export AWS_PROJECT='cloudone01'    #may only contain lowercase and trailing numbers, but no "-", no "_", nor any special characters.

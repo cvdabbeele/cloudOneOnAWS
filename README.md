@@ -148,7 +148,7 @@ The IAM User account that you will use:
 (trial) Licenses
 You will need the following licenses:
 - **A license for SmartCheck**  If you don't have a license key yet, you can get one here: <https://www.trendmicro.com/product_trials/download/index/us/168>
-- **CloudOne (Application Security) Account**  You can register for a trial here: <https://cloudone.trendmicro.com/_workload_iframe//SignUp.screen>  In CloudOne Application Security, you will need to create a "group" for the MoneyX application.  This will give you a **key** and a **secret** that you can use for the TREND_AP_KEY and TREND_AP_SECRET variables in this script.  
+- **CloudOne (Application Security) Account**  You can register for a trial here: <${C1URL}/_workload_iframe//SignUp.screen>  In CloudOne Application Security, you will need to create a "group" for the MoneyX application.  This will give you a **key** and a **secret** that you can use for the TREND_AP_KEY and TREND_AP_SECRET variables in this script.  
 
 ### Prepare the environment
 
