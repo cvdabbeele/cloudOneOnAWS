@@ -198,7 +198,7 @@ export POLICYID=`curl --silent --location --request POST "${C1CSAPIURL}/policies
 # get all policies
 # curl --silent --location --request GET "${C1CSAPIURL}/policies" \
 # --header 'Content-Type: application/json' \
-# --header ${C1AUTHHEADER}  \
+# --header "${C1AUTHHEADER}""  \
 # --header 'api-version: v1' \
 # | jq -r ".policies[].id"
 
@@ -206,7 +206,7 @@ export POLICYID=`curl --silent --location --request POST "${C1CSAPIURL}/policies
 # AssignAdmission Policy to Cluster
 ADMISSION_POLICY_ID=`curl --silent --request POST \
   --url ${C1CSAPIURL}/clusters/${C1CSCLUSTERID} \
-  --header ${C1AUTHHEADER} \
+  --header "${C1AUTHHEADER}" \
   --header 'content-type: application/json' \
   --data "{\"description\":\"EKS cluster added and Policy Assigned by the CloudOneOnAWS project ${AWS_PROJECT}\",\"policyID\":\"${POLICYID}\"}" | jq -r ".policyID"`
 
