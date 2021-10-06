@@ -82,7 +82,7 @@ fi
 
 # remove this projects groups from c1as
 TEMPJSON=(`\
-curl --silent --location --request GET "${C1URL}/api/application/accounts/groups" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' `)
+curl --silent --location --request GET "${C1ASAPIURL}/accounts/groups" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' `)
 
 C1ASGROUPS=(`echo "$TEMPJSON" | jq   -r ".[].name"`)
 C1ASGROUPIDS=(`echo "$TEMPJSON" | jq   -r ".[].group_id"`)
@@ -94,7 +94,7 @@ do
   #if [[ "${C1ASGROUPS[$i]}" == "${AWS_PROJECT^^}" ]]; 
   then
     printf "%s\n" "Deleting Group object ${AWS_PROJECT^^}-${1^^} in C1AS"
-    curl --silent --location --request DELETE "${C1URL}/api/application/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
+    curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
   fi
 done 
 
