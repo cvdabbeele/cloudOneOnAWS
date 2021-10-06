@@ -20,7 +20,7 @@ printf '%s\n' "AWS_REGION= $AWS_REGION"
 
 #remove this project's cluster from c1cs
 C1CSCLUSTERS=(`\
-curl --silent --location --request GET "${C1URL}/api/container/clusters" \
+curl --silent --location --request GET "${C1CSAPIURL}/clusters" \
 --header 'Content-Type: application/json' \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' \
@@ -29,7 +29,7 @@ curl --silent --location --request GET "${C1URL}/api/container/clusters" \
 for i in "${!C1CSCLUSTERS[@]}"
 do
   printf "%s\n" "C1CS: Removing cluster ${C1CSCLUSTERS[$i]}"
-  curl --silent --location --request DELETE "${C1URL}/api/container/clusters/${C1CSCLUSTERS[$i]}" \
+  curl --silent --location --request DELETE "${C1CSAPIURL}/clusters/${C1CSCLUSTERS[$i]}" \
 --header 'Content-Type: application/json' \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' 
@@ -38,7 +38,7 @@ done
 
 # remove this project's Policy from c1cs
 C1CSPOLICIES=(`\
-curl --silent --location --request GET "${C1URL}/api/container/policies" \
+curl --silent --location --request GET "${C1CSAPIURL}/policies" \
 --header 'Content-Type: application/json' \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' \
@@ -47,7 +47,7 @@ curl --silent --location --request GET "${C1URL}/api/container/policies" \
 for i in "${!C1CSPOLICIES[@]}"
 do
   printf "%s\n" "C1CS: Removing policy ${C1CSPOLICIES[$i]}"
-  curl --silent --location --request DELETE "${C1URL}/api/container/policies/${C1CSPOLICIES[$i]}" \
+  curl --silent --location --request DELETE "${C1CSAPIURL}/policies/${C1CSPOLICIES[$i]}" \
 --header 'Content-Type: application/json' \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' 
@@ -56,7 +56,7 @@ done
 
 # remove this project's Scanner from c1cs
 C1CSSCANNERS=(`\
-curl --silent --location --request GET "${C1URL}/api/container/scanners" \
+curl --silent --location --request GET "${C1CSAPIURL}/scanners" \
 --header 'Content-Type: application/json' \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' \
@@ -65,7 +65,7 @@ curl --silent --location --request GET "${C1URL}/api/container/scanners" \
 for i in "${!C1CSSCANNERS[@]}"
 do
   printf "%s\n" "C1CS: Removing scanner ${C1CSSCANNERS[$i]}"
-  curl --silent --location --request DELETE "${C1URL}/api/container/scanners/${C1CSSCANNERS[$i]}" \
+  curl --silent --location --request DELETE "${C1CSAPIURL}/scanners/${C1CSSCANNERS[$i]}" \
 --header 'Content-Type: application/json' \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' 

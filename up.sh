@@ -17,6 +17,34 @@
 # removing "aws_session_token = <blanco> " from credentials file (which throws an error if not removed)
 #sed -i "/aws_session_token/d" ~/.aws/credentials 
 
+# C1new authentication mechanism
+export C1AUTH="accountbased"
+
+if [[ "${C1AUTH}" = "accountbased" ]] ; then
+    export C1AUTHHEADER="api-secret-key: ${C1APIKEY}"
+    export C1REGION=""
+    export C1CSAPIURL="https://cloudone.trendmicro.com/api/container"
+    export C1ASAPIURL="https://cloudone.trendmicro.com/api/application"
+fi
+
+if [[ "${C1AUTH}" = "emailbased" ]] ; then
+    export C1AUTHHEADER="Authorization:	 ApiKey ${C1APIKEY}"
+    export C1CSAPIURL="https://container.${AWS_REGION}.cloudone.trendmicro.com/api/scanners"
+        
+fi
+
+if [ "${C1AUTH}" != "accountbased" ] && [ "${C1AUTH}" != "emailbased" ]  ; then
+    printf "%s\n" 'ERROR: illegal value for ${C1AUTH}'
+    export C1AUTHHEADER=""
+fi
+echo $C1AUTHHEADER
+
+export C1REGION="could be us-1,in-1, gb-1, jp-1, de-1,au-1; only used when $C1AUTH=email "
+export C1URL="https://cloudone.trendmicro.com"
+
+
+
+
 
 # install tools
 . ./tools.sh

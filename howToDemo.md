@@ -51,7 +51,7 @@ Click it to see the 3 pipeline-intances on the MoneyX app
 
 ### Ensure to have the following browser tabs opened and authenticated.
 
-- CloudOne Application Security  (${C1URL}/application)
+- CloudOne Application Security  (${C1ASAPIURL})
 - SmartCheck (to find the URL, in your Cloud9 shell, type: `kubectl get services -n smartcheck` and look for the `proxy` service)
 - AWS Service CodePipeline / CodeCommit
 - Your Cloud9 shell
@@ -224,7 +224,7 @@ http://a2baec90930634639a260c64b1be4b91-1290966830.eu-central-1.elb.amazonaws.co
 You should now see ALL payments... which is bad
 ![SeeAllReceivedPayments](images/SeeAllReceivedPayments.png)
 
-Go to <${C1URL}/application#/events> show that there is a security event for SQL injection
+Go to <${C1ASAPIURL}#/events> show that there is a security event for SQL injection
 ![GroupOneUnderAttack](images/GroupOneUnderAttack.png)
 Check security events in CloudOne Application Security
 
