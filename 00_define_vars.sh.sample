@@ -10,12 +10,9 @@ printf '%s\n' "-------------------------------"
 # version 1.2
 #changes: (202110)
 # new variables (see below):
-# export C1AUTH="could be accountbased (=account&username-based authenticated to C1) or emailbased(=authenticated to C1 with email address)"
+# export C1AUTH="could be \"accountbased\" (=account&username-based authenticated to C1) or \"emailbased\"(=authenticated to C1 with email address)"
 # export C1REGION="could be us-1,in-1, gb-1, jp-1, de-1,au-1; only used when $C1AUTH=email "
 # export C1APIKEY='your_CloudOne_API_Key; either created in C1WS (in case of legacy auth.) or in C1 (in case of email auth.)'
-# export C1URL="https://cloudone.trendmicro.com"
-# export C1AUTHHEADER="api-secret-key: ${C1APIKEY}"
-
 
 #enter your configuration variables in this file
 #save it without the .sample extension
@@ -27,10 +24,10 @@ printf '%s' "Defining variables... "
 #### ---------------------------------------------------------------------------
 
 # update 202110
-export C1AUTH="could be \"accountbased (=account&username-based authenticated to C1) or emailbased(=authenticated to C1 with email address)"
-export C1REGION="could be us-1,in-1, gb-1, jp-1, de-1,au-1; only used when $C1AUTH=email "
+export C1AUTH="could be \"accountbased\" (=account&username-based authenticated to C1) or \"emailbased\"(=authenticated to C1 with email address)"
+export C1REGION="could be us-1,in-1, gb-1, jp-1, de-1,au-1; only used when $C1AUTH=emailbased "
 export C1APIKEY='your_CloudOne_API_Key; either created in C1WS (in case of legacy auth.) or in C1 (in case of email auth.)'
-export C1URL="https://cloudone.trendmicro.com"
+
 
 
 # C1CS (update 20210315)
@@ -40,8 +37,6 @@ export C1URL="https://cloudone.trendmicro.com"
 # this is for compatibility reasons with older versions of this script
 
 export C1CS_RUNTIME="false"
-export C1URL="https://cloudone.trendmicro.com"
-export C1AUTHHEADER="api-secret-key: ${C1APIKEY}"
 
 #  AWS settings
 export AWS_PROJECT='cloudone01'    #may only contain lowercase and trailing numbers, but no "-", no "_", nor any special characters.
