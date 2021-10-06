@@ -17,8 +17,20 @@
 # removing "aws_session_token = <blanco> " from credentials file (which throws an error if not removed)
 #sed -i "/aws_session_token/d" ~/.aws/credentials 
 
-# C1new authentication mechanism
+# install tools
+. ./tools.sh
 
+# import variables
+. ./00_define_vars.sh
+
+# set additional variables based on aws configure
+PROJECTDIR=`pwd` 
+export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
+export AWS_REGION=`aws configure get region`
+export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
+export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
+
+# set additional variables based on the selected C1authentication mechanism
 if [[ "${C1AUTH}" = "accountbased" ]] ; then
     export C1AUTHHEADER="api-secret-key: ${C1APIKEY}"
     export C1CSAPIURL="https://cloudone.trendmicro.com/api/container"
@@ -35,25 +47,6 @@ if [ "${C1AUTH}" != "accountbased" ] && [ "${C1AUTH}" != "emailbased" ]  ; then
     printf "%s\n" 'ERROR: illegal value for ${C1AUTH}'
     export C1AUTHHEADER=""
 fi
-echo $C1AUTHHEADER
-
-
-
-
-
-
-# install tools
-. ./tools.sh
-
-# import variables
-. ./00_define_vars.sh
-
-# set additional variables based on aws configure
-PROJECTDIR=`pwd` 
-export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
-export AWS_REGION=`aws configure get region`
-export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
-export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
 
 varsok=true
 # Check AWS settings
