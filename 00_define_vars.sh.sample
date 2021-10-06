@@ -73,11 +73,6 @@ export DSSC_REGUSER='administrator'
 ####------do not edit below this line (unless you really know what you are doing)----------
 ####---------------------------------------------------------------------------------------
 
-#get AWS variables
-export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
-export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
-export AWS_REGION=`aws configure get region`
-
 # APPS  #those apps have been tested and work
 # using distinct variables as exporting arrays in bash is still troublesome
 export APP_GIT_URL1='https://github.com/cvdabbeele/c1-app-sec-moneyx.git'
