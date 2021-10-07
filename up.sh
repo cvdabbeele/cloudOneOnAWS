@@ -40,7 +40,7 @@ fi
 if [[ "${C1AUTH}" = "emailbased" ]] ; then
     export C1AUTHHEADER="Authorization:	ApiKey ${C1APIKEY}"
     export C1CSAPIURL="https://container.${C1REGION}.cloudone.trendmicro.com/api"
-    export C1ASAPIURL="https://application.${C1REGION}.cloudone.trendmicro.com/"
+    export C1ASAPIURL="https://application.${C1REGION}.cloudone.trendmicro.com"
 fi
 
 if [ "${C1AUTH}" != "accountbased" ] && [ "${C1AUTH}" != "emailbased" ]  ; then
