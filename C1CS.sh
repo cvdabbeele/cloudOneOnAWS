@@ -207,7 +207,7 @@ export POLICYID=`curl --silent --location --request POST "${C1CSAPIURL}/policies
 ADMISSION_POLICY_ID=`curl --silent --request POST \
   --url ${C1CSAPIURL}/clusters/${C1CSCLUSTERID} \
   --header "${C1AUTHHEADER}" \
-  --header 'content-type: application/json' \
+  --header 'Content-Type: application/json' \
   --data "{\"description\":\"EKS cluster added and Policy Assigned by the CloudOneOnAWS project ${AWS_PROJECT}\",\"policyID\":\"${POLICYID}\"}" | jq -r ".policyID"`
 
 # testing C1CS (admission control)
