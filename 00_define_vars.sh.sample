@@ -2,21 +2,18 @@
 printf '%s\n' "-------------------------------"
 printf '%s\n' "     Configuring Variables     "
 printf '%s\n' "-------------------------------"
-# version 1.1
-#changes: (202105)
-# new variables (see below):
-# export TAGKEY1="owner"    # could also use "user"
-# export TAGVALUE1="chrisV" # your username or anything you want
-# version 1.2
-#changes: (202110)
-# new variables (see below):
-# export C1AUTH="could be \"accountbased\" (=account&username-based authenticated to C1) or \"emailbased\"(=authenticated to C1 with email address)"
-# export C1REGION="could be us-1,in-1, gb-1, jp-1, de-1,au-1; only used when $C1AUTH=email "
-# export C1APIKEY='your_CloudOne_API_Key; either created in C1WS (in case of legacy auth.) or in C1 (in case of email auth.)'
 
-#enter your configuration variables in this file
-#save it without the .sample extension
-#make sure it is executable
+# copy this file to 00_define_vars.sh
+# enter your configuration variables in this file
+# make sure it is still executable
+
+# changes 202110
+#   new variables (see below): C1AUTH, C1REGION
+#   updated variables: C1APIKEY
+# changes 202105
+#   new variables (see below): TAGKEY1, TAGVALUE1, TAGKEY2, TAGVALUE2
+# changes 20210315
+#   new variables (see below): C1CS_RUNTIME
 
 printf '%s' "Defining variables... "
 #### ---------------------------------------------------------------------------
@@ -24,23 +21,21 @@ printf '%s' "Defining variables... "
 #### ---------------------------------------------------------------------------
 
 # update 202110
-export C1AUTH="could be \"accountbased\" (=account&username-based authenticated to C1) or \"emailbased\"(=authenticated to C1 with email address)"
-export C1REGION="could be us-1,in-1, gb-1, jp-1, de-1,au-1; only used when $C1AUTH=emailbased "
-export C1APIKEY='your_CloudOne_API_Key; either created in C1WS (in case of legacy auth.) or in C1 (in case of email auth.)'
-
-
+# export C1AUTH="the value could be \"accountbased\" (=account&username-based authenticated to C1) or \"emailbased\"(=authenticated to C1 with email address)"
+export C1AUTH="accountbased"   
+# If the variable does not exist, it will be set to "accountbased" for compatibility reasons with older versions of this script
+# export C1REGION="the value could be us-1,in-1, gb-1, jp-1, de-1,au-1; it will only be used when $C1AUTH=emailbased and the value must match the region of your CloudOne registration "
 
 # C1CS (update 20210315)
 # if you do not have access to C1CS-Runtime option (which is in preview now; March 2021), 
 # then set the following variable to "false".  
+export C1CS_RUNTIME="false"
 # If the variable does not exist, it will be set to "true" (meaning you have access to C1CS-runtime)
 # this is for compatibility reasons with older versions of this script
 
-export C1CS_RUNTIME="false"
-
 #  AWS settings
 export AWS_PROJECT='cloudone01'    #may only contain lowercase and trailing numbers, but no "-", no "_", nor any special characters.
-export AWS_EKS_NODES='2'
+
 # remember to run AWS configure first.  The scripts will pull the AWS keys and region from the AWS configure
 
 # Deep Security Smart Check settings (used for pre-runtime scanning)
@@ -52,9 +47,8 @@ export DSSC_AC='xx-xxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx'
 export TREND_AP_KEY='your_trend_key_for_cloudOne_Application_Security'
 export TREND_AP_SECRET='your_trend_secret_for_cloudOne_Application_Security'
 
-#Cloud One Container Security Settings (for Admission Control)
-# see https://cloudone.trendmicro.com/docs/container-security/api-key-create/
-export C1APIKEY='your_CloudOne_API_Key; for now you have to create this key in DSaaS aka C1WS'
+# export C1APIKEY='your_CloudOne_API_Key; depending on the choosen cloudOne authentication , the API key must either be created in C1WS (when using the legacy authentication to C1) or created (at the top level) in C1 (when email authentication to C1 is used)'
+export C1APIKEY='your_CloudOne_API_Key'
 
 # Dockerhub account information (required to do "authenticated pulls" from docker to get a higher max-pull limit)
 export DOCKERHUB_USERNAME='your username of your (free) account on hub.docker.com'
@@ -67,6 +61,8 @@ export DSSC_PASSWORD='Tr3ndm1cr0!'     #DO CHANGE THIS do NOT use any "\" in the
 #### --------------------------------------------------------------------------------------
 #### -----below this line are default settings which may be optionally customised----------
 #### --------------------------------------------------------------------------------------
+# The number of nodes you want your AWS Kubernetes Cluster (EKS) to have:
+export AWS_EKS_NODES='2'
 
 # Tags (you may customise these tags to your liking; both the Key and the Value)
 # Other than these, one more tag is added.  That third keypair is for use by the script only
