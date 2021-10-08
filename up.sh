@@ -16,7 +16,7 @@
 
 # removing "aws_session_token = <blanco> " from credentials file (which throws an error if not removed)
 #sed -i "/aws_session_token/d" ~/.aws/credentials 
-
+MAINSTARTTIME=`date +%s`
 # install tools
 . ./tools.sh
 
@@ -135,7 +135,9 @@ printf '%s\n'  " e.g. by running ./pushWithHighSecurityThresholds.sh"
 printf '%s\n'  " e.g. by running ./pushWithMalware.sh"
 printf '%s\n'  " After each script, verify that the pipeline has started and give it time to complete"
 printf '%s\n'  " If you kick off another pipeline too early, it will overrule (and stop) the previous one"
-
+MAINENDTIME=`date +%s`
+printf '%s\n' "Script run time = $((($MAINSTARTTIME-$MAINENDTIME)/60)) minutes"
+ 
 #. ./strickt_security_settings.sh  
 
 # create report
