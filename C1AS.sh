@@ -8,7 +8,6 @@ function create_c1as_group {
 # Creating groups
 # if a group object for this project-app already exists in c1as, then delete it first
 
-
 TEMPJSON=(`\
 curl --silent --location --request GET "${C1ASAPIURL}/accounts/groups" \
 --header 'Content-Type: application/json' \

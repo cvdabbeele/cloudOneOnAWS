@@ -24,7 +24,7 @@ printf '%s' "Defining variables... "
 # export C1AUTH="the value could be \"accountbased\" (=account&username-based authenticated to C1) or \"emailbased\"(=authenticated to C1 with email address)"
 export C1AUTH="accountbased"   
 # If the variable does not exist, it will be set to "accountbased" for compatibility reasons with older versions of this script
-# export C1REGION="the value could be us-1,in-1, gb-1, jp-1, de-1,au-1; it will only be used when $C1AUTH=emailbased and the value must match the region of your CloudOne registration "
+export C1REGION="the value could be us-1,in-1, gb-1, jp-1, de-1,au-1; it will only be used when $C1AUTH=emailbased and the value must match the region of your CloudOne registration "
 
 # C1CS (update 20210315)
 # if you do not have access to C1CS-Runtime option (which is in preview now; March 2021), 
