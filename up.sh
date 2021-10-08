@@ -17,6 +17,7 @@
 # removing "aws_session_token = <blanco> " from credentials file (which throws an error if not removed)
 #sed -i "/aws_session_token/d" ~/.aws/credentials 
 MAINSTARTTIME=`date +%s`
+
 # install tools
 . ./tools.sh
 
@@ -71,11 +72,14 @@ if  [ -z "$APP_GIT_URL2" ]; then echo APP_GIT_URL2 must be set && varsok=false; 
 if  [ -z "$APP_GIT_URL3" ]; then echo APP_GIT_URL3 must be set && varsok=false; fi
 
 #check Application Security settings (for runtime protection)
-if  [ -z "$TREND_AP_KEY" ]; then echo TREND_AP_KEY must be set && varsok=false; fi
-if  [ -z "$TREND_AP_SECRET" ]; then echo TREND_AP_SECRET must be set && varsok=false; fi
+#if  [ -z "$TREND_AP_KEY" ]; then echo TREND_AP_KEY must be set && varsok=false; fi
+#if  [ -z "$TREND_AP_SECRET" ]; then echo TREND_AP_SECRET must be set && varsok=false; fi
 
 # if C1CS_RUNTIME does not exist, assume that C1CS_RUNTIME is enabled (for compatibility reasons)
 if  [ -z "$C1CS_RUNTIME" ]; then export C1CS_RUNTIME="true";  fi  
+
+# if C1AUTH does not exist, assume that C1AUTH is "accountbased" (for compatibility reasons)
+if  [ -z "$C1AUTH" ]; then export C1AUTH="accountbased";  fi  
 
 if  [ "$varsok" = false ]; then
   printf '%s\n' "Please check your 00_define_vars.sh file"

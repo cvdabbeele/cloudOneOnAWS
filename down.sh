@@ -109,12 +109,12 @@ fi
 printf "%s\n" "Removing Services from EKS cluster"
 for i in `kubectl get services -o json | jq -r '.items[].metadata.name'`
 do
-  printf "%s\n" "... "
+  printf "%s" "... "
   kubectl delete service $i
 done
 
 #delete deployed apps
-printf "%s" "Removing Deployments from EKS cluster... "
+printf "%\n\s" "Removing Deployments from EKS cluster... "
 for i in `kubectl get deployments  -o json | jq -r '.items[].metadata.name'`
 do
   kubectl delete deployment $i
