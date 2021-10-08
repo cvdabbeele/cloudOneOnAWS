@@ -140,7 +140,7 @@ printf '%s\n'  " e.g. by running ./pushWithMalware.sh"
 printf '%s\n'  " After each script, verify that the pipeline has started and give it time to complete"
 printf '%s\n'  " If you kick off another pipeline too early, it will overrule (and stop) the previous one"
 MAINENDTIME=`date +%s`
-printf '%s\n' "Script run time = $((($MAINSTARTTIME-$MAINENDTIME)/60)) minutes"
+printf '%s\n' "Script run time = $((($MAINENDTIME-$MAINSTARTTIME)/60)) minutes"
  
 #. ./strickt_security_settings.sh  
 
