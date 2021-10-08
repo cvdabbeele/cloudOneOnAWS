@@ -2,13 +2,12 @@ printf '%s\n' "--------------------------"
 printf '%s\n' "     (re-)Adding C1CS     "
 printf '%s\n' "--------------------------"
 
-#delete old c1cs deployment 
-kubectl delete deployment trendmicro-admission-controller -n c1cs  &>/dev/null
-# delete old c1cs daemonset 
-kubectl delete daemonset  trendmicro-runtime-protection -n c1cs  &>/dev/null
 
-# Creating a Cluster
-## Creating a cluster object in C1Cs and getting an API key to deploy C1CS to the K8S cluster
+#delete old namespaces  
+printf '%s\n' "Deleting any potential old C1CS artefacts on the EKS cluster"
+kubectl delete namespace c1cs  &>/dev/null
+kubectl delete namespace nginx  &>/dev/null
+kubectl delete namespace mywhitelistednamespace &>/dev/null
 
 # if a cluster object for this project already exists in c1cs, then delete it 
 C1CSCLUSTERS=(`\
@@ -16,7 +15,7 @@ curl --silent --location --request GET "${C1CSAPIURL}/clusters" \
 --header 'Content-Type: application/json' \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' \
- | jq -r ".clusters[] | select(.name == \"${AWS_PROJECT}\").id"`)
+ | jq -r ".clusters[]? | select(.name == \"${AWS_PROJECT}\").id"`)
 
 for i in "${!C1CSCLUSTERS[@]}"
 do
@@ -31,14 +30,54 @@ do
   fi
 done 
 
+# if a Scanner object for this project already exists in c1cs, then delete it 
+C1CSSCANNERS=(`\
+curl --silent --location --request GET "${C1CSAPIURL}/scanners" \
+--header 'Content-Type: application/json' \
+--header "${C1AUTHHEADER}"  \
+--header 'api-version: v1' \
+ | jq -r ".scanners[]? | select(.name == \"${AWS_PROJECT}\").id"`)
+
+for i in "${!C1CSSCANNERS[@]}"
+do
+  printf "%s\n" "Deleting old scanner object ${C1CSSCANNERS[$i]} from C1CS"
+  curl --silent --location --request DELETE "${C1CSAPIURL}/scanners/${C1CSSCANNERS[$i]}" \
+--header 'Content-Type: application/json' \
+--header "${C1AUTHHEADER}"  \
+--header 'api-version: v1' 
+done 
+
+# if a Policy object for this project already exists in c1cs, then delete it 
+C1CSPOLICIES=(`\
+curl --silent --location --request GET "${C1CSAPIURL}/policies" \
+--header 'Content-Type: application/json' \
+--header "${C1AUTHHEADER}"  \
+--header 'api-version: v1' \
+ | jq -r ".policies[]? | select(.name == \"${AWS_PROJECT}\").id"`)  2>/dev/null
+
+for i in "${!C1CSPOLICIES[@]}"
+do
+  printf "%s\n" "Deleting old policy objecy ${C1CSPOLICIES[$i]} from C1CS"
+  curl --silent --location --request DELETE "${C1CSAPIURL}/policies/${C1CSPOLICIES[$i]}" \
+--header 'Content-Type: application/json' \
+--header "${C1AUTHHEADER}"  \
+--header 'api-version: v1' 
+done 
+
+
+
 printf '%s\n' "Creating a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster"
 
-export TEMPJSON=`\
-curl --silent --location --request POST "${C1CSAPIURL}/clusters" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}"  --header 'api-version: v1' --data-raw "{    \"name\": \"${AWS_PROJECT}\",
-\"description\": \"EKS cluster added by the CloudOneOnAWS project ${AWS_PROJECT}\",
-\"runtimeEnabled\": $C1CS_RUNTIME}" `
+export TEMPJSON=` \
+curl --silent --location --request POST "${C1CSAPIURL}/clusters" \
+--header 'Content-Type: application/json' \
+--header "${C1AUTHHEADER}"  \
+--header 'api-version: v1' \
+--data-raw "{   \
+    \"name\": \"${AWS_PROJECT}\", \
+    \"description\": \"EKS cluster added by the CloudOneOnAWS project ${AWS_PROJECT}\"}"`
+#echo $TEMPJSON | jq
 
-#eho $TEMPJSON | jq
 export C1APIKEYforCLUSTERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
 #echo  C1APIKEYforCLUSTERS = $C1APIKEYforCLUSTERS
 export C1CSCLUSTERID=`echo ${TEMPJSON}| jq -r ".id"`
@@ -48,15 +87,20 @@ if [[ "${C1CS_RUNTIME}" == "true" ]]; then
     #echo C1RUNTIMEKEY = $C1RUNTIMEKEY
     export C1RUNTIMESECRET=`echo ${TEMPJSON}| jq -r ".runtimeSecret"`
     #echo C1RUNTIMESECRET = $C1RUNTIMESECRET
+else
+    export C1RUNTIMEKEY=""
+    export C1RUNTIMESECRET=""
 fi
 
 ## deploy C1CS to the K8S cluster of the CloudOneOnAWS project
 printf '%s\n' "Deploying C1CS to the K8S cluster of the CloudOneOnAWS project"
+
 if [[ "${C1CS_RUNTIME}" == "true" ]]; then
     cat << EOF >work/overrides.addC1csToK8s.yml
     cloudOne:
        admissionController:
          apiKey: ${C1APIKEYforCLUSTERS}
+         endpoint: https://container.${C1REGION}.cloudone.trendmicro.com
        runtimeSecurity:
          enabled: true
          apiKey: ${C1RUNTIMEKEY}
@@ -67,6 +111,9 @@ else
     cloudOne:
        admissionController:
          apiKey: ${C1APIKEYforCLUSTERS}
+         endpoint: https://container.${C1REGION}.cloudone.trendmicro.com
+       runtimeSecurity:
+         enabled: false
 EOF
 fi
 helm upgrade \
@@ -78,26 +125,10 @@ helm upgrade \
      https://github.com/trendmicro/cloudone-container-security-helm/archive/master.tar.gz  1>/dev/null 2>/dev/null
 
 # Creating a Scanner
-## Creating a Scanner object in C1Cs and get an API key to grant C1CS rights to push scanresults to C1CS
+## Creating a Scanner object in C1Cs and getting an API key for the Scanner
 
-# if a Scanner object for this project already exists in c1cs, then delete it 
-C1CSSCANNERS=(`\
-curl --silent --location --request GET "${C1CSAPIURL}/scanners" \
---header 'Content-Type: application/json' \
---header "${C1AUTHHEADER}"  \
---header 'api-version: v1' \
- | jq -r ".scanners[] | select(.name == \"${AWS_PROJECT}\").id"`)
 
-for i in "${!C1CSSCANNERS[@]}"
-do
-  printf "%s\n" "Deleting old scanner object ${C1CSSCANNERS[$i]} from C1CS"
-  curl --silent --location --request DELETE "${C1CSAPIURL}/scanners/${C1CSSCANNERS[$i]}" \
---header 'Content-Type: application/json' \
---header "${C1AUTHHEADER}"  \
---header 'api-version: v1' 
-done 
-
-printf '%s\n' "Creating a Scanner object in C1Cs and get an API key to grant C1CS rights to push scanresults to C1CS"
+printf '%s\n' "Creating a Scanner object in C1Cs and getting an API key for the Scanner"
 export TEMPJSON=`\
 curl --silent --location --request POST "${C1CSAPIURL}/scanners" \
 --header 'Content-Type: application/json' \
@@ -125,25 +156,6 @@ helm upgrade \
           https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz  1>/dev/null 2>/dev/null
 
 # Creating an Admission Policy
-# remove this project's Policy from c1cs
-# if a Policy object for this project already exists in c1cs, then delete it 
-
-C1CSPOLICIES=(`\
-curl --silent --location --request GET "${C1CSAPIURL}/policies" \
---header 'Content-Type: application/json' \
---header "${C1AUTHHEADER}"  \
---header 'api-version: v1' \
- | jq -r ".policies[] | select(.name == \"${AWS_PROJECT}\").id"`)  2>/dev/null
-
-for i in "${!C1CSPOLICIES[@]}"
-do
-  printf "%s\n" "Deleting old policy objecy ${C1CSPOLICIES[$i]} from C1CS"
-  curl --silent --location --request DELETE "${C1CSAPIURL}/policies/${C1CSPOLICIES[$i]}" \
---header 'Content-Type: application/json' \
---header "${C1AUTHHEADER}"  \
---header 'api-version: v1' 
-done 
-
 printf '%s\n' "Creating Admission Policy in C1Cs"
 export POLICYID=`curl --silent --location --request POST "${C1CSAPIURL}/policies" \
 --header 'Content-Type: application/json' \
@@ -214,17 +226,17 @@ ADMISSION_POLICY_ID=`curl --silent --request POST \
 # --------------------------------
 printf '%s\n' "Whitelisting namespace smartcheck for Admission Control"
 kubectl label namespace smartcheck ignoreAdmissionControl=ignore 2>/dev/null
+printf '%s\n' "Testing C1CS Admission Control:"
+printf '%s\n' "   THE BELOW SHOULD FAIL: Deploying nginx pod in its own namespace "
+kubectl create namespace nginx 2>/dev/null  1>/dev/null
+kubectl run --generator=run-pod/v1 --image=nginx --namespace nginx nginx 
 
-printf '%s\n' "Deploying nginx pod in its own namespace --- this will fail"
-kubectl create namespace nginx 2>/dev/null
-kubectl run --generator=run-pod/v1 --image=nginx --namespace nginx nginx 2>/dev/null
-
-printf '%s\n' "Deploying nginx pod in whitelisted namespace --- this will work"
-kubectl create namespace mywhitelistednamespace 2>/dev/null
+printf '%s\n' "   THE BELOW SHOULD WORK: Deploying nginx pod in whitelisted namespace "
+kubectl create namespace mywhitelistednamespace 2>/dev/null  1>/dev/null
 #whitelist that namespace for C1CS
-kubectl label namespace mywhitelistednamespace ignoreAdmissionControl=ignore 2>/dev/null
+kubectl label namespace mywhitelistednamespace ignoreAdmissionControl=ignore --overwrite=true 2>/dev/null 1>/dev/null
 #deploying nginx in the "mywhitelistednamespace" will work:
-kubectl run --generator=run-pod/v1 --image=nginx --namespace mywhitelistednamespace nginx 2>/dev/null
+kubectl run --generator=run-pod/v1 --image=nginx --namespace mywhitelistednamespace nginx
 
 kubectl run nginx  --image=nginx --namespace mywhitelistednamespace 2>/dev/null
 #kubectl get namespaces --show-labels

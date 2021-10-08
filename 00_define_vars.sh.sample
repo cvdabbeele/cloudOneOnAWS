@@ -27,8 +27,7 @@ export C1AUTH="accountbased"
 export C1REGION="the value could be us-1,in-1, gb-1, jp-1, de-1,au-1; it will only be used when $C1AUTH=emailbased and the value must match the region of your CloudOne registration "
 
 # C1CS (update 20210315)
-# if you do not have access to C1CS-Runtime option (which is in preview now; March 2021), 
-# then set the following variable to "false".  
+# for now keep C1CS_RUNTIME to "false".  It will be implented later
 export C1CS_RUNTIME="false"
 # If the variable does not exist, it will be set to "true" (meaning you have access to C1CS-runtime)
 # this is for compatibility reasons with older versions of this script
