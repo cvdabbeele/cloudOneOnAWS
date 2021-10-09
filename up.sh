@@ -24,6 +24,12 @@ MAINSTARTTIME=`date +%s`
 # import variables
 . ./00_define_vars.sh
 
+varsok=true
+
+# check if aws keys are valid
+DUMMY=`aws s3 ls`
+if  [ -z "${DUMMY}" ]; then echo "AWS credentials are false, re-run aws configure" && varsok=false; fi
+
 # set additional variables based on aws configure
 PROJECTDIR=`pwd` 
 export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
@@ -49,7 +55,6 @@ if [ "${C1AUTH}" != "accountbased" ] && [ "${C1AUTH}" != "emailbased" ]  ; then
     export C1AUTHHEADER=""
 fi
 
-varsok=true
 # Check AWS settings
 #if  [ -z "$AWS_REGION" ]; then echo AWSC_REGION must be set && varsok=false; fi
 if  [ -z "$AWS_PROJECT" ]; then echo AWSC_PROJECT must be set && varsok=false; fi

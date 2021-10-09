@@ -114,7 +114,7 @@ do
 done
 
 #delete deployed apps
-printf "%\n\s" "Removing Deployments from EKS cluster... "
+printf "\n%s" "Removing Deployments from EKS cluster... "
 for i in `kubectl get deployments  -o json | jq -r '.items[].metadata.name'`
 do
   kubectl delete deployment $i
@@ -294,8 +294,8 @@ for i in "${!aws_vpc_ids[@]}"; do
 
     printf "%s\n" "Deleting VPC: ${aws_vpc_ids[$i]}  (hopefully)"
     aws ec2 delete-vpc --vpc-id ${aws_vpc_ids[$i]}
+    printf "%s\n" "---"
   fi
-  printf "%s\n" "---"
 done
 
 #the EKS cluster should already have been deleted  (in reality it is sometimes not)
