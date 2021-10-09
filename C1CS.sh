@@ -5,9 +5,22 @@ printf '%s\n' "--------------------------"
 
 #delete old namespaces  
 printf '%s\n' "Deleting any potential old C1CS artefacts on the EKS cluster"
-kubectl delete namespace c1cs  &>/dev/null
-kubectl delete namespace nginx  &>/dev/null
-kubectl delete namespace mywhitelistednamespace &>/dev/null
+#kubectl delete namespace c1cs  &>/dev/null
+kubectl delete namespace trendmicro-system   2>/dev/null
+kubectl delete clusterrole oversight-manager-role 2>/dev/null 
+kubectl delete ClusterRoleBinding "oversight-manager-rolebinding"  2>/dev/null 
+
+kubectl delete clusterrole oversight-proxy-role 2>/dev/null 
+kubectl delete ClusterRoleBinding "oversight-proxy-rolebinding"  2>/dev/null 
+
+kubectl delete namespace nginx  2>/dev/null
+kubectl delete clusterrole usage-manager-role 2>/dev/null
+kubectl delete clusterroleBinding "usage-manager-rolebinding" 2>/dev/null
+
+kubectl delete namespace mywhitelistednamespace 2>/dev/null
+kubectl delete clusterrole usage-proxy-role 2>/dev/null
+kubectl delete ClusterRoleBinding "usage-proxy-rolebinding"  2>/dev/null
+
 
 # if a cluster object for this project already exists in c1cs, then delete it 
 C1CSCLUSTERS=(`\
@@ -65,7 +78,6 @@ do
 done 
 
 
-
 printf '%s\n' "Creating a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster"
 
 export TEMPJSON=` \
@@ -76,17 +88,17 @@ curl --silent --location --request POST "${C1CSAPIURL}/clusters" \
 --data-raw "{   \
     \"name\": \"${AWS_PROJECT}\", \
     \"description\": \"EKS cluster added by the CloudOneOnAWS project ${AWS_PROJECT}\"}"`
-#echo $TEMPJSON | jq
+echo $TEMPJSON | jq
 
 export C1APIKEYforCLUSTERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
-#echo  C1APIKEYforCLUSTERS = $C1APIKEYforCLUSTERS
+echo  C1APIKEYforCLUSTERS = $C1APIKEYforCLUSTERS
 export C1CSCLUSTERID=`echo ${TEMPJSON}| jq -r ".id"`
-#echo C1CSCLUSTERID = $C1CSCLUSTERID
+echo C1CSCLUSTERID = $C1CSCLUSTERID
 if [[ "${C1CS_RUNTIME}" == "true" ]]; then
     export C1RUNTIMEKEY=`echo ${TEMPJSON}| jq -r ".runtimeKey"`
-    #echo C1RUNTIMEKEY = $C1RUNTIMEKEY
+    echo C1RUNTIMEKEY = $C1RUNTIMEKEY
     export C1RUNTIMESECRET=`echo ${TEMPJSON}| jq -r ".runtimeSecret"`
-    #echo C1RUNTIMESECRET = $C1RUNTIMESECRET
+    echo C1RUNTIMESECRET = $C1RUNTIMESECRET
 else
     export C1RUNTIMEKEY=""
     export C1RUNTIMESECRET=""
@@ -98,37 +110,37 @@ printf '%s\n' "Deploying C1CS to the K8S cluster of the CloudOneOnAWS project"
 if [[ "${C1CS_RUNTIME}" == "true" ]]; then
     cat << EOF >work/overrides.addC1csToK8s.yml
     cloudOne:
-       admissionController:
-         apiKey: ${C1APIKEYforCLUSTERS}
-         endpoint: https://container.${C1REGION}.cloudone.trendmicro.com
+        apiKey: ${C1APIKEYforCLUSTERS}
+        endpoint: https://container.${C1REGION}.cloudone.trendmicro.com
        runtimeSecurity:
          enabled: true
-         apiKey: ${C1RUNTIMEKEY}
-         secret: ${C1RUNTIMESECRET}
 EOF
 else
     cat << EOF >work/overrides.addC1csToK8s.yml
     cloudOne:
-       admissionController:
-         apiKey: ${C1APIKEYforCLUSTERS}
-         endpoint: https://container.${C1REGION}.cloudone.trendmicro.com
-       runtimeSecurity:
-         enabled: false
+        apiKey: ${C1APIKEYforCLUSTERS}
+        endpoint: https://container.${C1REGION}.cloudone.trendmicro.com
 EOF
 fi
+printf '%s\n' "Running Helm to deploy/upgrade C1CS"
 helm upgrade \
-     trendmicro-c1cs \
+     trendmicro \
+     --namespace trendmicro-system --create-namespace \
      --values work/overrides.addC1csToK8s.yml \
-     --namespace c1cs \
      --install \
-     --create-namespace \
-     https://github.com/trendmicro/cloudone-container-security-helm/archive/master.tar.gz  1>/dev/null 2>/dev/null
+     https://github.com/trendmicro/cloudone-container-security-helm/archive/master.tar.gz
+
+printf '%s' "Waiting for C1CS pod to become running"
+while [[ `kubectl get pods -n trendmicro-system | grep trendmicro-admission-controller | grep "1/1" | grep -c Running` -ne 1 ]];do
+  sleep 5
+  printf '%s' "."
+  #kubectl get pods -n trendmicro-system
+done
 
 # Creating a Scanner
 ## Creating a Scanner object in C1Cs and getting an API key for the Scanner
 
-
-printf '%s\n' "Creating a Scanner object in C1Cs and getting an API key for the Scanner"
+printf '\n%s\n' "Creating a Scanner object in C1Cs and getting an API key for the Scanner"
 export TEMPJSON=`\
 curl --silent --location --request POST "${C1CSAPIURL}/scanners" \
 --header 'Content-Type: application/json' \
@@ -146,15 +158,17 @@ export C1CSSCANNERID=`echo ${TEMPJSON}| jq -r ".id"`
 cat << EOF >work/overrides.smartcheck.yml
 cloudOne:
      apiKey: ${C1APIKEYforSCANNERS}
+     endpoint: https://container.${C1REGION}.cloudone.trendmicro.com
 EOF
-
+printf '%s\n' "Running Helm upgrade for SmartCheck"
 helm upgrade \
-          deepsecurity-smartcheck \
-          --reuse-values \
-          --values work/overrides.smartcheck.yml \
-          -n ${DSSC_NAMESPACE} \
-          https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz  1>/dev/null 2>/dev/null
-
+     deepsecurity-smartcheck -n ${DSSC_NAMESPACE} \
+     --values work/overrides.smartcheck.yml \
+     --reuse-values \
+     https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz
+     
+#watch kubectl get pods -n ${DSSC_NAMESPACE} 
+        
 # Creating an Admission Policy
 printf '%s\n' "Creating Admission Policy in C1Cs"
 export POLICYID=`curl --silent --location --request POST "${C1CSAPIURL}/policies" \
@@ -226,18 +240,18 @@ ADMISSION_POLICY_ID=`curl --silent --request POST \
 # --------------------------------
 printf '%s\n' "Whitelisting namespace smartcheck for Admission Control"
 kubectl label namespace smartcheck ignoreAdmissionControl=ignore 2>/dev/null
+# testing admission control
+kubectl create namespace nginx 
+kubectl create namespace mywhitelistednamespace
+#whitelist that namespace for C1CS
+kubectl label namespace mywhitelistednamespace ignoreAdmissionControl=ignore --overwrite=true 
 printf '%s\n' "Testing C1CS Admission Control:"
 printf '%s\n' "   THE BELOW SHOULD FAIL: Deploying nginx pod in its own namespace "
-kubectl create namespace nginx 2>/dev/null  1>/dev/null
-kubectl run --generator=run-pod/v1 --image=nginx --namespace nginx nginx 
+kubectl run nginx --image=nginx --namespace nginx nginx 
+kubectl run nginx --image=nginx --namespace nginx nginx 
 
 printf '%s\n' "   THE BELOW SHOULD WORK: Deploying nginx pod in whitelisted namespace "
-kubectl create namespace mywhitelistednamespace 2>/dev/null  1>/dev/null
-#whitelist that namespace for C1CS
-kubectl label namespace mywhitelistednamespace ignoreAdmissionControl=ignore --overwrite=true 2>/dev/null 1>/dev/null
 #deploying nginx in the "mywhitelistednamespace" will work:
-kubectl run --generator=run-pod/v1 --image=nginx --namespace mywhitelistednamespace nginx
-
-kubectl run nginx  --image=nginx --namespace mywhitelistednamespace 2>/dev/null
+kubectl run nginx --image=nginx --namespace mywhitelistednamespace 
 #kubectl get namespaces --show-labels
 #kubectl get pods -A | grep nginx
