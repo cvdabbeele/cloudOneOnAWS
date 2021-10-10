@@ -79,7 +79,6 @@ done
 
 
 printf '%s\n' "Creating a cluster object in C1Cs and get an API key to deploy C1CS to the K8S cluster"
-
 export TEMPJSON=` \
 curl --silent --location --request POST "${C1CSAPIURL}/clusters" \
 --header 'Content-Type: application/json' \
@@ -88,17 +87,17 @@ curl --silent --location --request POST "${C1CSAPIURL}/clusters" \
 --data-raw "{   \
     \"name\": \"${AWS_PROJECT}\", \
     \"description\": \"EKS cluster added by the CloudOneOnAWS project ${AWS_PROJECT}\"}"`
-echo $TEMPJSON | jq
+#echo $TEMPJSON | jq
 
 export C1APIKEYforCLUSTERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
-echo  C1APIKEYforCLUSTERS = $C1APIKEYforCLUSTERS
+#echo  C1APIKEYforCLUSTERS = $C1APIKEYforCLUSTERS
 export C1CSCLUSTERID=`echo ${TEMPJSON}| jq -r ".id"`
-echo C1CSCLUSTERID = $C1CSCLUSTERID
+#echo C1CSCLUSTERID = $C1CSCLUSTERID
 if [[ "${C1CS_RUNTIME}" == "true" ]]; then
     export C1RUNTIMEKEY=`echo ${TEMPJSON}| jq -r ".runtimeKey"`
-    echo C1RUNTIMEKEY = $C1RUNTIMEKEY
+    #echo C1RUNTIMEKEY = $C1RUNTIMEKEY
     export C1RUNTIMESECRET=`echo ${TEMPJSON}| jq -r ".runtimeSecret"`
-    echo C1RUNTIMESECRET = $C1RUNTIMESECRET
+    #echo C1RUNTIMESECRET = $C1RUNTIMESECRET
 else
     export C1RUNTIMEKEY=""
     export C1RUNTIMESECRET=""
@@ -123,16 +122,16 @@ else
 EOF
 fi
 printf '%s\n' "Running Helm to deploy/upgrade C1CS"
-helm upgrade \
+DUMMY=`helm upgrade \
      trendmicro \
      --namespace trendmicro-system --create-namespace \
      --values work/overrides.addC1csToK8s.yml \
      --install \
-     https://github.com/trendmicro/cloudone-container-security-helm/archive/master.tar.gz
+     https://github.com/trendmicro/cloudone-container-security-helm/archive/master.tar.gz `
 
 printf '%s' "Waiting for C1CS pod to become running"
 while [[ `kubectl get pods -n trendmicro-system | grep trendmicro-admission-controller | grep "1/1" | grep -c Running` -ne 1 ]];do
-  sleep 5
+  sleep 3
   printf '%s' "."
   #kubectl get pods -n trendmicro-system
 done
@@ -161,11 +160,11 @@ cloudOne:
      endpoint: https://container.${C1REGION}.cloudone.trendmicro.com
 EOF
 printf '%s\n' "Running Helm upgrade for SmartCheck"
-helm upgrade \
+DUMMY=`helm upgrade \
      deepsecurity-smartcheck -n ${DSSC_NAMESPACE} \
      --values work/overrides.smartcheck.yml \
      --reuse-values \
-     https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz
+     https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz`
      
 #watch kubectl get pods -n ${DSSC_NAMESPACE} 
         
@@ -239,14 +238,14 @@ ADMISSION_POLICY_ID=`curl --silent --request POST \
 # testing C1CS (admission control)
 # --------------------------------
 printf '%s\n' "Whitelisting namespace smartcheck for Admission Control"
-kubectl label namespace smartcheck ignoreAdmissionControl=ignore 2>/dev/null
+kubectl label namespace smartcheck ignoreAdmissionControl=ignore &>/dev/null
 # testing admission control
 kubectl create namespace nginx 
 kubectl create namespace mywhitelistednamespace
 #whitelist that namespace for C1CS
 kubectl label namespace mywhitelistednamespace ignoreAdmissionControl=ignore --overwrite=true 
 printf '%s\n' "Testing C1CS Admission Control:"
-printf '%s\n' "   THE BELOW SHOULD FAIL: Deploying nginx pod in its own namespace "
+printf '%s\n' "   THE deployment BELOW SHOULD FAIL: Deploying nginx pod in its own namespace "
 kubectl run nginx --image=nginx --namespace nginx nginx 
 kubectl run nginx --image=nginx --namespace nginx nginx 
 

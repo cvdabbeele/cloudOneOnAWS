@@ -33,23 +33,19 @@ printf "%s\n" "(Re-)creating Group object ${AWS_PROJECT^^}-${1^^} in C1AS"
 TEMPJSON=(`\
 curl --silent --location --request POST "${C1ASAPIURL}/accounts/groups/"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1'  --data-raw "${PAYLOAD}" \
 `)
-
-
-APPKEY=`echo "$TEMPJSON" | jq   -r ".credentials.key"`
-APPSECRET=`echo "$TEMPJSON" | jq   -r ".credentials.secret"`
-
-
+export APPKEY=`echo "$TEMPJSON" | jq   -r ".credentials.key"`
+export APPSECRET=`echo "$TEMPJSON" | jq   -r ".credentials.secret"`
 } 
 #end of function
 
 create_c1as_group $APP1 1
-APP1KEY=$APPKEY
-APP1SECRET=$APPSECRET
+export APP1KEY=$APPKEY
+export APP1SECRET=$APPSECRET
 
 create_c1as_group $APP2 2
-APP2KEY=$APPKEY
-APP2SECRET=$APPSECRET
+export APP2KEY=$APPKEY
+export APP2SECRET=$APPSECRET
 
 create_c1as_group $APP3 3
-APP3KEY=$APPKEY
-APP3SECRET=$APPSECRET
+export APP3KEY=$APPKEY
+export APP3SECRET=$APPSECRET

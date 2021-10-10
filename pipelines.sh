@@ -574,8 +574,18 @@ if [[ "${patched}" =~ "${AWS_PROJECT}EksClusterCodeBuildKubectlRole"   ]];then
     kubectl patch configmap/aws-auth -n kube-system --patch "$(cat work/aws-auth-patch.yml)"
 fi
 
+# create the pipelines
+#  for backward compatibility; set the TREND_AP variables
+export TREND_AP_KEY=${APP1KEY}
+export TREND_AP_SECRET=${APP1SECRET}
 create_eks_pipeline ${AWS_PROJECT}${APP1}
+
+export TREND_AP_KEY=${APP2KEY}
+export TREND_AP_SECRET=${APP2SECRET}
 create_eks_pipeline ${AWS_PROJECT}${APP2}
+
+export TREND_AP_KEY=${APP3KEY}
+export TREND_AP_SECRET=${APP3SECRET}
 create_eks_pipeline ${AWS_PROJECT}${APP3}
 
 printf '%s\n'  "Waiting for Cloudformation stacks to complete:"

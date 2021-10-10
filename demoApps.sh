@@ -34,7 +34,7 @@ function setupApp {
 
   if [[ "${AWS_CC_REPO}" = '' ]]; then
     printf '%s \n' "PANIC:  Could not find the CodeCommit repository: ${AWS_CC_REPO}. Run \"up.sh\" again."
-    read -p "Press CTRL-C to exit script"
+    read -p "Press CTRL-C to exit script, or Enter to continue anyway"
   fi
 
 
@@ -56,7 +56,7 @@ function setupApp {
   done
   if [[ "${AWS_ECR_REPO}" = '' ]]; then
       printf '%s \n' "PANIC:  Could not find the ECR repository: ${AWS_ECR_REPO}. Run \"up.sh\" again."
-      read -p "Press CTRL-C to exit script"
+      read -p "Press CTRL-C to exit script, or Enter to continue anyway"
   fi
 
   mkdir -p  ../apps
@@ -97,7 +97,7 @@ function setupApp {
   git add .  2>/dev/null
   printf '%s\n'  "Committing with tag \"add demoApps\""
   git commit -m "commit by \"add demoApps\""    1>/dev/null 2>/dev/null 
-  printf '%s\n'  "Pushing ${dirname} to CodeCommit"    
+  printf '%s\n'  "   Pushing ${dirname} to CodeCommit"    
   git push --set-upstream origin master         1>/dev/null 2>/dev/null
   #4. pipeline will pick it up, build an Image, send it to SmartCheck..
   cd $currentDir
@@ -116,12 +116,20 @@ function getUrl {
 # If exists, delete old Apps directory
 [ -d "/home/ubuntu/environment/appsxx"/ ] && printf '%s\n' "Cleaning up old Apps directory" && rm -rf ../apps 
 
-
+# setupApp
+#  for backward compatibility; set the TREND_AP variables
+TREND_AP_KEY=${APP1KEY}
+TREND_AP_SECRET=${APP1SECRET}
 setupApp ${APP1} ${APP_GIT_URL1}
 
+TREND_AP_KEY=${APP2KEY}
+TREND_AP_SECRET=${APP2SECRET}
 setupApp ${APP2} ${APP_GIT_URL2}
 
+TREND_AP_KEY=${APP3KEY}
+TREND_AP_SECRET=${APP3SECRET}
 setupApp ${APP3} ${APP_GIT_URL3}
+
 #exit
 #optionally (if the app makes it through the scanning)
 #it takes a while for the apps to get processed through the pipeline
