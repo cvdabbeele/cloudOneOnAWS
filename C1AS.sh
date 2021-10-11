@@ -39,13 +39,13 @@ export APPSECRET=`echo "$TEMPJSON" | jq   -r ".credentials.secret"`
 #end of function
 
 create_c1as_group $APP1 1
-export APP1KEY=$APPKEY
-export APP1SECRET=$APPSECRET
+export APP1KEY=${APPKEY}
+export APP1SECRET=${APPSECRET}
 
 create_c1as_group $APP2 2
-export APP2KEY=$APPKEY
-export APP2SECRET=$APPSECRET
+export APP2KEY=${APPKEY}
+export APP2SECRET=${APPSECRET}
 
 create_c1as_group $APP3 3
-export APP3KEY=$APPKEY
-export APP3SECRET=$APPSECRET
+export APP3KEY=${APPKEY}
+export APP3SECRET=${APPSECRET}

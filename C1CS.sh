@@ -247,8 +247,6 @@ kubectl label namespace mywhitelistednamespace ignoreAdmissionControl=ignore --o
 printf '%s\n' "Testing C1CS Admission Control:"
 printf '%s\n' "   THE deployment BELOW SHOULD FAIL: Deploying nginx pod in its own namespace "
 kubectl run nginx --image=nginx --namespace nginx nginx 
-kubectl run nginx --image=nginx --namespace nginx nginx 
-
 printf '%s\n' "   THE BELOW SHOULD WORK: Deploying nginx pod in whitelisted namespace "
 #deploying nginx in the "mywhitelistednamespace" will work:
 kubectl run nginx --image=nginx --namespace mywhitelistednamespace 
