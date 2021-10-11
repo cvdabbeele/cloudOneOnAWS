@@ -122,12 +122,14 @@ else
 EOF
 fi
 printf '%s\n' "Running Helm to deploy/upgrade C1CS"
-DUMMY=`helm upgrade \
+#DUMMY=`
+helm upgrade \
      trendmicro \
      --namespace trendmicro-system --create-namespace \
      --values work/overrides.addC1csToK8s.yml \
      --install \
-     https://github.com/trendmicro/cloudone-container-security-helm/archive/master.tar.gz `
+     https://github.com/trendmicro/cloudone-container-security-helm/archive/master.tar.gz 
+#`
 
 printf '%s' "Waiting for C1CS pod to become running"
 while [[ `kubectl get pods -n trendmicro-system | grep trendmicro-admission-controller | grep "1/1" | grep -c Running` -ne 1 ]];do
@@ -154,7 +156,7 @@ export C1APIKEYforSCANNERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
 #echo  $C1APIKEYforSCANNERS
 export C1CSSCANNERID=`echo ${TEMPJSON}| jq -r ".id"`
 #echo $C1CSSCANNERID
-cat << EOF >work/overrides.smartcheck.yml
+cat << EOF > work/overrides.smartcheck.yml
 cloudOne:
      apiKey: ${C1APIKEYforSCANNERS}
      endpoint:  ${C1CSAPIURL}
