@@ -110,7 +110,7 @@ if [[ "${C1CS_RUNTIME}" == "true" ]]; then
     cat << EOF >work/overrides.addC1csToK8s.yml
     cloudOne:
         apiKey: ${C1APIKEYforCLUSTERS}
-        endpoint: ${C1CSAPIURL}
+        endpoint: ${C1CSENDPOINTFORHELM}
         runtimeSecurity:
           enabled: true
 EOF
@@ -118,7 +118,7 @@ else
     cat << EOF >work/overrides.addC1csToK8s.yml
     cloudOne:
         apiKey: ${C1APIKEYforCLUSTERS}
-        endpoint: ${C1CSAPIURL}
+        endpoint: ${C1CSENDPOINTFORHELM}
 EOF
 fi
 printf '%s\n' "Running Helm to deploy/upgrade C1CS"
@@ -159,7 +159,7 @@ export C1CSSCANNERID=`echo ${TEMPJSON}| jq -r ".id"`
 cat << EOF > work/overrides.smartcheck.yml
 cloudOne:
      apiKey: ${C1APIKEYforSCANNERS}
-     endpoint:  ${C1CSAPIURL}
+     endpoint: ${C1CSENDPOINTFORHELM}
 EOF
 printf '%s\n' "Running Helm upgrade for SmartCheck"
 DUMMY=`helm upgrade \

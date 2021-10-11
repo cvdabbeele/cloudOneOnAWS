@@ -41,12 +41,14 @@ export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
 if [[ "${C1AUTH}" = "accountbased" ]] ; then
     export C1AUTHHEADER="api-secret-key: ${C1APIKEY}"
     export C1CSAPIURL="https://cloudone.trendmicro.com/api/container"
+    export C1CSENDPOINTFORHELM="https://container.us-1.cloudone.trendmicro.com"
     export C1ASAPIURL="https://cloudone.trendmicro.com/api/application"
 fi
 
 if [[ "${C1AUTH}" = "emailbased" ]] ; then
     export C1AUTHHEADER="Authorization:	ApiKey ${C1APIKEY}"
     export C1CSAPIURL="https://container.${C1REGION}.cloudone.trendmicro.com/api"
+    export C1CSENDPOINTFORHELM=${C1CSAPIURL}
     export C1ASAPIURL="https://application.${C1REGION}.cloudone.trendmicro.com"
 fi
 
