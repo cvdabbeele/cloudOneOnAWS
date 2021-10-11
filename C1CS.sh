@@ -118,7 +118,7 @@ else
     cat << EOF >work/overrides.addC1csToK8s.yml
     cloudOne:
         apiKey: ${C1APIKEYforCLUSTERS}
-        endpoint:  ${C1CSAPIURL}
+        endpoint: ${C1CSAPIURL}
 EOF
 fi
 printf '%s\n' "Running Helm to deploy/upgrade C1CS"
