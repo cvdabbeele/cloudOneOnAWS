@@ -110,15 +110,15 @@ if [[ "${C1CS_RUNTIME}" == "true" ]]; then
     cat << EOF >work/overrides.addC1csToK8s.yml
     cloudOne:
         apiKey: ${C1APIKEYforCLUSTERS}
-        endpoint: https://container.${C1REGION}.cloudone.trendmicro.com
-       runtimeSecurity:
-         enabled: true
+        endpoint: $C1CSAPIURL}
+        runtimeSecurity:
+          enabled: true
 EOF
 else
     cat << EOF >work/overrides.addC1csToK8s.yml
     cloudOne:
         apiKey: ${C1APIKEYforCLUSTERS}
-        endpoint: https://container.${C1REGION}.cloudone.trendmicro.com
+        endpoint:  $C1CSAPIURL}
 EOF
 fi
 printf '%s\n' "Running Helm to deploy/upgrade C1CS"
@@ -157,7 +157,7 @@ export C1CSSCANNERID=`echo ${TEMPJSON}| jq -r ".id"`
 cat << EOF >work/overrides.smartcheck.yml
 cloudOne:
      apiKey: ${C1APIKEYforSCANNERS}
-     endpoint: https://container.${C1REGION}.cloudone.trendmicro.com
+     endpoint:  $C1CSAPIURL}
 EOF
 printf '%s\n' "Running Helm upgrade for SmartCheck"
 DUMMY=`helm upgrade \
@@ -245,9 +245,9 @@ kubectl create namespace mywhitelistednamespace
 #whitelist that namespace for C1CS
 kubectl label namespace mywhitelistednamespace ignoreAdmissionControl=ignore --overwrite=true 
 printf '%s\n' "Testing C1CS Admission Control:"
-printf '%s\n' "   THE deployment BELOW SHOULD FAIL: Deploying nginx pod in its own namespace "
+printf '%s\n' "   THE DEPLOYMENT BELOW SHOULD FAIL: Deploying nginx pod in its own namespace "
 kubectl run nginx --image=nginx --namespace nginx nginx 
-printf '%s\n' "   THE BELOW SHOULD WORK: Deploying nginx pod in whitelisted namespace "
+printf '%s\n' "   THE DEPLOYMENT BELOW SHOULD WORK: Deploying nginx pod in whitelisted namespace "
 #deploying nginx in the "mywhitelistednamespace" will work:
 kubectl run nginx --image=nginx --namespace mywhitelistednamespace 
 #kubectl get namespaces --show-labels
