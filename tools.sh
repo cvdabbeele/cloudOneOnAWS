@@ -26,13 +26,15 @@ fi
 
 
 # Installing kubectl
-if ! [ -x "$(command -v kubectl)" ] ; then
-    printf '%s' "installing kubectl...."
-    sudo curl --silent --location -o /usr/local/bin/kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.15.10/2020-02-22/bin/linux/amd64/kubectl
+###if ! [ -x "$(command -v kubectl)" ] ; then
+    printf '%s' "installing/upgrading kubectl...."
+    #sudo curl --silent --location -o /usr/local/bin/kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.15.10/2020-02-22/bin/linux/amd64/kubectl
+    sudo curl --silent -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
     sudo chmod +x /usr/local/bin/kubectl
-else
-    printf '%s\n' "Using existing kubectl.  Version: `kubectl version  --output json  2>/dev/null | jq -r '.clientVersion|"Major: \(.major), Minor: \(.minor)"'`" 
-fi
+###else
+###    printf '%s\n' "Using existing kubectl.  Version: `kubectl version  --output json  2>/dev/null | jq -r '.clientVersion|"Major: \(.major), Minor: \(.minor)"'`" 
+###fi
 
 # Installing eksctl
 if ! [ -x "$(command -v eksctl)" ] ; then
