@@ -211,7 +211,7 @@ for i in "${!aws_vpc_ids[@]}"; do
   #printf "%s\n" "vpc $i = ${aws_vpc_ids[$i]}.........."
   aws_vpc_tags=`aws ec2 describe-vpcs --vpc-ids ${aws_vpc_ids[$i]} | jq -r '.Vpcs[].Tags'`  #no array needed here; just get thm all in one string
   #printf "%s\n" "${aws_vpc_tags}"
-  if [[ ${aws_vpc_tags} =~ ${C1PROJECT} ]];then
+  if [[ ${aws_vpc_tags} =~ "c1onaws" ]];then
     printf "%s\n" "Found VPC belonging to project: ${aws_vpc_ids[$i]}"
     aws_attachment_ids=(`aws ec2 describe-network-interfaces --filters Name=vpc-id,Values=${aws_vpc_ids[$i]} | jq -r '.NetworkInterfaces[].Attachment.AttachmentId'`)
       printf "%s\n" "Found Network attachment_ids: ${aws_attachment_ids[@]}"
@@ -362,7 +362,7 @@ for i in "${!aws_stacks[@]}"; do
   fi
 done
 
-UPDATE THE DELETE BUCKETS AFTER THE MEGA BUCKET HAS BEEN DELETED !!!!!!!!!!!!!!!
+##UPDATE THE DELETE BUCKETS AFTER THE MEGA S3 BUCKET HAS BEEN DELETED !!!!!!!!!!!!!!!
 
 #cleanup codepipelineartifactbuckets
 readarray -t BUCKETS  <<< `aws s3api list-buckets --region ${AWS_REGION}| jq -r '.Buckets[].Name' `
