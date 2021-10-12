@@ -6,7 +6,8 @@ printf '%s\n' "-------------------------------"
 # copy this file to 00_define_vars.sh
 # enter your configuration variables in this file
 # make sure it is still executable
-
+# changes 202112
+#   variable AWS_PROJECT is now replaced by C1_PROJECT for interchangeability of modules with cloudOneOnAzure Project
 # changes 202110
 #   new variables (see below): C1AUTH, C1REGION
 #   updated variables: C1APIKEY

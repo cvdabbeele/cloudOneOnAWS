@@ -524,28 +524,28 @@ toCreateNewEnvironment="true"
     #printf '%s\n'  "   ECR repo: ${aws_ecr_repo} exists = ${aws_ecr_repo_exists}"
 
     if [[ "${aws_pipeline_stack_exists}" = "true" ]]; then
-      printf '%s \n' "Cleaning up old Cloudformation Stack: ${aws_pipeline_stack}"
+      printf '%s \n' " Cleaning up old Cloudformation Stack: ${aws_pipeline_stack}"
       aws cloudformation delete-stack --stack-name ${aws_pipeline_stack} --region ${AWS_REGION}
       aws cloudformation wait stack-delete-complete --stack-name ${aws_pipeline_stack}  --region ${AWS_REGION}
     fi
 
     #if old pipeline exists -> delete it
     if [[ "${aws_pipeline_exists}" = "true" ]]; then
-      printf "%s\n" "Cleaning up old pipeline ${aws_pipeline}Pipeline"
+      printf "%s\n" " Cleaning up old pipeline ${aws_pipeline}Pipeline"
       aws codepipeline delete-pipeline --name ${aws_pipeline}
     fi
 
     #if old ecr repo exists -> delete it
     if [[ "${aws_ecr_repo_exists}" = "true" ]]; then
       aws_ecr_repo=`echo ${1} | awk '{ print tolower($0) }'`
-      printf "%s\n" "Cleaning up old ECR repository: ${aws_ecr_repo}"
+      printf "%s\n" " Cleaning up old ECR repository: ${aws_ecr_repo}"
       DUMMY=`aws ecr delete-repository --repository-name ${aws_ecr_repo} --region ${AWS_REGION} --force`
     fi
 
     #if old cc repo exists -> delete it
     if [[ "${aws_cc_repo_exists}" = "true" ]]; then
       aws_cc_repo=`echo ${1} | awk '{ print tolower($0) }'`
-      printf "%s\n" "Cleaning up old CodeCommit repository: ${aws_cc_repo}"
+      printf "%s\n" " Cleaning up old CodeCommit repository: ${aws_cc_repo}"
       DUMMY=`aws codecommit delete-repository --repository-name ${aws_cc_repo} --region ${AWS_REGION}`
     fi
     sleep 20  #make sure that stack is totally gone

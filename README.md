@@ -10,8 +10,7 @@ This is based on input from mawinkler and nicgoth.
 ## UPDATES 
 ### 202110
 The created resources in AWS are now being tagged. 
-Check the `00_define_vars.sh.sample` file for details
-Several smaller updates added
+Changes in variables.  Check the `00_define_vars.sh.sample` file for details (!)
 
 ### 202105
 1. At August 13, 2021, GitHub stops authentication with Username/Password.  You must create a Personal Access Token (PAT).  For more info see: https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/.
