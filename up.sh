@@ -28,7 +28,17 @@ varsok=true
 
 # check if aws keys are valid
 DUMMY=`aws s3 ls`
-if  [ -z "${DUMMY}" ]; then echo "AWS credentials are false, re-run aws configure" && varsok=false; fi
+if  [ -z "${DUMMY}" ]; then 
+  echo "AWS credentials are false, re-run aws configure" && varsok=false; 
+  aws configure
+fi
+DUMMY=`aws s3 ls`
+if  [ -z "${DUMMY}" ]; then 
+  echo "AWS credentials still not OK, exit the script and re-run aws configure" && varsok=false; 
+  ead -p "Press CTRL-C to exit script, or Enter to continue anyway"
+else
+  varsok=true;
+fi
 
 # set additional variables based on aws configure
 PROJECTDIR=`pwd` 
@@ -48,7 +58,7 @@ fi
 if [[ "${C1AUTH}" = "emailbased" ]] ; then
     export C1AUTHHEADER="Authorization:	ApiKey ${C1APIKEY}"
     export C1CSAPIURL="https://container.${C1REGION}.cloudone.trendmicro.com/api"
-    export C1CSENDPOINTFORHELM=${C1CSAPIURL}
+    export C1CSENDPOINTFORHELM="https://container.${C1REGION}.cloudone.trendmicro.com"
     export C1ASAPIURL="https://application.${C1REGION}.cloudone.trendmicro.com"
 fi
 
@@ -58,8 +68,8 @@ if [ "${C1AUTH}" != "accountbased" ] && [ "${C1AUTH}" != "emailbased" ]  ; then
 fi
 
 # Check AWS settings
-#if  [ -z "$AWS_REGION" ]; then echo AWSC_REGION must be set && varsok=false; fi
-if  [ -z "${C1PROJECT}" ]; then echo AWSC_PROJECT must be set && varsok=false; fi
+#if  [ -z "$AWS_REGION" ]; then echo C1PROJECT must be set && varsok=false; fi
+if  [ -z "${C1PROJECT}" ]; then echo C1PROJECT must be set && varsok=false; fi
 #if  [ -z "$AWS_ACCESS_KEY_ID" ]; then echo AWS_ACCESS_KEY_ID must be set && varsok=false; fi
 #if  [ -z "$AWS_SECRET_ACCESS_KEY" ]; then echo AWS_SECRET_ACCESS_KEY must be set && varsok=false; fi
 if  [ -z "$AWS_EKS_NODES" ]; then echo AWS_EKS_NODES must be set && varsok=false; fi
@@ -91,7 +101,6 @@ if  [ -z "$C1AUTH" ]; then export C1AUTH="accountbased";  fi
 if  [ "$varsok" = false ]; then
   printf '%s\n' "Please check your 00_define_vars.sh file"
   read -p "Press CTRL-C to exit script, or Enter to continue anyway"
-  exit
 fi
 printf '%s\n' "OK"
 

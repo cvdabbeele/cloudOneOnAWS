@@ -362,16 +362,21 @@ for i in "${!aws_stacks[@]}"; do
   fi
 done
 
-
+UPDATE THE DELETE BUCKETS AFTER THE MEGA BUCKET HAS BEEN DELETED !!!!!!!!!!!!!!!
 
 #cleanup codepipelineartifactbuckets
-buckets=(`aws s3api list-buckets --region ${AWS_REGION}| jq -r '.Buckets[].Name' ` )
-for i in "${!buckets[@]}"; do
-  #printf '%s\n' "Bucket ${i} = ${buckets[${i}]}"
-  if [[ "${buckets[${i}]}" =~ "codepipelineartifact" &&  "${buckets[${i}]}" =~ "${C1PROJECT}" ]]; then
-      printf "%s\n"  "Deleting codepipelineartifactbucket: ${buckets[${i}]}"
-      aws s3 rb s3://${buckets[${i}]} --force  2>/dev/null
-      #aws s3api  delete-bucket  --bucket ${buckets[$i]}  --region ${AWS_REGION}
+readarray -t BUCKETS  <<< `aws s3api list-buckets --region ${AWS_REGION}| jq -r '.Buckets[].Name' `
+readarray -t DUMMYARRAYTOFIXSYNTAXCOLORINGINVSCODE <<< `pwd `
+for i in "${!BUCKETS[@]}"; do
+  #printf '%s\n' "Bucket ${i} = ${BUCKETS[${i}]}"
+  BUCKETNAME=`aws s3 ls ${BUCKETS[${i}]}` 
+  echo "${i}  ${BUCKETS[${i}]}" ${BUCKETNAME}
+  if [[ "${BUCKETS[${i}]}" =~ "codepipelineartifact" ]] &&  [[ "${BUCKETNAME}" =~ "${C1PROJECT}" ]]; then
+      printf "%s\n"  "Deleting codepipelineartifactbucket: ${BUCKETNAME}"
+      aws s3 rb s3://${BUCKETS[${i}]} --force  2>/dev/null
+      #aws s3api  delete-bucket  --bucket ${BUCKETS[$i]}  --region ${AWS_REGION}
+  else
+      printf "%s"  "."
   fi
 done
 
