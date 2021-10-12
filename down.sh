@@ -80,22 +80,32 @@ if [[ "${helm_c1cs}" == "trendmicro-c1cs" ]]; then
   helm delete trendmicro-c1cs -n c1cs
 fi
 
-# remove this projects groups from c1as
-
+# remove these project groups from c1as
 readarray -t C1ASGROUPS <<< `curl --silent --location --request GET "${C1ASAPIURL}/accounts/groups" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' | jq -r ".[].name"`
 readarray -t DUMMYARRAYTOFIXSYNTAXCOLORINGINVSCODE <<< `pwd `
-#echo C1ASGROUPS[@] =  ${C1ASGROUPS[@]}
+echo C1ASGROUPS[@] =  ${C1ASGROUPS[@]}
 readarray -t C1ASGROUPIDS <<< `curl --silent --location --request GET "${C1ASAPIURL}/accounts/groups" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' | jq -r ".[].group_id"`
 readarray -t DUMMYARRAYTOFIXSYNTAXCOLORINGINVSCODE <<< `pwd `
 
 for i in "${!C1ASGROUPS[@]}"
 do
   #printf "%s\n" "C1AS: found group ${C1ASGROUPS[$i]} with ID ${C1ASGROUPIDS[$i]}"
-  if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT^^}-${1^^}" ]]; 
+  if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT^^}-${APP1^^}" ]]; 
   then
-    printf "%s\n" "Deleting old Group object ${C1PROJECT^^}-${1^^} in C1AS"
+    printf "%s\n" "Deleting old Group object ${C1PROJECT^^}-${APP1^^} in C1AS"
     curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
   fi
+  if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT^^}-${APP2^^}" ]]; 
+  then
+    printf "%s\n" "Deleting old Group object ${C1PROJECT^^}-${APP2^^} in C1AS"
+    curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
+  fi
+  if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT^^}-${APP3^^}" ]]; 
+  then
+    printf "%s\n" "Deleting old Group object ${C1PROJECT^^}-${APP3^^} in C1AS"
+    curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
+  fi
+
 done 
 
 
