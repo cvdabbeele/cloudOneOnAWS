@@ -28,12 +28,12 @@ curl --silent --location --request GET "${C1CSAPIURL}/clusters" \
 --header 'Content-Type: application/json' \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' \
- | jq -r ".clusters[]? | select(.name == \"${AWS_PROJECT}\").id"`)
+ | jq -r ".clusters[]? | select(.name == \"${C1PROJECT}\").id"`)
 
 for i in "${!C1CSCLUSTERS[@]}"
 do
   #printf "%s\n" "C1CS: found cluster ${C1CSCLUSTERS[$i]}"
-  if [[ "${C1CSCLUSTERS[$i]}" =~ "${AWS_PROJECT}" ]]; 
+  if [[ "${C1CSCLUSTERS[$i]}" =~ "${C1PROJECT}" ]]; 
   then
     printf "%s\n" "Deleting old Cluster object (${C1CSCLUSTERS[$i]}) in C1CS"
     curl --silent --location --request DELETE "${C1CSAPIURL}/clusters/${C1CSCLUSTERS[$i]}" \
@@ -49,7 +49,7 @@ curl --silent --location --request GET "${C1CSAPIURL}/scanners" \
 --header 'Content-Type: application/json' \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' \
- | jq -r ".scanners[]? | select(.name == \"${AWS_PROJECT}\").id"`)
+ | jq -r ".scanners[]? | select(.name == \"${C1PROJECT}\").id"`)
 
 for i in "${!C1CSSCANNERS[@]}"
 do
@@ -66,7 +66,7 @@ curl --silent --location --request GET "${C1CSAPIURL}/policies" \
 --header 'Content-Type: application/json' \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' \
- | jq -r ".policies[]? | select(.name == \"${AWS_PROJECT}\").id"`)  2>/dev/null
+ | jq -r ".policies[]? | select(.name == \"${C1PROJECT}\").id"`)  2>/dev/null
 
 for i in "${!C1CSPOLICIES[@]}"
 do
@@ -85,8 +85,8 @@ curl --silent --location --request POST "${C1CSAPIURL}/clusters" \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' \
 --data-raw "{   \
-    \"name\": \"${AWS_PROJECT}\", \
-    \"description\": \"EKS cluster added by the CloudOneOnAWS project ${AWS_PROJECT}\"}"`
+    \"name\": \"${C1PROJECT}\", \
+    \"description\": \"EKS cluster added by the CloudOneOnAWS project ${C1PROJECT}\"}"`
 #echo $TEMPJSON | jq
 
 export C1APIKEYforCLUSTERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
@@ -148,8 +148,8 @@ curl --silent --location --request POST "${C1CSAPIURL}/scanners" \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' \
 --data-raw "{
-    \"name\": \"${AWS_PROJECT}\",
-    \"description\": \"The SmartCheck scanner added by the CloudOneOnAWS project ${AWS_PROJECT} \"
+    \"name\": \"${C1PROJECT}\",
+    \"description\": \"The SmartCheck scanner added by the CloudOneOnAWS project ${C1PROJECT} \"
 }" `
 #echo $TEMPJSON | jq
 export C1APIKEYforSCANNERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
@@ -177,8 +177,8 @@ export POLICYID=`curl --silent --location --request POST "${C1CSAPIURL}/policies
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' \
 --data-raw "{
-    \"name\": \"${AWS_PROJECT}\",
-    \"description\": \"Policy created by the CloudOneOnAWS project ${AWS_PROJECT}\",
+    \"name\": \"${C1PROJECT}\",
+    \"description\": \"Policy created by the CloudOneOnAWS project ${C1PROJECT}\",
     \"default\": {
         \"rules\": [
             {
@@ -235,7 +235,7 @@ ADMISSION_POLICY_ID=`curl --silent --request POST \
   --url ${C1CSAPIURL}/clusters/${C1CSCLUSTERID} \
   --header "${C1AUTHHEADER}" \
   --header 'Content-Type: application/json' \
-  --data "{\"description\":\"EKS cluster added and Policy Assigned by the CloudOneOnAWS project ${AWS_PROJECT}\",\"policyID\":\"${POLICYID}\"}" | jq -r ".policyID"`
+  --data "{\"description\":\"EKS cluster added and Policy Assigned by the CloudOneOnAWS project ${C1PROJECT}\",\"policyID\":\"${POLICYID}\"}" | jq -r ".policyID"`
 
 # testing C1CS (admission control)
 # --------------------------------

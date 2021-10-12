@@ -15,7 +15,7 @@ if  [ "$varsok" = false ]; then exit 1 ; fi
 
 function create_pipeline_yaml {
   #creates the git CodeRepo (but no branch, no data), CodePipeline and ECR registry
-  #$1 = name of the pipeline (${AWS_PROJECT}${APP[$i]})
+  #$1 = name of the pipeline (${C1PROJECT}${APP[$i]})
   LOWER1=`echo ${1} | awk '{ print tolower($0) }'`
   printf '%s\n' "Creating file: work/${1}Pipeline.yml "
   ecr_repo_name=`echo ${1}| awk '{print tolower($0)}'`
@@ -107,7 +107,7 @@ Parameters:
   KubectlRoleName:
     Type: String
     Description: The Role for the deployments on EKS
-    Default: ${AWS_PROJECT}EksClusterCodeBuildKubectlRole
+    Default: ${C1PROJECT}EksClusterCodeBuildKubectlRole
     MinLength: 1
     MaxLength: 500
     ConstraintDescription: Do not change this
@@ -115,7 +115,7 @@ Parameters:
   EksClusterName:
     Type: String
     Description: The name of the EKS cluster
-    Default: ${AWS_PROJECT}
+    Default: ${C1PROJECT}
     MinLength: 1
     MaxLength: 50
     ConstraintDescription: Do not change this
@@ -370,7 +370,7 @@ Resources:
           - Name: EKS_KUBECTL_ROLE_ARN
             Value: !Sub arn:aws:iam::\${AWS::AccountId}:role/\${KubectlRoleName}
           - Name: EKS_CLUSTER_NAME
-            Value: !Sub ${AWS_PROJECT}
+            Value: !Sub ${C1PROJECT}
           - Name: REPOSITORY_URI
             Value: !Sub \${AWS::AccountId}.dkr.ecr.${AWS_REGION}.amazonaws.com/\${EcrDockerRepository}
           - Name: APPSEC_KEY
@@ -433,7 +433,7 @@ EOF
 
 function create_eks_pipeline {
 #$1 = name of the pipeline
-#$1 = name of the pipeline (${AWS_PROJECT}${APP[$i]})
+#$1 = name of the pipeline (${C1PROJECT}${APP[$i]})
 LOWER1=`echo ${1} | awk '{ print tolower($0) }'`
 
 #check of pipeline exists
@@ -563,14 +563,14 @@ if [[ "${toCreateNewEnvironment}" = "true" ]]; then
 fi
 }  #end of function
 
-ROLE="    - rolearn: arn:aws:iam::$ACCOUNT_ID:role/${AWS_PROJECT}EksClusterCodeBuildKubectlRole\n      username: build\n      groups:\n        - system:masters"
+ROLE="    - rolearn: arn:aws:iam::$ACCOUNT_ID:role/${C1PROJECT}EksClusterCodeBuildKubectlRole\n      username: build\n      groups:\n        - system:masters"
 
 kubectl get -n kube-system configmap/aws-auth -o yaml | awk "/mapRoles: \|/{print;print \"$ROLE\";next}1" > work/aws-auth-patch.yml
 patched=`kubectl get -n kube-system configmap/aws-auth -o yaml`
-if [[ "${patched}" =~ "${AWS_PROJECT}EksClusterCodeBuildKubectlRole"   ]];then
-    printf "%s\n" "aws-auth configmap already patched for ${AWS_PROJECT}"
+if [[ "${patched}" =~ "${C1PROJECT}EksClusterCodeBuildKubectlRole"   ]];then
+    printf "%s\n" "aws-auth configmap already patched for ${C1PROJECT}"
   else
-    printf "%s" "Patching aws-auth configmap for ${AWS_PROJECT}... "
+    printf "%s" "Patching aws-auth configmap for ${C1PROJECT}... "
     kubectl patch configmap/aws-auth -n kube-system --patch "$(cat work/aws-auth-patch.yml)"
 fi
 
@@ -578,23 +578,23 @@ fi
 #  for backward compatibility; set the TREND_AP variables
 export TREND_AP_KEY=${APP1KEY}
 export TREND_AP_SECRET=${APP1SECRET}
-create_eks_pipeline ${AWS_PROJECT}${APP1}
+create_eks_pipeline ${C1PROJECT}${APP1}
 
 export TREND_AP_KEY=${APP2KEY}
 export TREND_AP_SECRET=${APP2SECRET}
-create_eks_pipeline ${AWS_PROJECT}${APP2}
+create_eks_pipeline ${C1PROJECT}${APP2}
 
 export TREND_AP_KEY=${APP3KEY}
 export TREND_AP_SECRET=${APP3SECRET}
-create_eks_pipeline ${AWS_PROJECT}${APP3}
+create_eks_pipeline ${C1PROJECT}${APP3}
 
 printf '%s\n'  "Waiting for Cloudformation stacks to complete:"
 printf '%s\n'  "----------------------------------------------"
-printf '%s\n' "Waiting for Cloudformation stack ${AWS_PROJECT}${APP1}Pipeline to be created. "
-DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${AWS_PROJECT}${APP1}Pipeline  --region ${AWS_REGION}`
-printf '%s\n' "Waiting for Cloudformation stack ${AWS_PROJECT}${APP2}Pipeline to be created. "
-DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${AWS_PROJECT}${APP2}Pipeline  --region ${AWS_REGION}`
-printf '%s\n' "Waiting for Cloudformation stack ${AWS_PROJECT}${APP3}Pipeline to be created. "
-DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${AWS_PROJECT}${APP3}Pipeline  --region ${AWS_REGION}`
+printf '%s\n' "Waiting for Cloudformation stack ${C1PROJECT}${APP1}Pipeline to be created. "
+DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${C1PROJECT}${APP1}Pipeline  --region ${AWS_REGION}`
+printf '%s\n' "Waiting for Cloudformation stack ${C1PROJECT}${APP2}Pipeline to be created. "
+DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${C1PROJECT}${APP2}Pipeline  --region ${AWS_REGION}`
+printf '%s\n' "Waiting for Cloudformation stack ${C1PROJECT}${APP3}Pipeline to be created. "
+DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${C1PROJECT}${APP3}Pipeline  --region ${AWS_REGION}`
 
-#read -t 15 -p "press ctrl-c to break within 15 seconds"
+#read -p "Press CTRL-C to exit script, or Enter to continue anyway"

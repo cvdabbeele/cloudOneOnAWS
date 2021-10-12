@@ -256,8 +256,8 @@ Edit the `00_define_vars.sh` file with the built in editor
 - `DOCKERHUB_USERNAME`
 - `DOCKERHUB_PASSWORD`
 
-2. `AWS_PROJECT` and shared AWS accounts:
-- If you are sharing an AWS account with someone else, make sure that both of you use a different AWS_PROJECT name.  
+2. `C1PROJECT` and shared AWS accounts:
+- If you are sharing an AWS account with someone else, make sure that both of you use a different C1PROJECT name.  
 - Also, one project name **may not be a subset of the other**.  e.g. c1 and c1b would be bad, but c1a and c1b would be good.
 - To make sure that you do not "see" each other's projects, pipelines, clusters, registries etc, it is best to both use a **different AWS region**  
 
@@ -596,7 +596,7 @@ To start the enviroment again, simply reconnect to the Cloud9 environment and ru
 
 `The connection to the server localhost:8080 was refused - did you specify the right host or port?`
 
-Verify your AWS_PROJECT variable. It may only contain **lowercase and trailing numbers**, but :
+Verify your C1PROJECT variable. It may only contain **lowercase and trailing numbers**, but :
 
 - no uppercase
 - no " - "

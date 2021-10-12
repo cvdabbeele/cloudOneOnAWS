@@ -20,7 +20,7 @@ fi
 for IMAGE in "${IMAGES[@]}"; do
     printf '%s\n' "image = ${IMAGE} "
     docker pull ${IMAGE}:latest
-    if [ -n "$AWS_PROJECT" ];then
+    if [ -n "${C1PROJECT}" ];then
         echo "'we are in AWS"
         aws ecr create-repository --repository-name ${IMAGE} || true
 

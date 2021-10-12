@@ -10,7 +10,7 @@ printf '%s\n' "----------------------"
 
 varsok=true
 #if  [ -z "${AWS_REGION}" ]; then echo AWS_REGION must be set && varsok=false; fi
-if  [ -z "${AWS_PROJECT}" ]; then printf '%s\n' "AWS_PROJECT must be set" && varsok=false; fi
+if  [ -z "${C1PROJECT}" ]; then printf '%s\n' "C1PROJECT must be set" && varsok=false; fi
 if  [ "$varsok" = false ]; then exit ; fi
 
 printf '%s\n' "Getting region from AWS configure"
@@ -24,7 +24,7 @@ curl --silent --location --request GET "${C1CSAPIURL}/clusters" \
 --header 'Content-Type: application/json' \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' \
- | jq -r ".clusters[] | select(.name == \"${AWS_PROJECT}\").id"`)
+ | jq -r ".clusters[] | select(.name == \"${C1PROJECT}\").id"`)
 
 for i in "${!C1CSCLUSTERS[@]}"
 do
@@ -42,7 +42,7 @@ curl --silent --location --request GET "${C1CSAPIURL}/policies" \
 --header 'Content-Type: application/json' \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' \
- | jq -r ".policies[] | select(.name == \"${AWS_PROJECT}\").id"`)
+ | jq -r ".policies[] | select(.name == \"${C1PROJECT}\").id"`)
 
 for i in "${!C1CSPOLICIES[@]}"
 do
@@ -60,7 +60,7 @@ curl --silent --location --request GET "${C1CSAPIURL}/scanners" \
 --header 'Content-Type: application/json' \
 --header "${C1AUTHHEADER}"  \
 --header 'api-version: v1' \
- | jq -r ".scanners[] | select(.name == \"${AWS_PROJECT}\").id"`)
+ | jq -r ".scanners[] | select(.name == \"${C1PROJECT}\").id"`)
 
 for i in "${!C1CSSCANNERS[@]}"
 do
@@ -90,10 +90,10 @@ C1ASGROUPIDS=(`echo "$TEMPJSON" | jq   -r ".[].group_id"`)
 for i in "${!C1ASGROUPS[@]}"
 do
   printf "%s\n" "C1AS: found group ${C1ASGROUPS[$i]} with ID ${C1ASGROUPIDS[$i]}"
-  if [[ "${C1ASGROUPS[$i]}" == "${AWS_PROJECT^^}-${1^^}" ]]; 
-  #if [[ "${C1ASGROUPS[$i]}" == "${AWS_PROJECT^^}" ]]; 
+  if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT^^}-${1^^}" ]]; 
+  #if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT^^}" ]]; 
   then
-    printf "%s\n" "Deleting Group object ${AWS_PROJECT^^}-${1^^} in C1AS"
+    printf "%s\n" "Deleting Group object ${C1PROJECT^^}-${1^^} in C1AS"
     curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
   fi
 done 
@@ -126,7 +126,7 @@ aws_ecr_repo=''
 for i in "${!aws_ecr_repos[@]}"; do
   #printf "%s" "Repo $i =  ${aws_ecr_repos[$i]}"
   aws_ecr_repo=`echo ${1} | awk '{ print tolower($0) }'`
-  if [[ "${aws_ecr_repos[$i]}" =~ "${AWS_PROJECT}" ]]; then
+  if [[ "${aws_ecr_repos[$i]}" =~ "${C1PROJECT}" ]]; then
       printf "%s\n" "Deleting ECR repository: ${aws_ecr_repos[$i]}"
       aws_ecr_repo_exists="true"
       DUMMY=`aws ecr delete-repository --repository-name ${aws_ecr_repos[$i]} --region ${AWS_REGION} --force`
@@ -138,7 +138,7 @@ aws_cc_repos=(`aws codecommit list-repositories --region $AWS_REGION | jq -r '.r
 aws_cc_repo=''
 for i in "${!aws_cc_repos[@]}"; do
   #printf '%s\n' "Checking CC Repo $i =  ${aws_cc_repos[$i]} ..........Comparing with ${1}"
-  if [[ "${aws_cc_repos[$i]}" =~ "${AWS_PROJECT}" ]]; then
+  if [[ "${aws_cc_repos[$i]}" =~ "${C1PROJECT}" ]]; then
       printf "%s\n" "Deleting CodeCommit Repo "${aws_cc_repos[$i]}
       DUMMY=`aws codecommit delete-repository --repository-name ${aws_cc_repos[$i]} --region ${AWS_REGION}`
     fi
@@ -149,7 +149,7 @@ aws_stack=""
 aws_stacks=(`aws cloudformation describe-stacks --output json --region $AWS_REGION| jq -r '.Stacks[].StackName'` )
 for i in "${!aws_stacks[@]}"; do
   #printf "%s\n" "stack $i =  ${aws_stacks[$i]}"
-  if [[ "${aws_stacks[$i]}" =~ "${AWS_PROJECT}"  && "${aws_stacks[$i]}" =~ "Pipeline" ]]; then
+  if [[ "${aws_stacks[$i]}" =~ "${C1PROJECT}"  && "${aws_stacks[$i]}" =~ "Pipeline" ]]; then
     printf "%s \n" "Deleting CloudFormation Pipeline Stack ${aws_stacks[$i]}"
     aws cloudformation delete-stack --stack-name ${aws_stacks[$i]} --region ${AWS_REGION}
   fi
@@ -161,7 +161,7 @@ aws_stack=""
 aws_stacks=(`aws cloudformation describe-stacks --output json --region $AWS_REGION| jq -r '.Stacks[].StackName'` )
 for i in "${!aws_stacks[@]}"; do
   #printf "%s\n" "stack $i =  ${aws_stacks[$i]}"
-  if [[ "${aws_stacks[$i]}" =~ "${AWS_PROJECT}"  && "${aws_stacks[$i]}" =~ "Pipeline" ]]; then
+  if [[ "${aws_stacks[$i]}" =~ "${C1PROJECT}"  && "${aws_stacks[$i]}" =~ "Pipeline" ]]; then
     printf "%s \n" "Waiting for CloudFormation Pipeline Stack ${aws_stacks[$i]} to be deleted"
     aws cloudformation wait stack-delete-complete --stack-name ${aws_stacks[$i]}  --region ${AWS_REGION}
   fi
@@ -175,12 +175,12 @@ printf "\n"
 aws_eks_clusters=(`eksctl get clusters -o json | jq -r '.[].metadata.name'`)
 for i in "${!aws_eks_clusters[@]}"; do
   #printf "%s" "cluster $i =  ${aws_eks_clusters[$i]}.........."
-  if [[ "${aws_eks_clusters[$i]}" =~ "${AWS_PROJECT}" ]]; then
-       printf "%s\n" "Deleting EKS cluster: ${AWS_PROJECT}"
+  if [[ "${aws_eks_clusters[$i]}" =~ "${C1PROJECT}" ]]; then
+       printf "%s\n" "Deleting EKS cluster: ${C1PROJECT}"
        printf "%s\n" "Waiting for EKS cluster to be deleted. "
        printf "%s\n" "   Please be patient, this can take up to 30 minutes... (started at:`date`)"
        starttime=`date +%s`
-       eksctl delete cluster ${AWS_PROJECT} --wait
+       eksctl delete cluster ${C1PROJECT} --wait
        sleep 30  #giving the delete cluster process a bit more time
        endtime=`date +%s`
        printf '%s\n' "  Elapsed time: $((($endtime-$starttime)/60)) minutes"
@@ -200,7 +200,7 @@ for i in "${!aws_vpc_ids[@]}"; do
   #printf "%s\n" "vpc $i = ${aws_vpc_ids[$i]}.........."
   aws_vpc_tags=`aws ec2 describe-vpcs --vpc-ids ${aws_vpc_ids[$i]} | jq -r '.Vpcs[].Tags'`  #no array needed here; just get thm all in one string
   #printf "%s\n" "${aws_vpc_tags}"
-  if [[ ${aws_vpc_tags} =~ ${AWS_PROJECT} ]];then
+  if [[ ${aws_vpc_tags} =~ ${C1PROJECT} ]];then
     printf "%s\n" "Found VPC belonging to project: ${aws_vpc_ids[$i]}"
     aws_attachment_ids=(`aws ec2 describe-network-interfaces --filters Name=vpc-id,Values=${aws_vpc_ids[$i]} | jq -r '.NetworkInterfaces[].Attachment.AttachmentId'`)
       printf "%s\n" "Found Network attachment_ids: ${aws_attachment_ids[@]}"
@@ -302,15 +302,15 @@ done
 aws_eks_clusters=(`eksctl get clusters -o json | jq -r '.[].metadata.name'`)
 for i in "${!aws_eks_clusters[@]}"; do
   printf "%s" "cluster $i =  ${aws_eks_clusters[$i]}.........."
-  if [[ "${aws_eks_clusters[$i]}" =~ "${AWS_PROJECT}"  && "${aws_eks_clusters[$i]}" =~ "Pipeline" ]]; then
-      printf "%s\n" "Deleting EKS cluster: ${AWS_PROJECT}"
-      if [ -s  "${AWS_PROJECT}EksCluster.yml" ]; then
-        #eksctl delete cluster -f ${AWS_PROJECT}EksCluster.yml
+  if [[ "${aws_eks_clusters[$i]}" =~ "${C1PROJECT}"  && "${aws_eks_clusters[$i]}" =~ "Pipeline" ]]; then
+      printf "%s\n" "Deleting EKS cluster: ${C1PROJECT}"
+      if [ -s  "${C1PROJECT}EksCluster.yml" ]; then
+        #eksctl delete cluster -f ${C1PROJECT}EksCluster.yml
         echo "Second attempt to delete the EKS cluster"
-        eksctl delete cluster ${AWS_PROJECT}
+        eksctl delete cluster ${C1PROJECT}
         sleep 30  #giving the delete cluster process a bit more time
       else
-        printf '%s \n' "PANIC: eks cluster with name ${AWS_PROJECT} exists, but file \"${AWS_PROJECT}EksCluster.yml\" does not"
+        printf '%s \n' "PANIC: eks cluster with name ${C1PROJECT} exists, but file \"${C1PROJECT}EksCluster.yml\" does not"
         printf '%s \n' "This situation should not exist.  Manual cleanup is required"
       fi
   else
@@ -324,7 +324,7 @@ aws_stack=""
 aws_stacks=(`aws cloudformation describe-stacks --output json --region $AWS_REGION| jq -r '.Stacks[].StackName'` )
 for i in "${!aws_stacks[@]}"; do
   # printf "%s\n" "stack $i =  ${aws_stacks[$i]}"
-  if [[ "${aws_stacks[$i]}" =~ "eksctl-${AWS_PROJECT}-nodegroup" ]]; then
+  if [[ "${aws_stacks[$i]}" =~ "eksctl-${C1PROJECT}-nodegroup" ]]; then
     printf "%s\n" "Deleting CloudFormation Stack:  ${aws_stacks[$i]}"
     starttime=`date +%s`
     printf "%s\n" "Please be patient, this can take up to 30 minutes... (started at:`date`)"
@@ -340,7 +340,7 @@ aws_stack=""
 aws_stacks=(`aws cloudformation describe-stacks --output json --region $AWS_REGION| jq -r '.Stacks[].StackName'` )
 for i in "${!aws_stacks[@]}"; do
   # printf "%s\n" "stack $i =  ${aws_stacks[$i]}"
-  if [[ "${aws_stacks[$i]}" =~ "eksctl-${AWS_PROJECT}-cluster" ]]; then
+  if [[ "${aws_stacks[$i]}" =~ "eksctl-${C1PROJECT}-cluster" ]]; then
     printf "%s\n" "Waiting for CloudFormation Stack deletion to complete:  ${aws_stacks[$i]}"
     starttime=`date +%s`
     printf "%s\n" "Please be patient, this can take up to 30 minutes... (started at:`date`)"
@@ -357,7 +357,7 @@ done
 buckets=(`aws s3api list-buckets --region ${AWS_REGION}| jq -r '.Buckets[].Name' ` )
 for i in "${!buckets[@]}"; do
   #printf '%s\n' "Bucket ${i} = ${buckets[${i}]}"
-  if [[ "${buckets[${i}]}" =~ "codepipelineartifact" &&  "${buckets[${i}]}" =~ "${AWS_PROJECT}" ]]; then
+  if [[ "${buckets[${i}]}" =~ "codepipelineartifact" &&  "${buckets[${i}]}" =~ "${C1PROJECT}" ]]; then
       printf "%s\n"  "Deleting codepipelineartifactbucket: ${buckets[${i}]}"
       aws s3 rb s3://${buckets[${i}]} --force  2>/dev/null
       #aws s3api  delete-bucket  --bucket ${buckets[$i]}  --region ${AWS_REGION}
@@ -365,19 +365,19 @@ for i in "${!buckets[@]}"; do
 done
 
 #cleaning up local files
-[ -e ${AWS_PROJECT}EksCluster.yml ] && rm ${AWS_PROJECT}EksCluster.yml
-[ -e ${AWS_PROJECT}${APP1}Pipeline.yml ] && rm ${AWS_PROJECT}${APP1}Pipeline.yml
-[ -e ${AWS_PROJECT}${APP2}Pipeline.yml ] && rm ${AWS_PROJECT}${APP2}Pipeline.yml
-[ -e ${AWS_PROJECT}${APP3}Pipeline.yml ] && rm ${AWS_PROJECT}${APP3}Pipeline.yml
+[ -e ${C1PROJECT}EksCluster.yml ] && rm ${C1PROJECT}EksCluster.yml
+[ -e ${C1PROJECT}${APP1}Pipeline.yml ] && rm ${C1PROJECT}${APP1}Pipeline.yml
+[ -e ${C1PROJECT}${APP2}Pipeline.yml ] && rm ${C1PROJECT}${APP2}Pipeline.yml
+[ -e ${C1PROJECT}${APP3}Pipeline.yml ] && rm ${C1PROJECT}${APP3}Pipeline.yml
 [ -e req.conf ] && rm req.conf
 [ -e k8s.key ] && rm k8s.key
 [ -e k8s.crt ] && rm k8s.crt
 [ -e overrides.yml ] && rm overrides.yml
 
 #printf "%s\n" "Deleting Roles and Instance-Profiles"
-#AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
+#AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${C1PROJECT} `)
 #for i in "${!AWS_ROLES[@]}"; do
-#  if [[ "${AWS_ROLES[$i]}" =~ "${AWS_PROJECT}" ]]; then
+#  if [[ "${AWS_ROLES[$i]}" =~ "${C1PROJECT}" ]]; then
 #     printf "%s\n" "Role $i =  ${AWS_ROLES[$i]}.........."
 #     #printf "%s\n" "Getting AWS_POLICIES"
 #     AWS_POLICIES=(`aws iam list-role-policies --role-name ${AWS_ROLES[$i]} | jq -r '.PolicyNames[]'`)

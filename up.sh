@@ -59,7 +59,7 @@ fi
 
 # Check AWS settings
 #if  [ -z "$AWS_REGION" ]; then echo AWSC_REGION must be set && varsok=false; fi
-if  [ -z "$AWS_PROJECT" ]; then echo AWSC_PROJECT must be set && varsok=false; fi
+if  [ -z "${C1PROJECT}" ]; then echo AWSC_PROJECT must be set && varsok=false; fi
 #if  [ -z "$AWS_ACCESS_KEY_ID" ]; then echo AWS_ACCESS_KEY_ID must be set && varsok=false; fi
 #if  [ -z "$AWS_SECRET_ACCESS_KEY" ]; then echo AWS_SECRET_ACCESS_KEY must be set && varsok=false; fi
 if  [ -z "$AWS_EKS_NODES" ]; then echo AWS_EKS_NODES must be set && varsok=false; fi
@@ -90,27 +90,27 @@ if  [ -z "$C1AUTH" ]; then export C1AUTH="accountbased";  fi
 
 if  [ "$varsok" = false ]; then
   printf '%s\n' "Please check your 00_define_vars.sh file"
-  read -t 60 -p "exiting script in 60 seconds"
+  read -p "Press CTRL-C to exit script, or Enter to continue anyway"
   exit
 fi
 printf '%s\n' "OK"
 
 rolefound="false"
-AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${AWS_PROJECT} `)
+AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${C1PROJECT} `)
 for i in "${!AWS_ROLES[@]}"; do
-  if [[ "${AWS_ROLES[$i]}" = "${AWS_PROJECT}EksClusterCodeBuildKubectlRole" ]]; then
+  if [[ "${AWS_ROLES[$i]}" = "${C1PROJECT}EksClusterCodeBuildKubectlRole" ]]; then
      printf "%s\n" "Reusing existing EksClusterCodeBuildKubectlRole: ${AWS_ROLES[$i]} "
      rolefound="true"
   fi
 done
 if [[ "${rolefound}" = "false" ]]; then
-  printf "%s\n" "Creating Role ${AWS_PROJECT}EksClusterCodeBuildKubectlRole"
+  printf "%s\n" "Creating Role ${C1PROJECT}EksClusterCodeBuildKubectlRole"
   export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
   TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:root\" }, \"Action\": \"sts:AssumeRole\" } ] }"
   #TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Resource\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:role/*\" }, \"Action\": \"sts:AssumeRole\" } ] }"
   echo '{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": "eks:Describe*", "Resource": "*" } ] }' > /tmp/iam-role-policy
-  aws iam create-role --role-name ${AWS_PROJECT}EksClusterCodeBuildKubectlRole   --tags Key=${TAGKEY0},Value=${TAGVALUE0} Key=${TAGKEY1},Value=${TAGVALUE1} Key=${TAGKEY2},Value=${TAGVALUE2} --assume-role-policy-document "$TRUST" --output text --query 'Role.Arn'
-  aws iam put-role-policy --role-name ${AWS_PROJECT}EksClusterCodeBuildKubectlRole --policy-name eks-describe --policy-document file:///tmp/iam-role-policy
+  aws iam create-role --role-name ${C1PROJECT}EksClusterCodeBuildKubectlRole   --tags Key=${TAGKEY0},Value=${TAGVALUE0} Key=${TAGKEY1},Value=${TAGVALUE1} Key=${TAGKEY2},Value=${TAGVALUE2} --assume-role-policy-document "$TRUST" --output text --query 'Role.Arn'
+  aws iam put-role-policy --role-name ${C1PROJECT}EksClusterCodeBuildKubectlRole --policy-name eks-describe --policy-document file:///tmp/iam-role-policy
 fi
 
 

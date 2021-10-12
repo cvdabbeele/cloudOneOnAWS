@@ -31,7 +31,7 @@ In this demo scenario we will be using the MoneyX demo application. `This is the
 ### Start two extra pipeline-instances of MoneyX 
 When we will demo, we want to have 3 MoneyX pipeline-instances available, each with different settings.  
 The first pipeline-instance of MoneyX is built automatically by the deployment.  
-Verify its status in the AWSconsole -> Services -> CodePipeline -> `Pipelines` -> `{AWS_PROJECT}c1appsecmoneyxPipeline-CodePipelineDevSecOps-.....`  
+Verify its status in the AWSconsole -> Services -> CodePipeline -> `Pipelines` -> `{C1PROJECT}c1appsecmoneyxPipeline-CodePipelineDevSecOps-.....`  
 Once the initial MoneyX pipeline has finished, kick of a second deployment by running the  **pushWithHighSecurityThresholds.sh** script in your Cloud9 environment
 ```shell
 ./pushWithHighSecurityThresholds.sh
@@ -43,7 +43,7 @@ Once it has completed, kick off a third pipeline by running the  **pushWithMalwa
 ./pushWithMalware.sh
 ```
 You should now have 3 pipeline instances of MoneyX  
-To see the pipeline history (which you will need in the demo), go to AWSconsole -> Services -> CodePipeline -> `Pipelines` -> `{AWS_PROJECT}c1appsecmoneyxPipeline-CodePipelineDevSecOps-.....` -> now in the left margin, under pipelines, a new item `History` should appear (see screenshot)  
+To see the pipeline history (which you will need in the demo), go to AWSconsole -> Services -> CodePipeline -> `Pipelines` -> `{C1PROJECT}c1appsecmoneyxPipeline-CodePipelineDevSecOps-.....` -> now in the left margin, under pipelines, a new item `History` should appear (see screenshot)  
 Click it to see the 3 pipeline-intances on the MoneyX app
 
 ![pipelinesHistory](images/pipelinesHistory.png)

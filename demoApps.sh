@@ -21,7 +21,7 @@ function setupApp {
   export AWS_CC_REPO=''
   for i in "${!aws_cc_repos[@]}"; do
     # printf '%s\n' "Repo $i =  ${aws_ecr_repos[$i]} .........."
-    if [[ "${aws_cc_repos[$i]}" =~ "${AWS_PROJECT}${1}" ]]; then
+    if [[ "${aws_cc_repos[$i]}" =~ "${C1PROJECT}${1}" ]]; then
          #printf "%s\n" "Found CodeCommit Repo "${aws_cc_repos[$i]}
          AWS_CC_REPO=${aws_cc_repos[$i]}
          export AWS_CC_REPO_URL=`aws codecommit get-repository --region $AWS_REGION --repository-name ${AWS_CC_REPO} | jq -r '.repositoryMetadata.cloneUrlHttp' | sed 's/https\:\/\///'`
@@ -41,7 +41,7 @@ function setupApp {
   #finding AWS_ECRREPOSITORYURL
   aws_ecr_repos=(`aws ecr describe-repositories --region ${AWS_REGION} | jq -r '.repositories[].repositoryName'`)
   export AWS_ECR_REPO=''
-  aws_searchrepo=`echo ${AWS_PROJECT}${1} | awk '{ print tolower($0) }'`
+  aws_searchrepo=`echo ${C1PROJECT}${1} | awk '{ print tolower($0) }'`
   for i in "${!aws_ecr_repos[@]}"; do
     #printf '%s\n' "Repo $i =  ${aws_ecr_repos[$i]} .........."
     if [[ "${aws_ecr_repos[$i]}" =~ "${aws_searchrepo}" ]]; then
@@ -81,8 +81,8 @@ function setupApp {
   ###else
     printf '%s\n'  "Initializing git for CodeCommit"
     git init  1>/dev/null 2>/dev/null
-    git config --global user.name ${AWS_PROJECT}
-    git config --global user.email ${AWS_PROJECT}@example.com
+    git config --global user.name ${C1PROJECT}
+    git config --global user.email ${C1PROJECT}@example.com
     #git remote add origin https://${AWS_CC_REPO_URL}.git
     git remote add origin https://${AWS_CC_REPO_URL}
   ###fi

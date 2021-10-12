@@ -34,7 +34,7 @@ export C1CS_RUNTIME="false"
 # this is for compatibility reasons with older versions of this script
 
 #  AWS settings
-export AWS_PROJECT='cloudone01'    #may only contain lowercase and trailing numbers, but no "-", no "_", nor any special characters.
+export C1PROJECT='cloudone01'    #may only contain lowercase and trailing numbers, but no "-", no "_", nor any special characters.
 
 # remember to run AWS configure first.  The scripts will pull the AWS keys and region from the AWS configure
 
@@ -96,4 +96,4 @@ export APP3=`echo ${APP_GIT_URL3} | awk -F"/" '{print $NF}' | awk -F"." '{ print
 
 #systemTAGs; do not change  (mainly used to cleanup the environment)
 export TAGKEY0="c1onaws"    
-export TAGVALUE0="${AWS_PROJECT}" 
+export TAGVALUE0="${C1PROJECT}" 
