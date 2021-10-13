@@ -1,26 +1,52 @@
-#enter your configuration variables in this file
-#save it without the .sample extension
-#make sure it is executable
+#!/bin/bash
+printf '%s\n' "-------------------------------"
+printf '%s\n' "     Configuring Variables     "
+printf '%s\n' "-------------------------------"
+
+# 1. copy this file to 00_define_vars.sh
+# 2. enter your configuration variables in this file
+# 3. make sure it is still executable
+
+# changes 202112:
+#   variable AWS_PROJECT is now replaced by C1PROJECT for interchangeability of modules with cloudOneOnAzure Project
+
+# changes 202110
+#   new required variables (see below): C1AUTH, C1REGION  
+#   updated variables: C1APIKEY
+#   The script now creates the "groups" in C1CS; there is no longer a need to manually create a group and provide the TREND_AP_KEY and a TREND_AP_SECRET
+
+
+# changes 202105
+#   new required variables (see below): TAGKEY1, TAGVALUE1, TAGKEY2, TAGVALUE2
+
+# changes 20210315
+#   new required variables (see below): C1CS_RUNTIME
 
 printf '%s' "Defining variables... "
+#### ---------------------------------------------------------------------------
 #### ----------below this line are settings which MUST be customised  ----------
 #### ---------------------------------------------------------------------------
 
+# update 202110
+# export C1AUTH="the value could be \"accountbased\" (=account&username-based authenticated to C1) or \"emailbased\"(=authenticated to C1 with email address)"
+# If the variable does not exist, it will be set to "accountbased" for compatibility reasons with older versions of this script
+export C1AUTH="emailbased"   
+
+export C1REGION="the value could be us-1,in-1, gb-1, jp-1, de-1,au-1; it will only be used when $C1AUTH=emailbased and the value must match the region of your CloudOne registration "
+
 # C1CS (update 20210315)
-# if you do not have access to C1CS-Runtime option (which is in preview now; March 2021), 
-# then set the following variable to "false".  
+# for now keep C1CS_RUNTIME to "false".  It will be implemented later
+export C1CS_RUNTIME="false"
 # If the variable does not exist, it will be set to "true" (meaning you have access to C1CS-runtime)
 # this is for compatibility reasons with older versions of this script
 
-export C1CS_RUNTIME="false"
-
 #  AWS settings
-export AWS_PROJECT='cloudone01'    #may only contain lowercase and trailing numbers, but no "-", no "_", nor any special characters.
-export AWS_EKS_NODES='2'
+export C1PROJECT='cloudone01'    #may only contain lowercase and trailing numbers, but no "-", no "_", nor any special characters.
+
 # remember to run AWS configure first.  The scripts will pull the AWS keys and region from the AWS configure
 
 # Deep Security Smart Check settings (used for pre-runtime scanning)
-#Note: AC=ActivationCode or License Key for SmartCheck
+#Note: AC=ActivationCode this is your License Key for SmartCheck, the thing you enter in SmartCheck when you set it up
 export DSSC_AC='xx-xxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx'
 
 # Cloud One Application Security settings (used for runtime protection)
@@ -28,9 +54,8 @@ export DSSC_AC='xx-xxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx'
 export TREND_AP_KEY='your_trend_key_for_cloudOne_Application_Security'
 export TREND_AP_SECRET='your_trend_secret_for_cloudOne_Application_Security'
 
-#Cloud One Container Security Settings (for Admission Control)
-# see https://cloudone.trendmicro.com/docs/container-security/api-key-create/
-export C1APIKEY='your_CloudOne_API_Key; for now you have to create this key in DSaaS aka C1WS'
+# export C1APIKEY='your_CloudOne_API_Key; depending on the choosen cloudOne authentication , the API key must either be created in C1WS (when using the legacy authentication to C1) or created (at the top level) in C1 (when email authentication to C1 is used)'
+export C1APIKEY='your_CloudOne_API_Key'
 
 # Dockerhub account information (required to do "authenticated pulls" from docker to get a higher max-pull limit)
 export DOCKERHUB_USERNAME='your username of your (free) account on hub.docker.com'
@@ -40,9 +65,19 @@ export DOCKERHUB_PASSWORD='your password of your (free) account on hub.docker.co
 export DSSC_REGPASSWORD='Tr3ndm1cr0!'  #DO CHANGE THIS do NOT use any "\" in the passwords
 export DSSC_PASSWORD='Tr3ndm1cr0!'     #DO CHANGE THIS do NOT use any "\" in the passwords
 
+#### --------------------------------------------------------------------------------------
+#### -----below this line are default settings which may be optionally customised----------
+#### --------------------------------------------------------------------------------------
+# The number of nodes you want your AWS Kubernetes Cluster (EKS) to have:
+export AWS_EKS_NODES='2'
 
-#### ----------below this line are default settings which may be customised (optionally) ----------
-#### -------------------------------------------------------------------------------------------------------
+# Tags (you may customise these tags to your liking; both the Key and the Value)
+# Other than these, one more tag is added.  That third keypair is for use by the script only
+export TAGKEY1="owner"           # or use anything you like, except c1OnAws (that's an O not a zero)
+export TAGVALUE1="${C9_USER}"    # or anything you like; ${C9_USER} is a predefined Cloud9 variable
+export TAGKEY2="user"            # or anything you like, except c1OnAws (that's an O not a zero)
+export TAGVALUE2="${C9_USER}"    # or anything you like; ${C9_USER} is a predefined Cloud9 variable
+
 # Deep Security Smart Check) settings (for pre-runtime scanning)
 export DSSC_NAMESPACE='smartcheck' #Namespace to deploy SmartCheck'
 export DSSC_USERNAME='administrator'
@@ -50,16 +85,22 @@ export DSSC_TEMPPW='justatemppw'   #this temp pw will be overwritten by the DSSC
 export DSSC_HOST='will be generated by this script'
 export DSSC_REGUSER='administrator'
 
+####---------------------------------------------------------------------------------------
+####------do not edit below this line (unless you really know what you are doing)----------
+####---------------------------------------------------------------------------------------
+
 # APPS  #those apps have been tested and work
 # using distinct variables as exporting arrays in bash is still troublesome
 export APP_GIT_URL1='https://github.com/cvdabbeele/c1-app-sec-moneyx.git'
 export APP_GIT_URL2='https://github.com/cvdabbeele/troopers.git'
 export APP_GIT_URL3='https://github.com/cvdabbeele/mydvwa.git'
 
-####----------do not edit below this line (unless you really know what you are doing)------
-####---------------------------------------------------------------------------------------
 # Generating names for Apps, Stack, Pipelines, ECR, CodeCommit repo,..."
 #generate the names of the apps from the git URL
 export APP1=`echo ${APP_GIT_URL1} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
 export APP2=`echo ${APP_GIT_URL2} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
 export APP3=`echo ${APP_GIT_URL3} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
+
+#systemTAGs; do not change  (mainly used to cleanup the environment)
+export TAGKEY0="c1onaws"    
+export TAGVALUE0="${C1PROJECT}" 

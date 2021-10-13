@@ -1,15 +1,44 @@
 # Overview
 
-This is a collaborative effort with mawinkler and nicgoth.
+This is a set of pretty quick-and-dirty shelscripts that will deploy a demo/test environment for Trend Micro 
+- CloudOne Container Security  
+- CloudOne Application Security  
+- Smart Check  
+  
+It is not meant for production use.   
+Many parts are intentionally vurlnerable and should be kept running for a longer time than needed for a demo or a test
+
+
 1. UPDATES: [20201126](#20201126)  [20210129](#20210129)  
 2. [High level overview](#high-level-overview-of-steps-see-detailed-steps-in-next-section)  
 3. [Detailed Steps](#detailed-setup-instructions)
 4. [howToDemo.md](howToDemo.md) 
 
 
-## UPDATES  
-If this is your first time here, you can skip the "updates" section.  All changes are included in the documentation  
+## UPDATES 
+If this is your first time here, you can skip the "updates" section.  
 If you are a repeat visitor, then please check the updates below
+### 202110
+Changes in required variables.  Check the `00_define_vars.sh.sample` file for details (important!)  
+The script now supports the new, regional CloudOne Datacenters.  This uses the new, "emailbased", authentication to CloudOne.  See the `00_define_vars.sh.sample` file for details   
+The script now creates the "groups" in C1CS; there is no longer a need to manually create a group and provide the  TREND_AP_KEY and a TREND_AP_SECRET.  (However, for now, only monex has the C1AS agent)  
+### 202105
+At August 13, 2021, GitHub stops authentication with Username/Password.  You must create a Personal Access Token (PAT).  For more info see: https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/.
+How to create a PAT:   
+https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token  
+How to use the PAT:  
+Afterwards, whenever GitHub prompts you for a "password", repy with your PAT  
+### 20210505
+#### Most important changes  
+- 00_define_variables.sh.sample
+```
+    # Tags (you may customise these tags to your liking; both the Key and the Value)
+    # Other than these, one more tag is added.  That third keypair is for use by the script only
+    export TAGKEY1="owner"           # or use anything you like, except c1OnAws
+    export TAGVALUE1="${C9_USER}"   # or anything you like; ${C9_USER} is a predefined Cloud9 variable
+    export TAGKEY2="user"            # or anything you like, except c1OnAws
+    export TAGVALUE2="somethingHere" # or anythig you like
+```
 
 ### 20210325
 - added the variable `C1CS_RUNTIME` to 00_define_vars.sh.sample
@@ -23,7 +52,8 @@ If this variable does not exist, it will be set to "true" (meaning you have acce
   - a second one with very high thresholds.  This pipeline will build the image, push it to the registry and even deploy a (very) vulnerable container from it.  Here we can ***demo runtime protection with Cloud One Application Security**.  This pipeline-instance will be started by running "./pushWithHighSecurityThresholds.sh"
   - a third pipeline instance where we include malware (eicar) in the MoneyX app. This pipeline-instance will build the image, push it to the registry (because we have also set high security thresholds here), and it will try to deploy a container from it.  Here the **admission controller of Cloud On Container Security** will kick in and prevent the deployment of the container.  This pipeline-instance should be started by running "./pushWithMalware.sh"  
   See the updated **howToDemo.md** document in this repo
-3. Removed **pause.sh** and **resume.sh** because they have shown to be unreliable.  
+3. Removed **pause.sh** and **resume.sh** because they have shown to be unreliable.    
+
 ### 20201126  
 1. You now need to enter your DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD in the 00_define_vars.sh file (may be a free account).  To deal with docker image pull rate-limits, the buildscipts of the Apps will now do authenticated pulls (to https://hub.docker.com) from the AWS pipeline.  This script passes along those variables to the buildspec.yml files
   For more info on the Dockerhub pull rate limits, see: https://www.docker.com/increase-rate-limits  Image Pulls for unauthenticated connections are now capped to 100 and for connections authenticated with a free account, they are capped to 200.  Both pull rates are for the last 6 hours (sliding window).  Paid dockerhub subscriptions have no pull rate limit.
@@ -56,6 +86,10 @@ Checkout the [howToDemo.md](howToDemo.md) for demo scenarios
 
 - [Overview](#overview)
   - [UPDATES](#updates)
+    - [202110](#202110)
+    - [202105](#202105)
+    - [20210505](#20210505)
+      - [Most important changes](#most-important-changes)
     - [20210325](#20210325)
     - [20210215](#20210215)
     - [20201126](#20201126)
@@ -120,7 +154,7 @@ The IAM User account that you will use:
 (trial) Licenses
 You will need the following licenses:
 - **A license for SmartCheck**  If you don't have a license key yet, you can get one here: <https://www.trendmicro.com/product_trials/download/index/us/168>
-- **CloudOne (Application Security) Account**  You can register for a trial here: <https://cloudone.trendmicro.com/_workload_iframe//SignUp.screen>  In CloudOne Application Security, you will need to create a "group" for the MoneyX application.  This will give you a **key** and a **secret** that you can use for the TREND_AP_KEY and TREND_AP_SECRET variables in this script.  
+- **CloudOne (Application Security) Account**  You can register for a trial here: <${C1URL}/_workload_iframe//SignUp.screen>  In CloudOne Application Security, you will need to create a "group" for the MoneyX application.  This will give you a **key** and a **secret** that you can use for the TREND_AP_KEY and TREND_AP_SECRET variables in this script.  
 
 ### Prepare the environment
 
@@ -204,11 +238,12 @@ cd cloudOneOnAWS
 Our Cloud9 environment only has 10Gb of disk space.  
 Let's resize it to 40GB
 Credits to @mawinkler for adapting this AWS script
+note that, for this script to work properly, the region where you created the cloud9 environment, must be the same as the region that you defined in aws configure
 
 ```
-df -h   #notice the line /dev/nvme0n1p1 says 9.7G
+df -h /  #notice the line /dev/nvme0n1p1 says 9.7G
 ./resize.sh 40
-df -h   #notice the line /dev/nvme0n1p1 now says 39G 
+df -h /  #notice the line /dev/nvme0n1p1 now says 39G 
 ```
 
 #### 6. Configure `00_define_vars.sh`    
@@ -229,8 +264,8 @@ Edit the `00_define_vars.sh` file with the built in editor
 - `DOCKERHUB_USERNAME`
 - `DOCKERHUB_PASSWORD`
 
-2. `AWS_PROJECT` and shared AWS accounts:
-- If you are sharing an AWS account with someone else, make sure that both of you use a different AWS_PROJECT name.  
+2. `C1PROJECT` and shared AWS accounts:
+- If you are sharing an AWS account with someone else, make sure that both of you use a different C1PROJECT name.  
 - Also, one project name **may not be a subset of the other**.  e.g. c1 and c1b would be bad, but c1a and c1b would be good.
 - To make sure that you do not "see" each other's projects, pipelines, clusters, registries etc, it is best to both use a **different AWS region**  
 
@@ -569,7 +604,7 @@ To start the enviroment again, simply reconnect to the Cloud9 environment and ru
 
 `The connection to the server localhost:8080 was refused - did you specify the right host or port?`
 
-Verify your AWS_PROJECT variable. It may only contain **lowercase and trailing numbers**, but :
+Verify your C1PROJECT variable. It may only contain **lowercase and trailing numbers**, but :
 
 - no uppercase
 - no " - "
@@ -595,3 +630,5 @@ So please rerun
 ```
 
 Afterwards you will be able to commit changes to your CodeCommit repositories.
+ 
+ 

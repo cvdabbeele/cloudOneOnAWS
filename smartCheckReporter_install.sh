@@ -1,8 +1,12 @@
 git clone https://github.com/mawinkler/vulnerability-management.git
 PREVIOUS_DIR=`pwd`
 cd vulnerability-management/cloudone-image-security/scan-report
-#cp config.yml.sample config.yml
+# cp config.yml.sample config.yml
+# sudo apt install python3-pip -y
+pip3 install -r requirements.txt
 pip3 install  fpdf requests simplejson urllib3
+
+
 cat <<EOF>config.yml
 dssc:
   service: "${DSSC_HOST}:443"
@@ -10,7 +14,7 @@ dssc:
   password: "${DSSC_PASSWORD}"
 
 repository:
-  name: "517003314933.dkr.ecr.eu-central-1.amazonaws.com/cloudone101c1appsecmoneyx:b46769f6"
+  name: "C101c1appsecmoneyx"   #NO PATH HERE, JUST THE REPO NAME
   image_tag: "latest"
 
 criticalities:

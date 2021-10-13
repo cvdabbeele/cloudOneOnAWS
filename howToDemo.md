@@ -20,7 +20,7 @@ Update 5 Feb 2021
 In this demo scenario we will be using the MoneyX demo application. `This is the only app that has the runtime protection enabled`.
 
 ### 1. Configure the Cloud One Application Security policies for MoneyX  
-- login to your CloudOne account (https://cloudone.trendmicro.com/ ) 
+- login to your CloudOne account (${C1URL}/ ) 
 - go to `Application Security`.  
 - in the left margin, find the group that you created for the MoneyX application (`c1-app-sec-moneyx`)
 - enable all policies and set them to REPORT
@@ -31,7 +31,7 @@ In this demo scenario we will be using the MoneyX demo application. `This is the
 ### Start two extra pipeline-instances of MoneyX 
 When we will demo, we want to have 3 MoneyX pipeline-instances available, each with different settings.  
 The first pipeline-instance of MoneyX is built automatically by the deployment.  
-Verify its status in the AWSconsole -> Services -> CodePipeline -> `Pipelines` -> `{AWS_PROJECT}c1appsecmoneyxPipeline-CodePipelineDevSecOps-.....`  
+Verify its status in the AWSconsole -> Services -> CodePipeline -> `Pipelines` -> `{C1PROJECT}c1appsecmoneyxPipeline-CodePipelineDevSecOps-.....`  
 Once the initial MoneyX pipeline has finished, kick of a second deployment by running the  **pushWithHighSecurityThresholds.sh** script in your Cloud9 environment
 ```shell
 ./pushWithHighSecurityThresholds.sh
@@ -43,7 +43,7 @@ Once it has completed, kick off a third pipeline by running the  **pushWithMalwa
 ./pushWithMalware.sh
 ```
 You should now have 3 pipeline instances of MoneyX  
-To see the pipeline history (which you will need in the demo), go to AWSconsole -> Services -> CodePipeline -> `Pipelines` -> `{AWS_PROJECT}c1appsecmoneyxPipeline-CodePipelineDevSecOps-.....` -> now in the left margin, under pipelines, a new item `History` should appear (see screenshot)  
+To see the pipeline history (which you will need in the demo), go to AWSconsole -> Services -> CodePipeline -> `Pipelines` -> `{C1PROJECT}c1appsecmoneyxPipeline-CodePipelineDevSecOps-.....` -> now in the left margin, under pipelines, a new item `History` should appear (see screenshot)  
 Click it to see the 3 pipeline-intances on the MoneyX app
 
 ![pipelinesHistory](images/pipelinesHistory.png)
@@ -51,7 +51,7 @@ Click it to see the 3 pipeline-intances on the MoneyX app
 
 ### Ensure to have the following browser tabs opened and authenticated.
 
-- CloudOne Application Security  (https://cloudone.trendmicro.com/application)
+- CloudOne Application Security  (${C1ASAPIURL})
 - SmartCheck (to find the URL, in your Cloud9 shell, type: `kubectl get services -n smartcheck` and look for the `proxy` service)
 - AWS Service CodePipeline / CodeCommit
 - Your Cloud9 shell
@@ -224,7 +224,7 @@ http://a2baec90930634639a260c64b1be4b91-1290966830.eu-central-1.elb.amazonaws.co
 You should now see ALL payments... which is bad
 ![SeeAllReceivedPayments](images/SeeAllReceivedPayments.png)
 
-Go to <https://cloudone.trendmicro.com/application#/events> show that there is a security event for SQL injection
+Go to <${C1ASAPIURL}#/events> show that there is a security event for SQL injection
 ![GroupOneUnderAttack](images/GroupOneUnderAttack.png)
 Check security events in CloudOne Application Security
 
