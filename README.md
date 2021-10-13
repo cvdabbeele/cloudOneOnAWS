@@ -1,6 +1,14 @@
 # Overview
 
-This is based on input from mawinkler and nicgoth.
+This is a set of pretty quick-and-dirty shelscripts that will deploy a demo/test environment for Trend Micro 
+- CloudOne Container Security  
+- CloudOne Application Security  
+- Smart Check  
+  
+It is not meant for production use.   
+Many parts are intentionally vurlnerable and should be kept running for a longer time than needed for a demo or a test
+
+
 1. UPDATES: [20201126](#20201126)  [20210129](#20210129)  
 2. [High level overview](#high-level-overview-of-steps-see-detailed-steps-in-next-section)  
 3. [Detailed Steps](#detailed-setup-instructions)
@@ -9,11 +17,13 @@ This is based on input from mawinkler and nicgoth.
 
 ## UPDATES 
 ### 202110
-The created resources in AWS are now being tagged. 
-Changes in variables.  Check the `00_define_vars.sh.sample` file for details (!)
+All (most) of the created resources in AWS are now being tagged.   
+Changes in required variables.  Check the `00_define_vars.sh.sample` file for details (important!)  
+The script now supports the new, regional CloudOne Datacenters.  This uses the new, "emailbased", authentication to CloudOne.  See the `00_define_vars.sh.sample` file for details   
+The script now creates the "groups" in C1CS; there is no longer a need to manually create a group and provide the  TREND_AP_KEY and a TREND_AP_SECRET.  (However, for now, only monex has the C1AS agent)  
 
 ### 202105
-1. At August 13, 2021, GitHub stops authentication with Username/Password.  You must create a Personal Access Token (PAT).  For more info see: https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/.
+At August 13, 2021, GitHub stops authentication with Username/Password.  You must create a Personal Access Token (PAT).  For more info see: https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/.
 How to create a PAT:   
 https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token  
 How to use the PAT:  
@@ -230,11 +240,12 @@ cd cloudOneOnAWS
 Our Cloud9 environment only has 10Gb of disk space.  
 Let's resize it to 40GB
 Credits to @mawinkler for adapting this AWS script
+note that, for this script to work properly, the region where you created the cloud9 environment, must be the same as the region that you defined in aws configure
 
 ```
-df -h   #notice the line /dev/nvme0n1p1 says 9.7G
+df -h /  #notice the line /dev/nvme0n1p1 says 9.7G
 ./resize.sh 40
-df -h   #notice the line /dev/nvme0n1p1 now says 39G 
+df -h /  #notice the line /dev/nvme0n1p1 now says 39G 
 ```
 
 #### 6. Configure `00_define_vars.sh`    

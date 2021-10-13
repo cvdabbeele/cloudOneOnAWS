@@ -3,18 +3,24 @@ printf '%s\n' "-------------------------------"
 printf '%s\n' "     Configuring Variables     "
 printf '%s\n' "-------------------------------"
 
-# copy this file to 00_define_vars.sh
-# enter your configuration variables in this file
-# make sure it is still executable
-# changes 202112
-#   variable AWS_PROJECT is now replaced by C1_PROJECT for interchangeability of modules with cloudOneOnAzure Project
+# 1. copy this file to 00_define_vars.sh
+# 2. enter your configuration variables in this file
+# 3. make sure it is still executable
+
+# changes 202112:
+#   variable AWS_PROJECT is now replaced by C1PROJECT for interchangeability of modules with cloudOneOnAzure Project
+
 # changes 202110
-#   new variables (see below): C1AUTH, C1REGION
+#   new required variables (see below): C1AUTH, C1REGION  
 #   updated variables: C1APIKEY
+#   The script now creates the "groups" in C1CS; there is no longer a need to manually create a group and provide the TREND_AP_KEY and a TREND_AP_SECRET
+
+
 # changes 202105
-#   new variables (see below): TAGKEY1, TAGVALUE1, TAGKEY2, TAGVALUE2
+#   new required variables (see below): TAGKEY1, TAGVALUE1, TAGKEY2, TAGVALUE2
+
 # changes 20210315
-#   new variables (see below): C1CS_RUNTIME
+#   new required variables (see below): C1CS_RUNTIME
 
 printf '%s' "Defining variables... "
 #### ---------------------------------------------------------------------------
@@ -40,7 +46,7 @@ export C1PROJECT='cloudone01'    #may only contain lowercase and trailing number
 # remember to run AWS configure first.  The scripts will pull the AWS keys and region from the AWS configure
 
 # Deep Security Smart Check settings (used for pre-runtime scanning)
-#Note: AC=ActivationCode or License Key for SmartCheck
+#Note: AC=ActivationCode this is your License Key for SmartCheck, the thing you enter in SmartCheck when you set it up
 export DSSC_AC='xx-xxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx'
 
 # Cloud One Application Security settings (used for runtime protection)
