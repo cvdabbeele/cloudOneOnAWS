@@ -322,3 +322,4 @@ kubectl get pods -A | grep nginx
 ```
 
 
+  
