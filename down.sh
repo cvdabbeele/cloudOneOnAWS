@@ -369,16 +369,17 @@ readarray -t BUCKETS  <<< `aws s3api list-buckets --region ${AWS_REGION}| jq -r 
 readarray -t DUMMYARRAYTOFIXSYNTAXCOLORINGINVSCODE <<< `pwd `
 for i in "${!BUCKETS[@]}"; do
   #printf '%s\n' "Bucket ${i} = ${BUCKETS[${i}]}"
-  BUCKETNAME=`aws s3 ls ${BUCKETS[${i}]}` 
-  echo "${i}  ${BUCKETS[${i}]}" ${BUCKETNAME}
-  if [[ "${BUCKETS[${i}]}" =~ "codepipelineartifact" ]] &&  [[ "${BUCKETNAME}" =~ "${C1PROJECT}" ]]; then
-      printf "%s\n"  "Deleting codepipelineartifactbucket: ${BUCKETNAME}"
+  BUCKETCONTENTS=`aws s3 ls ${BUCKETS[${i}]}` 
+  echo "${i}  ${BUCKETS[${i}]}" ${BUCKETCONTENTS}
+  if [[ "${BUCKETS[${i}]}" =~ "codepipelineartifact" ]] &&  [[ "${BUCKETCONTENTS}" =~ "${C1PROJECT}" ]]; then
+      printf "%s\n"  "Deleting codepipelineartifactbucket: ${BUCKETCONTENTS}"
       aws s3 rb s3://${BUCKETS[${i}]} --force  2>/dev/null
       #aws s3api  delete-bucket  --bucket ${BUCKETS[$i]}  --region ${AWS_REGION}
   else
       printf "%s"  "."
   fi
 done
+
 
 #cleaning up local files
 [ -e ${C1PROJECT}EksCluster.yml ] && rm ${C1PROJECT}EksCluster.yml
