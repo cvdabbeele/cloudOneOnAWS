@@ -11,7 +11,7 @@ declare -a IMAGES_FLATENED  && IMAGES_FLATENED=()
 declare -A IMAGE_TAGS && IMAGE_TAGS=()   #ASSOCIATIVE Array (!)
 export AWS_REGION=`aws configure get region`
 export DSSC_HOST=`kubectl get services proxy -n smartcheck  --output JSON | jq -r '.status.loadBalancer.ingress[].hostname'`
-exportREGISTRY_HOST="`aws sts get-caller-identity | jq -r '.Account'`.dkr.ecr.`aws configure get region`.amazonaws.com"  
+export REGISTRY_HOST="`aws sts get-caller-identity | jq -r '.Account'`.dkr.ecr.`aws configure get region`.amazonaws.com"  
 echo REGISTRY_HOST=${REGISTRY_HOST}
 
 git clone https://github.com/mawinkler/vulnerability-management.git

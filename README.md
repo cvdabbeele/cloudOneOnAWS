@@ -1,15 +1,13 @@
 # Overview
 
 This is a set of pretty quick-and-dirty shelscripts that will deploy a demo/test environment for Trend Micro 
-- CloudOne Container Security  
-- CloudOne Application Security  
-- Smart Check  
-  
+- CloudOne Container Security (C1CS)+ Trend Micro Smart Check
+- CloudOne Application Security (C1AS)
+
 It is not meant for production use.   
-Many parts are intentionally vurlnerable and should be kept running for a longer time than needed for a demo or a test
+Many parts are intentionally vurlnerable and should be kept fom running for a longer time than needed for a demo or a test
 
-
-1. UPDATES: [20201126](#20201126)  [20210129](#20210129)  
+1. [Updates] (#updates)
 2. [High level overview](#high-level-overview-of-steps-see-detailed-steps-in-next-section)  
 3. [Detailed Steps](#detailed-setup-instructions)
 4. [howToDemo.md](howToDemo.md) 
@@ -20,49 +18,44 @@ If this is your first time here, you can skip the "updates" section.
 If you are a repeat visitor, then please check the updates below
 ### 202110
 Changes in required variables.  Check the `00_define_vars.sh.sample` file for details (important!)  
-The script now supports the new, regional CloudOne Datacenters.  This uses the new, "emailbased", authentication to CloudOne.  See the `00_define_vars.sh.sample` file for details   
-The script now creates the "groups" in C1CS; there is no longer a need to manually create a group and provide the  TREND_AP_KEY and a TREND_AP_SECRET.  (However, for now, only monex has the C1AS agent)  
+The script now supports the new, regional CloudOne Datacenters.  This uses the new, "emailbased", authentication to CloudOne.  
+The old ${AWS_REGION} variable has been replaced by ${C1REGION}.  This is for compatibility with the upcoming cloudOneOnAzure.  
+The script now creates the "groups" in C1AS; there is no longer a need to manually create a group and provide the  TREND_AP_KEY and a TREND_AP_SECRET.  (However, for now, only monex has the C1AS agent)  
 ### 202105
-At August 13, 2021, GitHub stops authentication with Username/Password.  You must create a Personal Access Token (PAT).  For more info see: https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/.
+At August 13, 2021, GitHub stopped authentication with Username/Password.  You must create a Personal Access Token (PAT).  For more info see: https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/.
 How to create a PAT:   
 https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token  
 How to use the PAT:  
 Afterwards, whenever GitHub prompts you for a "password", repy with your PAT  
 ### 20210505
-#### Most important changes  
-- 00_define_variables.sh.sample
+The script now tags the resources that it creates.   
+TAGKEY0/TAGVALUE0 are reserved for the script.
+TAGKEY/TAGVALUE 1 and 2 can be freely used to your liking.
+By default these are configured to:
 ```
-    # Tags (you may customise these tags to your liking; both the Key and the Value)
-    # Other than these, one more tag is added.  That third keypair is for use by the script only
-    export TAGKEY1="owner"           # or use anything you like, except c1OnAws
-    export TAGVALUE1="${C9_USER}"   # or anything you like; ${C9_USER} is a predefined Cloud9 variable
+    export TAGKEY1="owner"           # or use anything you like
+    export TAGVALUE1="${C9_USER}"    # or anything you like; ${C9_USER} is a predefined Cloud9 variable
     export TAGKEY2="user"            # or anything you like, except c1OnAws
     export TAGVALUE2="somethingHere" # or anythig you like
 ```
-
 ### 20210325
 - added the variable `C1CS_RUNTIME` to 00_define_vars.sh.sample
 If you do not have access to C1CS-Runtime option (which is in preview now; March 2021), then set the following variable to "false".  
-If this variable does not exist, it will be set to "true" (meaning you have access to C1CS-runtime)  This is for compatibility reasons with older versions of this script
 
 ### 20210215
-1. The demo has been extended with Cloud One Container Security (both the Admission Controller and -in preview- the Runtime Security)
-2. To make a better demo experience, pre-run 3 instances of the MoneyX pipeline.  This will allow for a smoother customer demo.    
-  - the first one, with low security thresholds.  This pipeline is started by default and it will fail/stop before deploying the image to the registry
-  - a second one with very high thresholds.  This pipeline will build the image, push it to the registry and even deploy a (very) vulnerable container from it.  Here we can ***demo runtime protection with Cloud One Application Security**.  This pipeline-instance will be started by running "./pushWithHighSecurityThresholds.sh"
-  - a third pipeline instance where we include malware (eicar) in the MoneyX app. This pipeline-instance will build the image, push it to the registry (because we have also set high security thresholds here), and it will try to deploy a container from it.  Here the **admission controller of Cloud On Container Security** will kick in and prevent the deployment of the container.  This pipeline-instance should be started by running "./pushWithMalware.sh"  
-  See the updated **howToDemo.md** document in this repo
-3. Removed **pause.sh** and **resume.sh** because they have shown to be unreliable.    
+1. The demo has been extended with Cloud One Container Security   
+2. To make a better demo experience, pre-run 3 instances of the pipeline. See the updated **howToDemo.md** document in this repo
 
 ### 20201126  
-1. You now need to enter your DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD in the 00_define_vars.sh file (may be a free account).  To deal with docker image pull rate-limits, the buildscipts of the Apps will now do authenticated pulls (to https://hub.docker.com) from the AWS pipeline.  This script passes along those variables to the buildspec.yml files
+1. You now need to enter your DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD in the `00_define_vars.sh` file (may be a free account).  This is required to deal with docker image-pull-rate-limits. The buildscipts of the Apps will now do authenticated pulls (to https://hub.docker.com) from the AWS pipeline.  This script passes along those variables to the buildspec.yml files
   For more info on the Dockerhub pull rate limits, see: https://www.docker.com/increase-rate-limits  Image Pulls for unauthenticated connections are now capped to 100 and for connections authenticated with a free account, they are capped to 200.  Both pull rates are for the last 6 hours (sliding window).  Paid dockerhub subscriptions have no pull rate limit.
 2. The json structure that is returned by the command "eksctl get cluster" has apparently changed (the Name attribute is now part of a Metadata sub-structure).  This threw errors in the down.sh, pause.sh and resume.sh scripts.  These scripts have been adapted for this.  
 3. The down.sh script has been enhanced to provide a better cleanup.
 
 
-## In short, the script in this repo sets up:
+## In short, the script in this repo:  
 
+sets up:
 - an AWS Elastic Kubernetes Service Cluster (EKS)
 - an AWS codeCommit registry
 - three AWS codePipelines
@@ -71,29 +64,25 @@ If this variable does not exist, it will be set to "true" (meaning you have acce
 - Trend Micro Cloud One Application Security
 
 Then it will:
-
-- build 3 containers with runtime security by C1AS
+- build 3 container-images with runtime security by C1AS (of which only moneyX has the C1AS agent)
 - scan them with Smart Check for vulnerabilities, malware, sensitive content etc..
 - and, if the risk is below the defined threshold:
   - push them to the ECR registry
   - deploy them on EKS
-  - enable Admission Control with policies defines by C1CS
+  - enable Admission Control with policies defined by C1CS   
   
-
-This README.md describes how to deploy the demo environment
-
-Checkout the [howToDemo.md](howToDemo.md) for demo scenarios
+This README.md describes how to deploy the demo environment.  
+Checkout the [howToDemo.md](howToDemo.md) for demo scenarios.
 
 - [Overview](#overview)
   - [UPDATES](#updates)
     - [202110](#202110)
     - [202105](#202105)
     - [20210505](#20210505)
-      - [Most important changes](#most-important-changes)
     - [20210325](#20210325)
     - [20210215](#20210215)
     - [20201126](#20201126)
-  - [In short, the script in this repo sets up:](#in-short-the-script-in-this-repo-sets-up)
+  - [In short, the script in this repo:](#in-short-the-script-in-this-repo)
   - [High level overview of setup](#high-level-overview-of-setup)
   - [Detailed description for the setup](#detailed-description-for-the-setup)
     - [Requirements       -----DO READ-----](#requirements------------do-read-----)
@@ -121,10 +110,10 @@ Checkout the [howToDemo.md](howToDemo.md) for demo scenarios
 2. Disable the AWS-managed temporary credentials
 3. Configure AWS CLI with your keys and region
 4. Clone this repository 
-5. Configure `00_define_vars.sh`  
-6. run  `. ./up.sh` to deploy the environment 
+5. Copy and configure `00_define_vars.sh`  
+6. run  `. ./up.sh` to deploy the environment (takes typically 25 minutes, but can take up to 40 min)
 7. see [howToDemo.md](howToDemo.md) for demo scenarios
-8. run ./down.sh to tear everything down
+8. run ./down.sh to tear everything down (deleting the Cloud9 environment will NOT do this; keep the Cloud9 environment for later demos)
 
 ## Detailed description for the setup 
 
@@ -132,7 +121,7 @@ Checkout the [howToDemo.md](howToDemo.md) for demo scenarios
 
 #### Shared AWS Accounts
 
-If you share an AWS account with a co-worker, make sure that you both use different project names and that one project name is not a subset of the other one: eg cloudone and cloudone01 would be bad, but cloudone01 and cloudone02 would be fine  (I know... there is room for improvement here)
+If you share an AWS account with a co-worker, make sure that you both use different project names and that one project name is not a subset of the other one: eg cloudone and cloudone01 would be bad, but cloudone01 and cloudone02 would be fine  (I know... there is room for improvement in the scirpt here)  
 
 ### AWS Service Limits
 The AWS Region that you will use must have:  
@@ -143,8 +132,8 @@ The AWS Region that you will use must have:
 - **one "available" Internet Gateway "slot"**
    By default, there is a soft limit of 5 Internet Gateways per region.  This script must be able to create 1 Internet Gateway  
 
-AWS Service Limits can be increased by a simple (free) Support Request at: https://console.aws.amazon.com/support/home#/case/create -> Increase Service Levels    
-The Cloud Formation Template to build the EKS cluster will crash if those resources cannot be created
+AWS Service Limits can be increased by a simple (free) Support Request at: https://console.aws.amazon.com/support/home#/case/create -> Increase Service Levels. No Support Contract is required for this.  
+The Cloud Formation Template to build the EKS cluster will crash if those resources cannot be created.  (future versions of this script may check for this)  
 
 The IAM User account that you will use:
 
