@@ -296,7 +296,7 @@ The Registration keys for CloudOne Application Security must be called per runni
 ![C1CSAdmissionPolicies](images/C1CSAdmissionPolicies.png)
 - Demonstrate this by trying to start an nginx pod, straight from dockerhub
 ```shell 
-kubectl run --generator=run-pod/v1 --image=nginx --namespace nginx nginx
+kubectl run  --image=nginx --namespace nginx nginx
 ```
 - This will not be allowed and will generate the following error:    
 ```
@@ -314,7 +314,7 @@ kubectl create namespace mywhitelistednamespace
 #whitelist that namespace for C1CS
 kubectl label namespace mywhitelistednamespace ignoreAdmissionControl=ignore
 #deploying nginx in the "mywhitelistednamespace" will now work:
-kubectl run --generator=run-pod/v1 --image=nginx --namespace mywhitelistednamespace nginx
+kubectl run  --image=nginx --namespace mywhitelistednamespace nginx
 
 kubectl run nginx  --image=nginx --namespace mywhitelistednamespace
 kubectl get namespaces --show-labels
