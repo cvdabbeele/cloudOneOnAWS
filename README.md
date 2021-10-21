@@ -619,7 +619,8 @@ So please rerun
 ```
 
 Afterwards you will be able to commit changes to your CodeCommit repositories.
- 
- 
-notes:
-20211021: merged branch "branch3"
+
+notes:   
+20211021: merged branch with the name "branch3"
+
+
