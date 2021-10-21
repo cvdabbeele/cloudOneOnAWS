@@ -362,15 +362,13 @@ for i in "${!aws_stacks[@]}"; do
   fi
 done
 
-##UPDATE THE DELETE BUCKETS AFTER THE MEGA S3 BUCKET HAS BEEN DELETED !!!!!!!!!!!!!!!
-
 #cleanup codepipelineartifactbuckets
 readarray -t BUCKETS  <<< `aws s3api list-buckets --region ${AWS_REGION}| jq -r '.Buckets[].Name' `
 readarray -t DUMMYARRAYTOFIXSYNTAXCOLORINGINVSCODE <<< `pwd `
 for i in "${!BUCKETS[@]}"; do
-  #printf '%s\n' "Bucket ${i} = ${BUCKETS[${i}]}"
+  [ ${VERBOSE} -eq 1 ] &&  printf '%s\n' "Bucket ${i} = ${BUCKETS[${i}]}"
   BUCKETCONTENTS=`aws s3 ls ${BUCKETS[${i}]}` 
-  echo "${i}  ${BUCKETS[${i}]}" ${BUCKETCONTENTS}
+  [ ${VERBOSE} -eq 1 ] &&  echo "${i}  ${BUCKETS[${i}]}" ${BUCKETCONTENTS}
   if [[ "${BUCKETS[${i}]}" =~ "codepipelineartifact" ]] &&  [[ "${BUCKETCONTENTS}" =~ "${C1PROJECT}" ]]; then
       printf "%s\n"  "Deleting codepipelineartifactbucket: ${BUCKETCONTENTS}"
       aws s3 rb s3://${BUCKETS[${i}]} --force  2>/dev/null

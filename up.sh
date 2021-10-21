@@ -67,6 +67,12 @@ if [ "${C1AUTH}" != "accountbased" ] && [ "${C1AUTH}" != "emailbased" ]  ; then
     export C1AUTHHEADER=""
 fi
 
+
+if  [ -z "${VERBOSE}" ] ; then
+  VERBOSE=0
+fi
+
+
 # Check AWS settings
 #if  [ -z "$AWS_REGION" ]; then echo C1PROJECT must be set && varsok=false; fi
 if  [ -z "${C1PROJECT}" ]; then echo C1PROJECT must be set && varsok=false; fi

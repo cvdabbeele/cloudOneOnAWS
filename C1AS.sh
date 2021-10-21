@@ -30,11 +30,11 @@ printf "%s\n" "(Re-)creating Group object ${C1PROJECT^^}-${1^^} in C1AS"
 export C1ASGROUPCREATERESULT=`\
 curl --silent --location --request POST "${C1ASAPIURL}/accounts/groups/"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1'  --data-raw "${PAYLOAD}" \
 `
-#echo $C1ASGROUPCREATERESULT
+[ ${VERBOSE} -eq 1 ] &&  echo $C1ASGROUPCREATERESULT
 APPKEY=`echo "$C1ASGROUPCREATERESULT" | jq   -r ".credentials.key"`
-#echo APPKEY=$APPKEY
+[ ${VERBOSE} -eq 1 ] &&  echo APPKEY=$APPKEY
 APPSECRET=`echo "$C1ASGROUPCREATERESULT" | jq   -r ".credentials.secret"`
-#echo APPSECRET= $APPSECRET
+[ ${VERBOSE} -eq 1 ] &&  echo APPSECRET= $APPSECRET
 if [[ "$APPKEY" == "null"  ]];then
    printf "%s\n" "Failed to create group object in C1AS for ${1}"; 
    read -p "Press CTRL-C to exit script, or Enter to continue anyway"
