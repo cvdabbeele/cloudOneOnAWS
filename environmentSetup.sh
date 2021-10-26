@@ -189,39 +189,43 @@ else
 fi
 
 # checking AWS Service Limits
-## checking "available" VPC Service Limit
-[ ${VERBOSE} -eq 1 ] && printf "Trying to create a VPC"
+## checking VPC Service Limit (Can I create a VPC?)
+printf "%s\n" "testing VPC Service Limit (Can I create a VPC?)"
+[ ${VERBOSE} -eq 1 ] && printf "%s" "Trying to create a VPC..."
 TESTVPCID=`aws ec2 create-vpc --cidr-block 10.0.0.0/16 | jq -r ".Vpc.VpcId"`
 if [[ "${?}" -ne 0 ]]; then
-  [ ${VERBOSE} -eq 1 ] && printf "%s\n" "TESTVPCID= ${TESTVPCID}"
+  [ ${VERBOSE} -eq 1 ] && printf "\n%s\n" "TESTVPCID= ${TESTVPCID}"
   printf "%s\n" "unable to create a test VPC, check your \"AWS SERVICE LIMITS\"  (see also README.md"
   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 else
-  [ ${VERBOSE} -eq 1 ] && printf "Deleting test VPC with id= ${TESTVPCID}"
+  [ ${VERBOSE} -eq 1 ] && printf "%s\n" "Deleting test VPC with id= ${TESTVPCID}"
   aws ec2 delete-vpc --vpc-id ${TESTVPCID}
+  printf "%s\n" "OK"
 fi
 
 ## checing available Elastic IP Service Limit
-[ ${VERBOSE} -eq 1 ] && printf "Trying to create an Elastic IP"
+printf "%s\n" "testing Elastic IP Service Limit (Can I create an Elastic IP ?)"
+[ ${VERBOSE} -eq 1 ] && printf "%s\n" "Trying to create an Elastic IP"
 TESTEIPALLOCATIONID=`aws ec2 allocate-address --domain vpc |jq -r ".AllocationId"`
 if [[ "${?}" -ne 0 ]]; then
   [ ${VERBOSE} -eq 1 ] && printf "%s\n" "TestIpAcllocation id= ${TESTEIPALLOCATIONID}"
   printf "%s\n" "unable to create a test elastic IP, check your \"AWS SERVICE LIMITS\"  (see also README.md"
   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 else
-  [ ${VERBOSE} -eq 1 ] && printf "Deleting test Elastic IP with id= ${TESTEIPALLOCATIONID}"
+  [ ${VERBOSE} -eq 1 ] && printf "%s\n" "Deleting test Elastic IP with id= ${TESTEIPALLOCATIONID}"
   aws ec2 release-address --allocation-id ${TESTEIPALLOCATIONID}
 fi
 
 ## checking available Internet Gateway Service Limit
-[ ${VERBOSE} -eq 1 ] && printf "Trying to create an Internet Gateway"
+printf "%s\n" "testing Internet Gateway Service Limit (Can I create an IGW ?)"
+[ ${VERBOSE} -eq 1 ] && printf "%s\n" "Trying to create an Internet Gateway"
 TESTINTERNETGWID=`aws ec2 create-internet-gateway | jq -r ".InternetGateway.InternetGatewayId"`
 if [[ "${?}" -ne 0 ]]; then
   [ ${VERBOSE} -eq 1 ] && printf "%s\n" "Internet Gateway Allocation id= ${TESTINTERNETGWID}"
   printf "%s\n" "unable to create a test Internet Gateway, check your \"AWS SERVICE LIMITS\"  (see also README.md"
   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 else
-  [ ${VERBOSE} -eq 1 ] && printf "Deleting test Internet Gateway with id= ${TESTINTERNETGWID}"
+  [ ${VERBOSE} -eq 1 ] && printf "%s\n" "Deleting test Internet Gateway with id= ${TESTINTERNETGWID}"
   aws ec2 delete-internet-gateway --internet-gateway-id  ${TESTINTERNETGWID}
 fi
 
