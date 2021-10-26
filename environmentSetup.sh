@@ -50,7 +50,7 @@ if ! [ -x "$(command -v helm)" ] ; then
     chmod 700 get_helm.sh
     ./get_helm.sh
 else
-    printf '%s\n'  "Using existing helm.  Version `helm version  | awk -F',' '{ print $1 }' | awk -F'{' '{ print $2 }' | awk -F':' '{ print $2 }' | sed 's/"//g'`"
+    printf '%s\n'  "Using existing helm.  Version" `helm version  | awk -F',' '{ print $1 }' | awk -F'{' '{ print $2 }' | awk -F':' '{ print $2 }' | sed 's/"//g'`
 fi
 
 # Installing aws authenticator
@@ -77,7 +77,7 @@ DUMMY=`aws s3 ls`
 if [ "$?" != "0" ]; then
   echo "AWS credentials still not OK, exit the script and re-run aws configure"
   varsok=false; 
-  read -p "Press CTRL-C to exit script, or Enter to continue anyway"
+  read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 fi
 
 # set additional variables based on aws configure
@@ -127,16 +127,17 @@ for i in "${VARS_TO_VALIDATE_BY_FORMAT[@]}"; do
   else
     VAROK[$i]="false"
     INPUTISVALID="false"
-    [ ${VERBOSE} -eq 1 ] && printf "%s\n" "Variable has a wrong format. "
-    [ ${VERBOSE} -eq 1 ] && printf "%s\n" "     Format must be ${VARFORMAT[$i]} "
+    printf "%s\n" "Variable ${i} has a wrong format. "
+    printf "%s\n" "     Contents =  ${!i} " 
+    printf "%s\n" "     Expected format must be ${VARFORMAT[$i]} "
   fi
 done
 
-if [[ $INPUTISVALID == "true" ]]; then
+if [[ ${INPUTISVALID} == "true" ]]; then
   echo "All variables checked out ok"
 else
   echo "Please correct the above-mentioned variables"
-  read -p "Press CTRL-C to exit script, or Enter to continue anyway"
+  read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 fi
 
 # Validate Cloud One Container Security (aka Deep Security Smart Check) settings (for pre-runtime scanning)
@@ -158,7 +159,7 @@ if  [ -z "$TAGVALUE0" ]; then echo TAGVALUE0 must be set && varsok=false; fi
 
 if  [ "$varsok" = false ]; then
   printf '%s\n' "Please check your 00_define_vars.sh file"
-  read -p "Press CTRL-C to exit script, or Enter to continue anyway"
+  read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 fi
 printf '%s\n' "OK"
 
@@ -181,21 +182,54 @@ if [[ "${rolefound}" = "false" ]]; then
   aws iam put-role-policy --role-name ${C1PROJECT}EksClusterCodeBuildKubectlRole --policy-name eks-describe --policy-document file:///tmp/iam-role-policy
 fi
 
-#checking dockerlogin
+# checking dockerlogin
 [ ${VERBOSE} -eq 1 ] && printf "%s\n" "Validating Docker login"
 docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
 DOCKERLOGIN=`docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD`
 [ ${VERBOSE} -eq 1 ] && printf "%s\n" "DOCKERLOGIN= $DOCKERLOGIN"
 if [[ ${DOCKERLOGIN} == "Login Succeeded" ]];then 
-  echo "Docker Login Successful"; 
+  printf "%s\n" "Docker Login Successful"; 
 else 
-  echo "Docker Login Failed.  Please check the Docker Variables in 00_define.var.sh";    
+  printf "%s\n" "Docker Login Failed.  Please check the Docker Variables in 00_define.var.sh";    
 fi
 
-#checking AWS limits
-# TODO
+# checking AWS Service Limits
+## checking "available" VPC Service Limit
+[ ${VERBOSE} -eq 1 ] && printf "Trying to create a VPC"
+TESTVPCID=`aws ec2 create-vpc --cidr-block 10.0.0.0/16 | jq -r ".Vpc.VpcId"`
+[ ${VERBOSE} -eq 1 ] && printf "%s\n" "TestVpcId= ${TESTVPCID}"
 
+if [[ "${?}" -ne 0 ]]; then
+  printf "%s\n" "unable to create a test VPC, check your \"AWS SERVICE LIMITS\"  (see also README.md"
+  read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
+else
+  [ ${VERBOSE} -eq 1 ] && printf "Deleting test VPC with id= ${TESTVPCID}"
+  aws ec2 delete-vpc --vpc-id ${TESTVPCID}
+fi
 
+## checing available Elastic IP Service Limit
+[ ${VERBOSE} -eq 1 ] && printf "Trying to create an Elastic IP"
+TESTEIPALLOCATIONID=`aws ec2 allocate-address --domain vpc |jq -r ".AllocationId"`
+[ ${VERBOSE} -eq 1 ] && printf "%s\n" "TestIpAcllocation id= ${TESTEIPALLOCATIONID}"
+if [[ "${?}" -ne 0 ]]; then
+  printf "%s\n" "unable to create a test elastic IP, check your \"AWS SERVICE LIMITS\"  (see also README.md"
+  read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
+else
+  [ ${VERBOSE} -eq 1 ] && printf "Deleting test Elastic IP with id= ${TESTEIPALLOCATIONID}"
+  aws ec2 release-address --allocation-id ${TESTEIPALLOCATIONID}
+fi
+
+## checking available Internet Gateway Service Limit
+[ ${VERBOSE} -eq 1 ] && printf "Trying to create an Internet Gateway"
+TESTINTERNETGWID=`aws ec2 create-internet-gateway | jq -r ".InternetGateway.InternetGatewayId"`
+[ ${VERBOSE} -eq 1 ] && printf "%s\n" "Internet Gateway Allocation id= ${TESTINTERNETGWID}"
+if [[ "${?}" -ne 0 ]]; then
+  printf "%s\n" "unable to create a test Internet Gateway, check your \"AWS SERVICE LIMITS\"  (see also README.md"
+  read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
+else
+  [ ${VERBOSE} -eq 1 ] && printf "Deleting test Internet Gateway with id= ${TESTINTERNETGWID}"
+  aws ec2 delete-internet-gateway --internet-gateway-id  ${TESTINTERNETGWID}
+fi
 
 # setting additional variables:
 # The old API endpoints have been / will be removed shortly

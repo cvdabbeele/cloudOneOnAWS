@@ -597,4 +597,4 @@ DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${C1PROJECT}${
 printf '%s\n' "Waiting for Cloudformation stack ${C1PROJECT}${APP3}Pipeline to be created. "
 DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${C1PROJECT}${APP3}Pipeline  --region ${AWS_REGION}`
 
-#read -p "Press CTRL-C to exit script, or Enter to continue anyway"
+#read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"

@@ -37,7 +37,7 @@ APPSECRET=`echo "$C1ASGROUPCREATERESULT" | jq   -r ".credentials.secret"`
 [ ${VERBOSE} -eq 1 ] &&  echo APPSECRET= $APPSECRET
 if [[ "$APPKEY" == "null"  ]];then
    printf "%s\n" "Failed to create group object in C1AS for ${1}"; 
-   read -p "Press CTRL-C to exit script, or Enter to continue anyway"
+   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 fi
 } 
 
