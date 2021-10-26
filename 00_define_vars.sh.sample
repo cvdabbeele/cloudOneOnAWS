@@ -1,20 +1,28 @@
 #!/bin/bash
+# define your configuration variables in this file
+# save it without the .sample extension
+# make sure it is executable
 printf '%s\n' "-------------------------------"
 printf '%s\n' "     Configuring Variables     "
 printf '%s\n' "-------------------------------"
+
+# remember to run AWS configure first.  
+# The scripts will pull the AWS keys and region from the AWS configure
 
 # 1. copy this file to 00_define_vars.sh
 # 2. enter your configuration variables in this file
 # 3. make sure it is still executable
 
-# changes 202112:
-#   variable AWS_PROJECT is now replaced by C1PROJECT for interchangeability of modules with cloudOneOnAzure Project
+# changes 202111
+#   the old CloudOne backend, where the authentication was done via an Accountname and a username is no longer supported
+#   you must use an account on the new CloudOne backend, where you authenticate with email address
+#   this environment also supports the different CloudOne regions (see C1REGION variable)
 
-# changes 202110
+# changes 202110:
+#   variable AWS_PROJECT is now replaced by C1PROJECT for interchangeability of modules with cloudOneOnAzure Project
 #   new required variables (see below): C1AUTH, C1REGION  
 #   updated variables: C1APIKEY
 #   The script now creates the "groups" in C1CS; there is no longer a need to manually create a group and provide the TREND_AP_KEY and a TREND_AP_SECRET
-
 
 # changes 202105
 #   new required variables (see below): TAGKEY1, TAGVALUE1, TAGKEY2, TAGVALUE2
@@ -22,40 +30,25 @@ printf '%s\n' "-------------------------------"
 # changes 20210315
 #   new required variables (see below): C1CS_RUNTIME
 
-printf '%s' "Defining variables... "
 #### ---------------------------------------------------------------------------
 #### ----------below this line are settings which MUST be customised  ----------
 #### ---------------------------------------------------------------------------
 
-# update 202110
-# export C1AUTH="the value could be \"accountbased\" (=account&username-based authenticated to C1) or \"emailbased\"(=authenticated to C1 with email address)"
-# If the variable does not exist, it will be set to "accountbased" for compatibility reasons with older versions of this script
-export C1AUTH="emailbased"   
-
-export C1REGION="the value could be us-1,in-1, gb-1, jp-1, de-1,au-1; it will only be used when $C1AUTH=emailbased and the value must match the region of your CloudOne registration "
-
-# C1CS (update 20210315)
-# for now keep C1CS_RUNTIME to "false".  It will be implemented later
+# CloudOne Settings:
+# C1REGION="the value can be one one of: us-1|in-1|gb-1|jp-1|de-1|au-1|ca-1|sg-1|trend-us-1"
+export C1REGION="us-1"
+# export C1APIKEY='your_CloudOne_API_Key. MUST be created in C1S (no longer in C1WS; this API key is different!)
+export C1APIKEY='your_CloudOne_API_Key'
+# for now keep C1CS_RUNTIME to "false".  "true" will be implemented later
 export C1CS_RUNTIME="false"
-# If the variable does not exist, it will be set to "true" (meaning you have access to C1CS-runtime)
-# this is for compatibility reasons with older versions of this script
-
-#  AWS settings
-export C1PROJECT='cloudone01'    #may only contain lowercase and trailing numbers, but no "-", no "_", nor any special characters.
-
-# remember to run AWS configure first.  The scripts will pull the AWS keys and region from the AWS configure
-
-# Deep Security Smart Check settings (used for pre-runtime scanning)
-#Note: AC=ActivationCode this is your License Key for SmartCheck, the thing you enter in SmartCheck when you set it up
+# Deep Security Smart Check ActivationCode: this is your License Key for SmartCheck, the key you enter in SmartCheck when you set it up
 export DSSC_AC='xx-xxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx'
 
-# Cloud One Application Security settings (used for runtime protection)
-# Those are the keys that you get when you have created a "group" for the MoneyX app in CloudOne Application Security
-export TREND_AP_KEY='your_trend_key_for_cloudOne_Application_Security'
-export TREND_AP_SECRET='your_trend_secret_for_cloudOne_Application_Security'
-
-# export C1APIKEY='your_CloudOne_API_Key; depending on the choosen cloudOne authentication , the API key must either be created in C1WS (when using the legacy authentication to C1) or created (at the top level) in C1 (when email authentication to C1 is used)'
-export C1APIKEY='your_CloudOne_API_Key'
+# Script settings
+# All objects created by this script will be prepended by this string
+#may only contain LOWERCASE and trailing numbers
+# MAY NOT CONTAIN UPPERCASE, no "-", no "_", nor any special characters.
+export C1PROJECT='c101'    
 
 # Dockerhub account information (required to do "authenticated pulls" from docker to get a higher max-pull limit)
 export DOCKERHUB_USERNAME='your username of your (free) account on hub.docker.com'
@@ -68,6 +61,8 @@ export DSSC_PASSWORD='Tr3ndm1cr0!'     #DO CHANGE THIS do NOT use any "\" in the
 #### --------------------------------------------------------------------------------------
 #### -----below this line are default settings which may be optionally customised----------
 #### --------------------------------------------------------------------------------------
+# set verbose output (1=verbose/debug during startup; 0=non-verbose output)
+export VERBOSE=0
 # The number of nodes you want your AWS Kubernetes Cluster (EKS) to have:
 export AWS_EKS_NODES='2'
 

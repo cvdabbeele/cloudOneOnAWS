@@ -10,17 +10,16 @@ Many parts are intentionally vurlnerable and should be kept fom running for a lo
 1. [Updates] (#updates)
 2. [High level overview](#high-level-overview-of-steps-see-detailed-steps-in-next-section)  
 3. [Detailed Steps](#detailed-setup-instructions)
-4. [howToDemo.md](howToDemo.md) 
-
+4. [howToDemo.md](howToDemo.md)   
 
 ## UPDATES 
 If this is your first time here, you can skip the "updates" section.  
-If you are a repeat visitor, then please check the updates below
+If you are a repeat visitor, then please check the updates below.  New veriable settings in `00_define_vars.sh.sample` may be required.  
 ### 202110
 Changes in required variables.  Check the `00_define_vars.sh.sample` file for details (important!)  
-The script now supports the new, regional CloudOne Datacenters.  This uses the new, "emailbased", authentication to CloudOne.  
-The old ${AWS_REGION} variable has been replaced by ${C1REGION}.  This is for compatibility with the upcoming cloudOneOnAzure.  
-The script now creates the "groups" in C1AS; there is no longer a need to manually create a group and provide the  TREND_AP_KEY and a TREND_AP_SECRET.  (However, for now, only monex has the C1AS agent)  
+The script now uses the new CloudOne Datacenters, which support regional instances.    
+This requires a CloudOne account with the "emailbased" authentication.    
+
 ### 202105
 At August 13, 2021, GitHub stopped authentication with Username/Password.  You must create a Personal Access Token (PAT).  For more info see: https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/.
 How to create a PAT:   
