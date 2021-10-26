@@ -56,11 +56,10 @@ EOF
     printf '%s\n' "This may take up to 20 minutes... (started at:`date`)"
     starttime=`date +%s`
     eksctl create cluster -f work/${C1PROJECT}EksCluster.yml   #non-fargate EKS cluster
-    #eksctl create cluster --name=${C1PROJECT}.fargate --fargate --tags Key=${TAGKEY0},Value=${TAGVALUE0} Key=${TAGKEY1},Value=${TAGVALUE1} Key=${TAGKEY2},Value=${TAGVALUE2}  #EKS cluster with Fargate profile
-    #printf '%s\n' "Waiting for Cloudformation stack \"managed-smartcheck-cluster\" to be created."
-    #aws cloudformation wait stack-create-complete --stack-name eksctl-managed-smartcheck-cluster  --region $AWS_REGION
-    #printf '%s\n' "Waiting for Cloudformation stack \"managed-smartcheck-nodegroup-nodegroup\" to be created.  This may take a while"
-    #aws cloudformation wait stack-create-complete --stack-name eksctl-eksctl-managed-smartcheck-nodegroup-nodegroup	 --region $AWS_REGION
+    if [ "$?" != "0" ]; then
+      read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
+    fi
+
     endtime="$(date +%s)"
     printf '%s\n' "Cloudformation Stacks deployed.  Elapsed time: $((($endtime-$starttime)/60)) minutes"
     printf '%s\n' "Checking EKS cluster.  You should see your EKS cluster in the list below "

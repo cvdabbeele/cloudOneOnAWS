@@ -156,7 +156,7 @@ if  [ "$varsok" = false ]; then
   printf '%s\n' "Please check your 00_define_vars.sh file"
   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 fi
-printf '%s\n' "OK"
+#printf '%s\n' "OK"
 
 rolefound="false"
 AWS_ROLES=(`aws iam list-roles | jq -r '.Roles[].RoleName ' | grep ${C1PROJECT} `)
@@ -178,16 +178,14 @@ if [[ "${rolefound}" = "false" ]]; then
 fi
 
 # checking dockerlogin
-[ ${VERBOSE} -eq 1 ] && printf "%s\n" "Validating Docker login"
-docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-DOCKERLOGIN=`docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD`
+printf "%s\n" "Validating Docker login"
+DOCKERLOGIN=`docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD 2>/dev/null`
 [ ${VERBOSE} -eq 1 ] && printf "%s\n" "DOCKERLOGIN= $DOCKERLOGIN"
 if [[ ${DOCKERLOGIN} == "Login Succeeded" ]];then 
   printf "%s\n" "Docker Login Successful"; 
 else 
   printf "%s\n" "Docker Login Failed.  Please check the Docker Variables in 00_define.var.sh";    
 fi
-
 # checking AWS Service Limits
 ## checking VPC Service Limit (Can I create a VPC?)
 printf "%s\n" "testing VPC Service Limit (Can I create a VPC?)"
