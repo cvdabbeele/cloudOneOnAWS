@@ -87,11 +87,6 @@ export AWS_REGION=`aws configure get region`
 export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
 export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
 
-# if not already defined; set VERBOSE to 0
-if  [ -z "${VERBOSE}" ] ; then
-  VERBOSE=0
-fi
-
 # IMPORTANT setting of LC_LOCATE for the pattern testing the variables
 export LC_COLLATE=C
 
@@ -197,9 +192,8 @@ fi
 ## checking "available" VPC Service Limit
 [ ${VERBOSE} -eq 1 ] && printf "Trying to create a VPC"
 TESTVPCID=`aws ec2 create-vpc --cidr-block 10.0.0.0/16 | jq -r ".Vpc.VpcId"`
-[ ${VERBOSE} -eq 1 ] && printf "%s\n" "TestVpcId= ${TESTVPCID}"
-
 if [[ "${?}" -ne 0 ]]; then
+  [ ${VERBOSE} -eq 1 ] && printf "%s\n" "TESTVPCID= ${TESTVPCID}"
   printf "%s\n" "unable to create a test VPC, check your \"AWS SERVICE LIMITS\"  (see also README.md"
   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 else
@@ -210,8 +204,8 @@ fi
 ## checing available Elastic IP Service Limit
 [ ${VERBOSE} -eq 1 ] && printf "Trying to create an Elastic IP"
 TESTEIPALLOCATIONID=`aws ec2 allocate-address --domain vpc |jq -r ".AllocationId"`
-[ ${VERBOSE} -eq 1 ] && printf "%s\n" "TestIpAcllocation id= ${TESTEIPALLOCATIONID}"
 if [[ "${?}" -ne 0 ]]; then
+  [ ${VERBOSE} -eq 1 ] && printf "%s\n" "TestIpAcllocation id= ${TESTEIPALLOCATIONID}"
   printf "%s\n" "unable to create a test elastic IP, check your \"AWS SERVICE LIMITS\"  (see also README.md"
   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 else
@@ -222,8 +216,8 @@ fi
 ## checking available Internet Gateway Service Limit
 [ ${VERBOSE} -eq 1 ] && printf "Trying to create an Internet Gateway"
 TESTINTERNETGWID=`aws ec2 create-internet-gateway | jq -r ".InternetGateway.InternetGatewayId"`
-[ ${VERBOSE} -eq 1 ] && printf "%s\n" "Internet Gateway Allocation id= ${TESTINTERNETGWID}"
 if [[ "${?}" -ne 0 ]]; then
+  [ ${VERBOSE} -eq 1 ] && printf "%s\n" "Internet Gateway Allocation id= ${TESTINTERNETGWID}"
   printf "%s\n" "unable to create a test Internet Gateway, check your \"AWS SERVICE LIMITS\"  (see also README.md"
   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 else
