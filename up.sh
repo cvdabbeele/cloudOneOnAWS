@@ -1,21 +1,5 @@
 #!/bin/bash
 
-#TODO: check if we have enough limits to create a VPC (or if one for our project already exists fro a previous run of this script)
-#TODO: check if we have enough limits to create a IGW (or if one for our project already exists fro a previous run of this script
-#TODO: check if we have enough limits to create an Elastic IP  (or if one for our project already exists fro a previous run of this script)
-# aws service-quotas list-service-quotas     --service-code vpc  
-#      "ServiceCode": "vpc",
-#            "ServiceName": "Amazon Virtual Private Cloud (Amazon VPC)",
-#            "QuotaArn": "arn:aws:servicequotas:eu-central-1:517003314933:vpc/L-F678F1CE",
-#            "QuotaCode": "L-F678F1CE",
-#            "QuotaName": "VPCs per Region",
-#            "Value": 10.0,
-#            "Unit": "None",
-#            "Adjustable": true,
-#            "GlobalQuota": false
-
-# removing "aws_session_token = <blanco> " from credentials file (which throws an error if not removed)
-#sed -i "/aws_session_token/d" ~/.aws/credentials 
 MAINSTARTTIME=`date +%s`
 
 # import variables
@@ -24,33 +8,31 @@ MAINSTARTTIME=`date +%s`
 # install tools
 . ./environmentSetup.sh
 
-
 mkdir -p work
 
 # create cluster
-. ./eks_cluster.sh
+. ./eksCluster.sh
 
 # deploy SmartCheck
 . ./smartcheck.sh
 
-# add registries
-. ./internal_repo.sh
-#. ./add_demo_repo.sh   #this repository does no longer exist
+# add internal smartcheck repo
+. ./smartcheckInternalRepo.sh
+
+# add ECR registry to SmartCheck
+. ./smartCheckAddEcr.sh
 
 # create groups in C1AS
 . ./C1AS.sh
 
+# add C1CS
+. ./C1CS.sh
+
 # setup AWS CodePipeline
 . ./pipelines.sh
-  
-# add ECR registry to SmartCheck
-. ./ECR_registry.sh
 
 # add the demo apps
 . ./demoApps.sh
-
-# add C1CS
-. ./C1CS.sh
 
 printf '%s\n'  "You can now kick off sample pipeline-builds of MoneyX"
 printf '%s\n'  " e.g. by running ./pushWithHighSecurityThresholds.sh"
