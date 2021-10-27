@@ -26,7 +26,7 @@ do
 done 
 
 export PAYLOAD="{ \"name\": \"${C1PROJECT^^}-${1^^}\"  }"
-printf "%s\n" "(Re-)creating Group object ${C1PROJECT^^}-${1^^} in C1AS"
+printf "%s" "(Re-)creating Group object ${C1PROJECT^^}-${1^^} in C1AS..."
 export C1ASGROUPCREATERESULT=`\
 curl --silent --location --request POST "${C1ASAPIURL}/accounts/groups/"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1'  --data-raw "${PAYLOAD}" \
 `
@@ -36,8 +36,10 @@ APPKEY=`echo "$C1ASGROUPCREATERESULT" | jq   -r ".credentials.key"`
 APPSECRET=`echo "$C1ASGROUPCREATERESULT" | jq   -r ".credentials.secret"`
 [ ${VERBOSE} -eq 1 ] &&  echo APPSECRET= $APPSECRET
 if [[ "$APPKEY" == "null"  ]];then
-   printf "%s\n" "Failed to create group object in C1AS for ${1}"; 
+   printf "\n%s\n" "Failed to create group object in C1AS for ${1}"; 
    read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
+else
+  printf "%s\n" "OK"
 fi
 } 
 

@@ -58,10 +58,10 @@ EOF
     eksctl create cluster -f work/${C1PROJECT}EksCluster.yml   #non-fargate EKS cluster
     if [ "$?" != "0" ]; then
       read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
+    else
+      endtime="$(date +%s)"
+      printf '%s\n' "EKS cluster created.  Elapsed time: $((($endtime-$starttime)/60)) minutes"
+      printf '%s\n' "You should see your EKS cluster in the list below "
+      eksctl get clusters
     fi
-
-    endtime="$(date +%s)"
-    printf '%s\n' "Cloudformation Stacks deployed.  Elapsed time: $((($endtime-$starttime)/60)) minutes"
-    printf '%s\n' "Checking EKS cluster.  You should see your EKS cluster in the list below "
-    eksctl get clusters
   fi
