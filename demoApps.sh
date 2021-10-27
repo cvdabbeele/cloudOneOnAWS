@@ -6,11 +6,13 @@ printf '%s\n' "-------------------------------"
 #checking required variables
 varsok=true
 if  [ -z "$AWS_REGION" ]; then echo AWS_REGION must be set && varsok=false; fi
-if  [ -z "$APP_GIT1_URL" ]; then echo APP_GIT1_URL must be set && varsok=false; fi
-if  [ -z "$APP_GIT2_URL" ]; then echo APP_GIT2_URL must be set && varsok=false; fi
-if  [ -z "$APP_GIT3_URL" ]; then echo APP_GIT3_URL must be set && varsok=false; fi
-if  [ "$varsok" = false ]; then exit 1 ; fi
-
+if  [ -z "$APP1_GIT_URL" ]; then echo APP1_GIT_URL must be set && varsok=false; fi
+if  [ -z "$APP2_GIT_URL" ]; then echo APP2_GIT_URL must be set && varsok=false; fi
+if  [ -z "$APP3_GIT_URL" ]; then echo APP3_GIT_URL must be set && varsok=false; fi
+if  [ "$varsok" = false ]; then 
+   printf "%s\n" "Check the above-mentioned variables"; 
+   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
+fi
 function setupApp {
   #$1=appname
   #$2=downloadURL for application on public git
@@ -120,15 +122,15 @@ function getUrl {
 #  for backward compatibility; set the TREND_AP variables
 TREND_AP_KEY=${APP1KEY}
 TREND_AP_SECRET=${APP1SECRET}
-setupApp ${APP1} ${APP_GIT1_URL}
+setupApp ${APP1} ${APP1_GIT_URL}
 
 TREND_AP_KEY=${APP2KEY}
 TREND_AP_SECRET=${APP2SECRET}
-setupApp ${APP2} ${APP_GIT2_URL}
+setupApp ${APP2} ${APP2_GIT_URL}
 
 TREND_AP_KEY=${APP3KEY}
 TREND_AP_SECRET=${APP3SECRET}
-setupApp ${APP3} ${APP_GIT3_URL}
+setupApp ${APP3} ${APP3_GIT_URL}
 
 #exit
 #optionally (if the app makes it through the scanning)

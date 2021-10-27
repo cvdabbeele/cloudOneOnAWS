@@ -178,11 +178,11 @@ if [[ "${rolefound}" = "false" ]]; then
 fi
 
 # checking dockerlogin
-printf "%s\n" "Validating Docker login"
+printf "%s" "Validating Docker login..."
 DOCKERLOGIN=`docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD 2>/dev/null`
-[ ${VERBOSE} -eq 1 ] && printf "%s\n" "DOCKERLOGIN= $DOCKERLOGIN"
+[ ${VERBOSE} -eq 1 ] && printf "\n%s\n" "DOCKERLOGIN= $DOCKERLOGIN"
 if [[ ${DOCKERLOGIN} == "Login Succeeded" ]];then 
-  printf "%s\n" "Docker Login Successful"; 
+  printf "%s\n" "OK"; 
 else 
   printf "%s\n" "Docker Login Failed.  Please check the Docker Variables in 00_define.var.sh";    
 fi
@@ -216,8 +216,8 @@ else
 fi
 
 ## checking available Internet Gateway Service Limit
-printf "%s\n" "Testing Internet Gateway Service Limit (Can I create an IGW ?)..."
-[ ${VERBOSE} -eq 1 ] && printf "%s\n" "Trying to create an Internet Gateway"
+printf "%s" "Testing Internet Gateway Service Limit (Can I create an IGW ?)..."
+[ ${VERBOSE} -eq 1 ] && printf "\n%s\n" "Trying to create an Internet Gateway"
 TESTINTERNETGWID=`aws ec2 create-internet-gateway | jq -r ".InternetGateway.InternetGatewayId"`
 if [[ "${?}" -ne 0 ]]; then
   [ ${VERBOSE} -eq 1 ] && printf "\n%s\n" "Internet Gateway Allocation id= ${TESTINTERNETGWID}"
@@ -240,6 +240,6 @@ export C1ASAPIURL="https://application.${C1REGION}.cloudone.trendmicro.com"
 
 # Generating names for Apps, Stack, Pipelines, ECR, CodeCommit repo,..."
 #generate the names of the apps from the git URL
-export APP1=`echo ${APP_GIT1_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
-export APP2=`echo ${APP_GIT2_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
-export APP3=`echo ${APP_GIT3_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
+export APP1=`echo ${APP1_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
+export APP2=`echo ${APP2_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
+export APP3=`echo ${APP3_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
