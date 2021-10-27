@@ -240,6 +240,6 @@ export C1ASAPIURL="https://application.${C1REGION}.cloudone.trendmicro.com"
 
 # Generating names for Apps, Stack, Pipelines, ECR, CodeCommit repo,..."
 #generate the names of the apps from the git URL
-export APP1=`echo ${APP_GIT_URL1} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
-export APP2=`echo ${APP_GIT_URL2} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
-export APP3=`echo ${APP_GIT_URL3} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
+export APP1=`echo ${APP_GIT1_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
+export APP2=`echo ${APP_GIT2_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
+export APP3=`echo ${APP_GIT3_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
