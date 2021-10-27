@@ -3,10 +3,12 @@ printf '%s\n' "-------------------------------------"
 printf '%s\n' "     Installing / Checking Tools     "
 printf '%s\n' "-------------------------------------"
 
+varsok=true
+
 # Validating the shell
 if [ -z "$BASH_VERSION" ]; then
-    echo -e "Error: this script requires the BASH shell!"
-    exit 1
+   printf '%s\n' "Error: this script requires the BASH shell!"
+   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 fi
 
 # Installing jq
@@ -26,13 +28,9 @@ fi
 
 # Installing kubectl
 printf '%s\n' "Installing/upgrading kubectl...."
-#sudo curl --silent --location -o /usr/local/bin/kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.15.10/2020-02-22/bin/linux/amd64/kubectl
 sudo curl --silent -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 sudo chmod +x /usr/local/bin/kubectl
-###else
-###    printf '%s\n' "Using existing kubectl.  Version: `kubectl version  --output json  2>/dev/null | jq -r '.clientVersion|"Major: \(.major), Minor: \(.minor)"'`" 
-###fi
 
 # Installing eksctl
 if ! [ -x "$(command -v eksctl)" ] ; then
@@ -63,10 +61,6 @@ else
     printf '%s\n'  "Using existing AWS authenticator. Version `aws-iam-authenticator version | jq -r '.Version'  2>/dev/null`"
 fi
 
-
-
-varsok=true
-
 # Validate aws keys 
 DUMMY=`aws s3 ls`
 if [ "$?" != "0" ]; then
@@ -80,17 +74,26 @@ if [ "$?" != "0" ]; then
   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 fi
 
-# set additional variables based on aws configure
+# set additional variables 
 PROJECTDIR=`pwd` 
+# IMPORTANT setting of LC_LOCATE for the pattern testing the variables
+export LC_COLLATE=C
+export C1AUTHHEADER="Authorization:	ApiKey ${C1APIKEY}"
+export C1CSAPIURL="https://container.${C1REGION}.cloudone.trendmicro.com/api"
+export C1CSENDPOINTFORHELM="https://container.${C1REGION}.cloudone.trendmicro.com"
+export C1ASAPIURL="https://application.${C1REGION}.cloudone.trendmicro.com"
 export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
 export AWS_REGION=`aws configure get region`
 export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
 export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
 
-# IMPORTANT setting of LC_LOCATE for the pattern testing the variables
-export LC_COLLATE=C
+# Generating names for Apps, Stack, Pipelines, ECR, CodeCommit repo,..."
+#generate the names of the apps from the git URL
+export APP1=`echo ${APP1_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
+export APP2=`echo ${APP2_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
+export APP3=`echo ${APP3_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
 
-# Decaring associative arrays (mind the capital 'A')
+# Declaring associative arrays (mind the capital 'A')
 declare -A VAROK
 declare -A VARFORMAT
 
@@ -115,7 +118,7 @@ VARFORMAT[AWS_EKS_NODES]='^[1-5]'
 # Check all variables from the VARS_TO_VALIDATE_BY_FORMAT list
 INPUTISVALID="true"
 for i in "${VARS_TO_VALIDATE_BY_FORMAT[@]}"; do
-  [ ${VERBOSE} -eq 1 ] && printf "%s"  "checking variable ${i}    "
+  [ ${VERBOSE} -eq 1 ] && printf "%s"  "checking variable ${i} with contents =  ${!i}    "
   if [[ ${!i} =~ ${VARFORMAT[$i]} ]];then
     VAROK[$i]="true"
    [ ${VERBOSE} -eq 1 ] && printf "%s\n"  "OK"
@@ -135,15 +138,11 @@ else
   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 fi
 
-# Validate Cloud One Container Security (aka Deep Security Smart Check) settings (for pre-runtime scanning)
+# quick-check other variables 
 if  [ -z "$DOCKERHUB_USERNAME" ]; then echo DOCKERHUB_USERNAME must be set && varsok=false; fi
 if  [ -z "$DOCKERHUB_PASSWORD" ]; then echo DOCKERHUB_PASSWORD must be set && varsok=false; fi
 if  [ -z "$DSSC_PASSWORD" ]; then echo DSSC_PASSWORD must be set && varsok=false; fi
 if  [ -z "$DSSC_REGPASSWORD" ]; then echo DSSC_REGPASSWORD must be set && varsok=false; fi
-if  [ -z "$TAGKEY1" ]; then echo TAGKEY1 must be set && varsok=false; fi
-if  [ -z "$TAGVALUE1" ]; then echo TAGVALUE1 must be set && varsok=false; fi
-if  [ -z "$TAGKEY2" ]; then echo TAGKEY2 must be set && varsok=false; fi
-if  [ -z "$TAGVALUE2" ]; then echo TAGVALUE2 must be set && varsok=false; fi
 if  [ -z "$DSSC_NAMESPACE" ]; then echo DSSC_NAMESPACE must be set && varsok=false; fi
 if  [ -z "$DSSC_USERNAME" ]; then echo DSSC_USERNAME must be set && varsok=false; fi
 if  [ -z "$DSSC_TEMPPW" ]; then echo DSSC_TEMPPW must be set && varsok=false; fi
@@ -151,6 +150,14 @@ if  [ -z "$DSSC_HOST" ]; then echo DSSC_HOST must be set && varsok=false; fi
 if  [ -z "$DSSC_REGUSER" ]; then echo DSSC_REGUSER must be set && varsok=false; fi
 if  [ -z "$TAGKEY0" ]; then echo TAGKEY0 must be set && varsok=false; fi
 if  [ -z "$TAGVALUE0" ]; then echo TAGVALUE0 must be set && varsok=false; fi
+if  [ -z "$TAGKEY1" ]; then echo TAGKEY1 must be set && varsok=false; fi
+if  [ -z "$TAGVALUE1" ]; then echo TAGVALUE1 must be set && varsok=false; fi
+if  [ -z "$TAGKEY2" ]; then echo TAGKEY2 must be set && varsok=false; fi
+if  [ -z "$TAGVALUE2" ]; then echo TAGVALUE2 must be set && varsok=false; fi
+
+if  [ -z "$APP1_GIT_URL" ]; then printf '%s\n' "APP1_GIT_URL must be set && varsok=false"; fi
+if  [ -z "$APP2_GIT_URL" ]; then printf '%s\n' "APP2_GIT_URL must be set && varsok=false"; fi
+if  [ -z "$APP3_GIT_URL" ]; then printf '%s\n' "APP3_GIT_URL must be set && varsok=false"; fi
 
 if  [ "$varsok" = false ]; then
   printf '%s\n' "Please check your 00_define_vars.sh file"
@@ -229,17 +236,3 @@ else
   printf "%s\n" "OK"
 fi
 
-# setting additional variables:
-# The old API endpoints have been / will be removed shortly
-# so this script no longer supports the old CloudOne with Account authentication
-# only email authentication to cloudOne is supported as of now
-export C1AUTHHEADER="Authorization:	ApiKey ${C1APIKEY}"
-export C1CSAPIURL="https://container.${C1REGION}.cloudone.trendmicro.com/api"
-export C1CSENDPOINTFORHELM="https://container.${C1REGION}.cloudone.trendmicro.com"
-export C1ASAPIURL="https://application.${C1REGION}.cloudone.trendmicro.com"
-
-# Generating names for Apps, Stack, Pipelines, ECR, CodeCommit repo,..."
-#generate the names of the apps from the git URL
-export APP1=`echo ${APP1_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
-export APP2=`echo ${APP2_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
-export APP3=`echo ${APP3_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`

@@ -90,12 +90,6 @@ export APP1_GIT_URL='https://github.com/cvdabbeele/c1-app-sec-moneyx.git'
 export APP2_GIT_URL='https://github.com/cvdabbeele/troopers.git'
 export APP3_GIT_URL='https://github.com/cvdabbeele/mydvwa.git'
 
-# Generating names for Apps, Stack, Pipelines, ECR, CodeCommit repo,..."
-#generate the names of the apps from the git URL
-export APP1=`echo ${APP1_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
-export APP2=`echo ${APP2_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
-export APP3=`echo ${APP3_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
-
 #systemTAGs; do not change  (mainly used to cleanup the environment)
 export TAGKEY0="c1onaws"    
 export TAGVALUE0="${C1PROJECT}" 
