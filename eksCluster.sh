@@ -12,7 +12,9 @@ if  [ -z "${C1PROJECT}" ]; then echo C1PROJECT must be set && varsok=false; fi
 if  [ -z "$AWS_EKS_NODES" ]; then echo AWS_EKS_NODES must be set && varsok=false; fi
 #if  [ -z "$AWS_EKS_CLUSTERNAME" ]; then echo AWS_EKS_CLUSTERNAME must be set && varsok=false; fi
 
-if  [ "$varsok" = false ]; then printf '%s\n' "Missing variables" && exit ; fi
+if  [ "$varsok" = false ]; then 
+   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)" 
+fi
 
 aws_cluster_exists="false"
 aws_clusters=( `eksctl get clusters -o json| jq '.[].metadata.name'` ) 

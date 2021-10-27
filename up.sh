@@ -19,9 +19,6 @@ mkdir -p work
 # add internal smartcheck repo
 . ./smartcheckInternalRepo.sh
 
-# add ECR registry to SmartCheck
-. ./smartCheckAddEcr.sh
-
 # create groups in C1AS
 . ./C1AS.sh
 
@@ -33,6 +30,9 @@ mkdir -p work
 
 # add the demo apps
 . ./demoApps.sh
+
+# add ECR registry to SmartCheck
+. ./smartCheckAddEcr.sh
 
 printf '%s\n'  "You can now kick off sample pipeline-builds of MoneyX"
 printf '%s\n'  " e.g. by running ./pushWithHighSecurityThresholds.sh"
