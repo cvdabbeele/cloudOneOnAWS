@@ -11,7 +11,7 @@ HELM_DEPLOYMENTS=
 if [[ "`helm list -n ${DSSC_NAMESPACE} -o json | jq -r '.[].name'`" =~ 'deepsecurity-smartcheck' ]];
   then
     printf '%s\n' "Reusing existing Smart Check deployment"
-    DSSC_HOST=`kubectl get services proxy -n $DSSC_NAMESPACE -o json | jq -r ".status.loadBalancer.ingress[].hostname"`
+    DSSC_HOST=`kubectl get services proxy -n $DSSC_NAMESPACE -o json | jq -r "${DSSC_HOST_FILTER}"`
   else
     #get certificate for internal registry
     #-------------------------------------
@@ -107,7 +107,7 @@ EOF
     helm install -n ${DSSC_NAMESPACE} --values work/overrides.yml deepsecurity-smartcheck https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz > /dev/null
     export DSSC_HOST=''
     while [[ "$DSSC_HOST" == '' ]];do
-      export DSSC_HOST=`kubectl get svc -n ${DSSC_NAMESPACE} proxy -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'`
+      export DSSC_HOST=`kubectl get svc -n ${DSSC_NAMESPACE} proxy -o jsonpath="${DSSC_HOST_FILTER}"`
       sleep 10
     done
    

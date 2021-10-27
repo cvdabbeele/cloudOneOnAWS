@@ -82,6 +82,8 @@ export C1AUTHHEADER="Authorization:	ApiKey ${C1APIKEY}"
 export C1CSAPIURL="https://container.${C1REGION}.cloudone.trendmicro.com/api"
 export C1CSENDPOINTFORHELM="https://container.${C1REGION}.cloudone.trendmicro.com"
 export C1ASAPIURL="https://application.${C1REGION}.cloudone.trendmicro.com"
+export DSSC_HOST_FILTER=".status.loadBalancer.ingress[].hostname"
+
 export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
 export AWS_REGION=`aws configure get region`
 export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
