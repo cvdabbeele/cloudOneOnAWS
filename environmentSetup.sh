@@ -18,7 +18,7 @@ if  [ -x "$(command -v apt-get)" ] ; then
   sudo apt-get -qq install ca-certificates curl apt-transport-https lsb-release gnupg jq -y
 else
    printf '%s' "Cannot install packages... no supported package manager found, must run on Debian/Ubuntu"
-   exit
+   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 fi 
 
 # Installing jq
@@ -30,7 +30,7 @@ if ! [ -x "$(command -v jq)" ] ; then
       sudo yum install jq -y
     else
       printf '%s' "Cannot install jq... no supported package manager found"
-      exit
+     read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
     fi 
 else
     printf '%s\n' "Using existing jq.  Version : `jq --version 2>/dev/null`"
@@ -99,6 +99,8 @@ rm -rf deployC1ASandC1CS
 # ---------------
 #  AWS specific 
 # ---------------
+
+DSSC_SUBJECTALTNAME="DNS:*.${AWS_REGION}.elb.amazonaws.com"
 
 # Installing eksctl
 if ! [ -x "$(command -v eksctl)" ] ; then
