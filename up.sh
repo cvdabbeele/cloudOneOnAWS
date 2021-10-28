@@ -15,7 +15,7 @@ MAINSTARTTIME=`date +%s`
 . ./smartcheck.sh
 
 # add internal smartcheck repo
-. ./smartcheckInternalRepo.sh
+. ./smartcheckInternalRegistry.sh
 
 # create groups in C1AS
 . ./C1AS.sh
