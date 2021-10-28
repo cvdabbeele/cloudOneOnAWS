@@ -84,10 +84,17 @@ fi
 
 # pulling/cloning common parts
 printf "\n%s\n" "Cloning/pulling deploySmartcheck"
-mkdir -p smartcheck
-git clone https://github.com/cvdabbeele/deploySmartcheck.git smartcheck
-cp smartcheck/*.sh ./
-rm -rf smartcheck
+mkdir -p deploySmartcheck
+git clone https://github.com/cvdabbeele/deploySmartcheck.git deploySmartcheck
+cp deploySmartcheck/*.sh ./
+rm -rf deploySmartcheck
+
+printf "\n%s\n" "Cloning/pulling deployC1ASandC1CS"
+mkdir -p deployC1ASandC1CS
+git clone https://github.com/cvdabbeele/deployC1ASandC1CS.git deployC1ASandC1CS
+cp deployC1ASandC1CS/*.sh ./
+rm -rf deployC1ASandC1CS
+
 
 # ---------------
 #  AWS specific 
