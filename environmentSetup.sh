@@ -100,7 +100,7 @@ rm -rf deployC1ASandC1CS
 #  AWS specific 
 # ---------------
 
-DSSC_SUBJECTALTNAME="DNS:*.${AWS_REGION}.elb.amazonaws.com"
+export DSSC_SUBJECTALTNAME="DNS:*.${AWS_REGION}.elb.amazonaws.com"
 
 # Installing eksctl
 if ! [ -x "$(command -v eksctl)" ] ; then

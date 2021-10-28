@@ -119,7 +119,7 @@ function getUrl {
 [ -d "/home/ubuntu/environment/appsxx"/ ] && printf '%s\n' "Cleaning up old Apps directory" && rm -rf ../apps 
 
 # setupApp
-#  for backward compatibility; set the TREND_AP variables
+# set the TREND_AP variables
 TREND_AP_KEY=${APP1KEY}
 TREND_AP_SECRET=${APP1SECRET}
 setupApp ${APP1} ${APP1_GIT_URL}
