@@ -56,8 +56,8 @@ fi
 export PROJECTDIR=`pwd` 
 export WORKDIR=${PROJECTDIR}/work
 export APPSDIR=${PROJECTDIR}/apps
-mkdir ${WORKDIR}
-mkdir ${APPSDIR}
+mkdir -p ${WORKDIR}
+mkdir -p ${APPSDIR}
 export LC_COLLATE=C  # IMPORTANT setting of LC_LOCATE for the pattern testing the variables
 export C1AUTHHEADER="Authorization:	ApiKey ${C1APIKEY}"
 export C1CSAPIURL="https://container.${C1REGION}.cloudone.trendmicro.com/api"
@@ -83,6 +83,7 @@ else
 fi
 
 # pulling/cloning common parts
+printf "\n%s\n" "Cloning/pulling deploySmartcheck"
 mkdir -p smartcheck
 git clone https://github.com/cvdabbeele/deploySmartcheck.git smartcheck
 cp smartcheck/*.sh ./
