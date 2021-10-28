@@ -2,7 +2,6 @@ printf '%s\n' "--------------------------"
 printf '%s\n' "     (re-)Adding C1CS     "
 printf '%s\n' "--------------------------"
 
-
 #delete old namespaces  
 printf '%s\n' "Deleting any potential old C1CS artefacts on the EKS cluster"
 #kubectl delete namespace c1cs  &>/dev/null
@@ -147,7 +146,7 @@ curl --silent --location --request POST "${C1CSAPIURL}/scanners" \
 --header 'api-version: v1' \
 --data-raw "{
     \"name\": \"${C1PROJECT}\",
-    \"description\": \"The SmartCheck scanner added by the CloudOneOnAWS project ${C1PROJECT} \"
+    \"description\": \"The SmartCheck scanner added by the CloudOneDevOps project ${C1PROJECT} \"
 }" `
 #echo $TEMPJSON | jq
 export C1APIKEYforSCANNERS=`echo ${TEMPJSON}| jq -r ".apiKey"`
@@ -176,7 +175,7 @@ export POLICYID=`curl --silent --location --request POST "${C1CSAPIURL}/policies
 --header 'api-version: v1' \
 --data-raw "{
     \"name\": \"${C1PROJECT}\",
-    \"description\": \"Policy created by the CloudOneOnAWS project ${C1PROJECT}\",
+    \"description\": \"Policy created by the CloudOneDevOps project ${C1PROJECT}\",
     \"default\": {
         \"rules\": [
             {
@@ -218,14 +217,6 @@ export POLICYID=`curl --silent --location --request POST "${C1CSAPIURL}/policies
 }" \
 | jq -r ".id"`
 #echo $POLICYID
-
-
-# get all policies
-# curl --silent --location --request GET "${C1CSAPIURL}/policies" \
-# --header 'Content-Type: application/json' \
-# --header "${C1AUTHHEADER}""  \
-# --header 'api-version: v1' \
-# | jq -r ".policies[].id"
 
 
 # AssignAdmission Policy to Cluster

@@ -11,7 +11,7 @@ HELM_DEPLOYMENTS=
 if [[ "`helm list -n ${DSSC_NAMESPACE} -o json | jq -r '.[].name'`" =~ 'deepsecurity-smartcheck' ]];
   then
     printf '%s\n' "Reusing existing Smart Check deployment"
-    DSSC_HOST=`kubectl get services proxy -n $DSSC_NAMESPACE -o json | jq -r "${DSSC_HOST_FILTER}"`
+    export DSSC_HOST=`kubectl get services proxy -n $DSSC_NAMESPACE -o json | jq -r "${DSSC_HOST_FILTER}"`
   else
     #get certificate for internal registry
     #-------------------------------------
@@ -103,15 +103,15 @@ vulnerabilityScan:
     memory: 3Gi
 EOF
 
-    printf '%s\n' "Deploying SmartCheck Helm chart... "
+    printf '%s' "Deploying SmartCheck Helm chart..."
     helm install -n ${DSSC_NAMESPACE} --values work/overrides.yml deepsecurity-smartcheck https://github.com/deep-security/smartcheck-helm/archive/master.tar.gz > /dev/null
     export DSSC_HOST=''
     while [[ "$DSSC_HOST" == '' ]];do
-      export DSSC_HOST=`kubectl get svc -n ${DSSC_NAMESPACE} proxy -o jsonpath="${DSSC_HOST_FILTER}"`
+      export DSSC_HOST=`kubectl get svc -n ${DSSC_NAMESPACE} proxy -o json | jq -r "${DSSC_HOST_FILTER}" 2>/dev/null`
       sleep 10
+      printf "%s" "."
     done
-   
-    printf '%s' "Waiting for SmartCheck Service to come online: ."
+    printf '\n%s' "Waiting for SmartCheck Service to come online: ."
     export DSSC_BEARERTOKEN=''
     while [[ "$DSSC_BEARERTOKEN" == '' ]];do
       sleep 10
