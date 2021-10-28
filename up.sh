@@ -5,10 +5,8 @@ MAINSTARTTIME=`date +%s`
 # import variables
 . ./00_define_vars.sh
 
-# install tools
+# environmentSetup
 . ./environmentSetup.sh
-
-mkdir -p work
 
 # create cluster
 . ./eksCluster.sh

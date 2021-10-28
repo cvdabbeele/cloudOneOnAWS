@@ -11,6 +11,16 @@ if [ -z "$BASH_VERSION" ]; then
    read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 fi
 
+# Installing packages  
+printf '%s\n'  "Updating Package Manager"
+if  [ -x "$(command -v apt-get)" ] ; then
+  sudo apt-get -qq update 1>/dev/null 2>/dev/null
+  sudo apt-get -qq install ca-certificates curl apt-transport-https lsb-release gnupg jq -y
+else
+   printf '%s' "Cannot install packages... no supported package manager found, must run on Debian/Ubuntu"
+   exit
+fi 
+
 # Installing jq
 if ! [ -x "$(command -v jq)" ] ; then
     printf '%s\n'  "installing jq"
@@ -32,15 +42,6 @@ sudo curl --silent -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 sudo chmod +x /usr/local/bin/kubectl
 
-# Installing eksctl
-if ! [ -x "$(command -v eksctl)" ] ; then
-    printf '%s\n'  "installing eksctl...."
-    curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-    sudo mv -v /tmp/eksctl /usr/local/bin
-else
-    printf '%s\n'  "Using existing eksctl. Version: `eksctl version`"
-fi
-
 # Installing helm
 if ! [ -x "$(command -v helm)" ] ; then
     printf '%s\n'  "installing helm...."
@@ -49,6 +50,55 @@ if ! [ -x "$(command -v helm)" ] ; then
     ./get_helm.sh
 else
     printf '%s\n'  "Using existing helm.  Version" `helm version  | awk -F',' '{ print $1 }' | awk -F'{' '{ print $2 }' | awk -F':' '{ print $2 }' | sed 's/"//g'`
+fi
+
+# setting additional variables 
+export PROJECTDIR=`pwd` 
+export WORKDIR=${PROJECTDIR}/work
+export APPSDIR=${PROJECTDIR}/apps
+mkdir ${WORKDIR}
+mkdir ${APPSDIR}
+export LC_COLLATE=C  # IMPORTANT setting of LC_LOCATE for the pattern testing the variables
+export C1AUTHHEADER="Authorization:	ApiKey ${C1APIKEY}"
+export C1CSAPIURL="https://container.${C1REGION}.cloudone.trendmicro.com/api"
+export C1CSENDPOINTFORHELM="https://container.${C1REGION}.cloudone.trendmicro.com"
+export C1ASAPIURL="https://application.${C1REGION}.cloudone.trendmicro.com"
+export DSSC_HOST_FILTER=".status.loadBalancer.ingress[].hostname"
+
+# Generating names for Apps, Stack, Pipelines, ECR, CodeCommit repo,..."
+#generate the names of the apps from the git URL
+#export APP1=moneyx
+export APP1=`echo ${APP1_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
+export APP2=`echo ${APP2_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
+export APP3=`echo ${APP3_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
+
+# checking dockerlogin
+printf "%s" "Validating Docker login..."
+DOCKERLOGIN=`docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD 2>/dev/null`
+[ ${VERBOSE} -eq 1 ] && printf "\n%s\n" "DOCKERLOGIN= $DOCKERLOGIN"
+if [[ ${DOCKERLOGIN} == "Login Succeeded" ]];then 
+  printf "%s\n" "OK"; 
+else 
+  printf "%s\n" "Docker Login Failed.  Please check the Docker Variables in 00_define.var.sh";    
+fi
+
+# pulling/cloning common parts
+mkdir -p smartcheck
+git clone https://github.com/cvdabbeele/deploySmartcheck.git smartcheck
+cp smartcheck/*.sh ./
+rm -rf smartcheck
+
+# ---------------
+#  AWS specific 
+# ---------------
+
+# Installing eksctl
+if ! [ -x "$(command -v eksctl)" ] ; then
+    printf '%s\n'  "installing eksctl...."
+    curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+    sudo mv -v /tmp/eksctl /usr/local/bin
+else
+    printf '%s\n'  "Using existing eksctl. Version: `eksctl version`"
 fi
 
 # Installing aws authenticator
@@ -74,42 +124,25 @@ if [ "$?" != "0" ]; then
   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 fi
 
-# set additional variables 
-PROJECTDIR=`pwd` 
-# IMPORTANT setting of LC_LOCATE for the pattern testing the variables
-export LC_COLLATE=C
-export C1AUTHHEADER="Authorization:	ApiKey ${C1APIKEY}"
-export C1CSAPIURL="https://container.${C1REGION}.cloudone.trendmicro.com/api"
-export C1CSENDPOINTFORHELM="https://container.${C1REGION}.cloudone.trendmicro.com"
-export C1ASAPIURL="https://application.${C1REGION}.cloudone.trendmicro.com"
-export DSSC_HOST_FILTER=".status.loadBalancer.ingress[].hostname"
 
 export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
 export AWS_REGION=`aws configure get region`
 export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
 export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
 
-# Generating names for Apps, Stack, Pipelines, ECR, CodeCommit repo,..."
-#generate the names of the apps from the git URL
-export APP1=`echo ${APP1_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
-export APP2=`echo ${APP2_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
-export APP3=`echo ${APP3_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
 
 # Declaring associative arrays (mind the capital 'A')
 declare -A VAROK
 declare -A VARFORMAT
 
 # set list of VARS_TO_VALIDATE_BY_FORMAT
-
 VARS_TO_VALIDATE_BY_FORMAT=(C1REGION C1CS_RUNTIME C1PROJECT DSSC_AC C1APIKEY AWS_EKS_NODES)
-
 # set the expected FORMAT for each variable
 #  ^ is the beginning of the line anchor
 #  [...] is a character class definition
 #  * is "zero-or-more" repetition
 #  $ is the end of the line anchor
 # in the IF comparison, the "=~" means the right hand side is a regex expression
-
 VARFORMAT[C1REGION]="^(us-1|in-1|gb-1|jp-1|de-1|au-1|ca-1|sg-1|trend-us-1)$"
 VARFORMAT[C1CS_RUNTIME]="^(true|false)$"
 VARFORMAT[C1PROJECT]="^[a-z0-9]*$"
@@ -186,15 +219,6 @@ if [[ "${rolefound}" = "false" ]]; then
   aws iam put-role-policy --role-name ${C1PROJECT}EksClusterCodeBuildKubectlRole --policy-name eks-describe --policy-document file:///tmp/iam-role-policy
 fi
 
-# checking dockerlogin
-printf "%s" "Validating Docker login..."
-DOCKERLOGIN=`docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD 2>/dev/null`
-[ ${VERBOSE} -eq 1 ] && printf "\n%s\n" "DOCKERLOGIN= $DOCKERLOGIN"
-if [[ ${DOCKERLOGIN} == "Login Succeeded" ]];then 
-  printf "%s\n" "OK"; 
-else 
-  printf "%s\n" "Docker Login Failed.  Please check the Docker Variables in 00_define.var.sh";    
-fi
 # checking AWS Service Limits
 ## checking VPC Service Limit (Can I create a VPC?)
 printf "%s" "testing VPC Service Limit (Can I create a VPC?)..."
