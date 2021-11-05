@@ -10,8 +10,10 @@ if  [ -z "${DSSC_HOST}" ]; then echo DSSC_HOST must be set && varsok=false; fi
 if  [ -z "${AWS_REGION}" ]; then echo DSSC_REGION must be set && varsok=false; fi
 if  [ -z "${DSSC_REGUSER}" ]; then echo DSSC_REGUSER must be set && varsok=false; fi
 if  [ -z "${DSSC_REGPASSWORD}" ]; then echo DSSC_REGPASSWORD must be set && varsok=false; fi
-if  [ "$varsok" = false ]; then exit 1 ; fi
-
+if  [ "$varsok" = false ]; then 
+   printf "%s\n" "Check the above-mentioned variables"; 
+   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
+fi
 
 function create_pipeline_yaml {
   #creates the git CodeRepo (but no branch, no data), CodePipeline and ECR registry
@@ -597,4 +599,4 @@ DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${C1PROJECT}${
 printf '%s\n' "Waiting for Cloudformation stack ${C1PROJECT}${APP3}Pipeline to be created. "
 DUMMY=`aws cloudformation wait stack-create-complete --stack-name ${C1PROJECT}${APP3}Pipeline  --region ${AWS_REGION}`
 
-#read -p "Press CTRL-C to exit script, or Enter to continue anyway"
+#read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"

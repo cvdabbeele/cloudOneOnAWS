@@ -12,7 +12,9 @@ if  [ -z "${C1PROJECT}" ]; then echo C1PROJECT must be set && varsok=false; fi
 if  [ -z "$AWS_EKS_NODES" ]; then echo AWS_EKS_NODES must be set && varsok=false; fi
 #if  [ -z "$AWS_EKS_CLUSTERNAME" ]; then echo AWS_EKS_CLUSTERNAME must be set && varsok=false; fi
 
-if  [ "$varsok" = false ]; then printf '%s\n' "Missing variables" && exit ; fi
+if  [ "$varsok" = false ]; then 
+   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)" 
+fi
 
 aws_cluster_exists="false"
 aws_clusters=( `eksctl get clusters -o json| jq '.[].metadata.name'` ) 
@@ -56,13 +58,12 @@ EOF
     printf '%s\n' "This may take up to 20 minutes... (started at:`date`)"
     starttime=`date +%s`
     eksctl create cluster -f work/${C1PROJECT}EksCluster.yml   #non-fargate EKS cluster
-    #eksctl create cluster --name=${C1PROJECT}.fargate --fargate --tags Key=${TAGKEY0},Value=${TAGVALUE0} Key=${TAGKEY1},Value=${TAGVALUE1} Key=${TAGKEY2},Value=${TAGVALUE2}  #EKS cluster with Fargate profile
-    #printf '%s\n' "Waiting for Cloudformation stack \"managed-smartcheck-cluster\" to be created."
-    #aws cloudformation wait stack-create-complete --stack-name eksctl-managed-smartcheck-cluster  --region $AWS_REGION
-    #printf '%s\n' "Waiting for Cloudformation stack \"managed-smartcheck-nodegroup-nodegroup\" to be created.  This may take a while"
-    #aws cloudformation wait stack-create-complete --stack-name eksctl-eksctl-managed-smartcheck-nodegroup-nodegroup	 --region $AWS_REGION
-    endtime="$(date +%s)"
-    printf '%s\n' "Cloudformation Stacks deployed.  Elapsed time: $((($endtime-$starttime)/60)) minutes"
-    printf '%s\n' "Checking EKS cluster.  You should see your EKS cluster in the list below "
-    eksctl get clusters
+    if [ "$?" != "0" ]; then
+      read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
+    else
+      endtime="$(date +%s)"
+      printf '%s\n' "EKS cluster created.  Elapsed time: $((($endtime-$starttime)/60)) minutes"
+      printf '%s\n' "You should see your EKS cluster in the list below "
+      eksctl get clusters
+    fi
   fi

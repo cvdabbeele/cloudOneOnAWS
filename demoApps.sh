@@ -6,11 +6,13 @@ printf '%s\n' "-------------------------------"
 #checking required variables
 varsok=true
 if  [ -z "$AWS_REGION" ]; then echo AWS_REGION must be set && varsok=false; fi
-if  [ -z "$APP_GIT_URL1" ]; then echo APP_GIT_URL1 must be set && varsok=false; fi
-if  [ -z "$APP_GIT_URL2" ]; then echo APP_GIT_URL2 must be set && varsok=false; fi
-if  [ -z "$APP_GIT_URL3" ]; then echo APP_GIT_URL3 must be set && varsok=false; fi
-if  [ "$varsok" = false ]; then exit 1 ; fi
-
+if  [ -z "$APP1_GIT_URL" ]; then echo APP1_GIT_URL must be set && varsok=false; fi
+if  [ -z "$APP2_GIT_URL" ]; then echo APP2_GIT_URL must be set && varsok=false; fi
+if  [ -z "$APP3_GIT_URL" ]; then echo APP3_GIT_URL must be set && varsok=false; fi
+if  [ "$varsok" = false ]; then 
+   printf "%s\n" "Check the above-mentioned variables"; 
+   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
+fi
 function setupApp {
   #$1=appname
   #$2=downloadURL for application on public git
@@ -34,7 +36,7 @@ function setupApp {
 
   if [[ "${AWS_CC_REPO}" = '' ]]; then
     printf '%s \n' "PANIC:  Could not find the CodeCommit repository: ${AWS_CC_REPO}. Run \"up.sh\" again."
-    read -p "Press CTRL-C to exit script, or Enter to continue anyway"
+    read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
   fi
 
 
@@ -56,7 +58,7 @@ function setupApp {
   done
   if [[ "${AWS_ECR_REPO}" = '' ]]; then
       printf '%s \n' "PANIC:  Could not find the ECR repository: ${AWS_ECR_REPO}. Run \"up.sh\" again."
-      read -p "Press CTRL-C to exit script, or Enter to continue anyway"
+      read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
   fi
 
   mkdir -p  ../apps
@@ -117,18 +119,18 @@ function getUrl {
 [ -d "/home/ubuntu/environment/appsxx"/ ] && printf '%s\n' "Cleaning up old Apps directory" && rm -rf ../apps 
 
 # setupApp
-#  for backward compatibility; set the TREND_AP variables
+# set the TREND_AP variables
 TREND_AP_KEY=${APP1KEY}
 TREND_AP_SECRET=${APP1SECRET}
-setupApp ${APP1} ${APP_GIT_URL1}
+setupApp ${APP1} ${APP1_GIT_URL}
 
 TREND_AP_KEY=${APP2KEY}
 TREND_AP_SECRET=${APP2SECRET}
-setupApp ${APP2} ${APP_GIT_URL2}
+setupApp ${APP2} ${APP2_GIT_URL}
 
 TREND_AP_KEY=${APP3KEY}
 TREND_AP_SECRET=${APP3SECRET}
-setupApp ${APP3} ${APP_GIT_URL3}
+setupApp ${APP3} ${APP3_GIT_URL}
 
 #exit
 #optionally (if the app makes it through the scanning)

@@ -125,7 +125,7 @@ do
 done
 
 #delete deployed apps
-printf "\n%s" "Removing Deployments from EKS cluster... "
+printf "\n%s" "Removing Deployments from cluster... "
 for i in `kubectl get deployments  -o json | jq -r '.items[].metadata.name'`
 do
   kubectl delete deployment $i
@@ -187,8 +187,8 @@ aws_eks_clusters=(`eksctl get clusters -o json | jq -r '.[].metadata.name'`)
 for i in "${!aws_eks_clusters[@]}"; do
   #printf "%s" "cluster $i =  ${aws_eks_clusters[$i]}.........."
   if [[ "${aws_eks_clusters[$i]}" =~ "${C1PROJECT}" ]]; then
-       printf "%s\n" "Deleting EKS cluster: ${C1PROJECT}"
-       printf "%s\n" "Waiting for EKS cluster to be deleted. "
+       printf "%s\n" "Deleting cluster: ${C1PROJECT}"
+       printf "%s\n" "Waiting for cluster to be deleted. "
        printf "%s\n" "   Please be patient, this can take up to 30 minutes... (started at:`date`)"
        starttime=`date +%s`
        eksctl delete cluster ${C1PROJECT} --wait
@@ -203,7 +203,7 @@ printf "%s\n" "Deleting: ~/environment/apps"
 rm -rf ~/environment/apps
 
 # Cleaning up project VPC, starting with its dependencies
-# Note: idealy the VPC should have been deleted with the EKS cluster, in reality this sometimes fails
+# Note: idealy the VPC should have been deleted with the cluster, in reality this sometimes fails
 # the below is a failsave attempt to cleanup any remains
 aws_vpc_ids=(`aws ec2 describe-vpcs | jq -r ".Vpcs[].VpcId"`)
 #find Project VPCs
@@ -309,7 +309,7 @@ for i in "${!aws_vpc_ids[@]}"; do
   fi
 done
 
-#the EKS cluster should already have been deleted  (in reality it is sometimes not)
+#the cluster should already have been deleted  (in reality it is sometimes not)
 aws_eks_clusters=(`eksctl get clusters -o json | jq -r '.[].metadata.name'`)
 for i in "${!aws_eks_clusters[@]}"; do
   printf "%s" "cluster $i =  ${aws_eks_clusters[$i]}.........."
