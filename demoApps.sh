@@ -16,7 +16,6 @@ fi
 function setupApp {
   #$1=appname
   #$2=downloadURL for application on public git
-  currentDir=`pwd`
   #printf '%s\n' "Creating required vars for ${1}"
   #finding AWS_CODECOMMITURL
   aws_cc_repos=(`aws codecommit list-repositories --region $AWS_REGION | jq -r '.repositories[].repositoryName'`)
@@ -61,22 +60,23 @@ function setupApp {
       read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
   fi
 
-  mkdir -p  ../apps
-  cd ../apps
+  rm -rf ${APPSDIR}
+  mkdir -p  ../${APPSDIR}
+
   #cannot use ${1} for dirname because ${1} =  dirname | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'
   dirname=`echo ${2} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' `
   #echo ${2}
   #echo dirname= $dirname
   #clone from public git if not already done so
   ###if [ -d "${dirname}" ]; then
-  ###   printf '%s\n' "Directory ../apps/${dirname} exists.  Not downloading app again"
+  ###   printf '%s\n' "Directory ${APPSDIR}//${dirname} exists.  Not downloading app again"
   ###else
      printf '%s\n' "Cloning ${dirname} from public git"
      git clone ${2} 2>/dev/null
      #printf '%s\n' "Deleting ${dirname}/.git directory (.git from github)"
      rm -rf ${dirname}/.git
   ###fi
-  cd ../apps/$dirname
+  cd ${APPSDIR}/$dirname
   # removing the link to github as this will be linked to the AWS CodeCommit
   ###if [ -d ".git" ]; then
   ###  printf '%s\n'  ".git directory found, skipping git init"
@@ -102,7 +102,7 @@ function setupApp {
   printf '%s\n'  "   Pushing ${dirname} to CodeCommit"    
   git push --set-upstream origin master         1>/dev/null 2>/dev/null
   #4. pipeline will pick it up, build an Image, send it to SmartCheck..
-  cd $currentDir
+  cd ${PROJECTDIR}
 }
 
 function getUrl {
