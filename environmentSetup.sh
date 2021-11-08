@@ -96,6 +96,34 @@ cp deployC1ASandC1CS/*.sh ./
 rm -rf deployC1ASandC1CS
 
 
+#can I create and C1AS opbject? (validating C1APIkeyb)
+export C1ASRND=-$(openssl rand -hex 4)
+export PAYLOAD="{ \"name\": \"${C1PROJECT^^}-${C1ASRND}\"}"
+printf "%s" "Validating C1API key by creating C1AS Group object ${C1PROJECT^^}-${C1ASRND}\"} in C1AS..."
+export C1ASGROUPCREATERESULT=`\
+curl --silent --location --request POST "${C1ASAPIURL}/accounts/groups/" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1'  --data-raw "${PAYLOAD}" \
+`
+[ ${VERBOSE} -eq 1 ] &&  printf "%s" "$C1ASGROUPCREATERESULT"
+APPKEY=`printf "%s" "C1ASGROUPCREATERESULT" | jq   -r ".credentials.key"`
+[ ${VERBOSE} -eq 1 ] &&  printf "%s" APPKEY=$APPKEY
+APPSECRET=`printf "%s" "$C1ASGROUPCREATERESULT" | jq   -r ".credentials.secret"`
+[ ${VERBOSE} -eq 1 ] &&  printf "%s" APPSECRET= $APPSECRET
+if [[ "$APPKEY" == "null"  ]];then
+   printf "\n%s\n" "Failed to create group object in C1AS for ${1}"; 
+   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
+else
+  printf "%s\n" "OK"
+  #deleting C1AS test object
+
+     printf "%s\n" "Deleting test Group object ${C1PROJECT^^}-${C1ASRND} in C1AS"
+    curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1PROJECT^^}-${C1ASRND}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
+  
+   ${C1PROJECT^^}-${C1ASRND}\"} 
+fi
+} 
+
+
+
 # ---------------
 #  AWS specific 
 # ---------------
