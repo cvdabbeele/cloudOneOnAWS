@@ -117,7 +117,6 @@ else
   printf "%s\n" "Deleting test Group object ${C1PROJECT^^}-${C1ASRND} in C1AS"
   curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1PROJECT^^}-${C1ASRND}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
 fi
-} 
 
 
 
