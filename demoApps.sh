@@ -60,9 +60,6 @@ function setupApp {
       read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
   fi
 
-  rm -rf ${APPSDIR}
-  mkdir -p  ../${APPSDIR}
-
   #cannot use ${1} for dirname because ${1} =  dirname | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'
   dirname=`echo ${2} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' `
   #echo ${2}
@@ -116,7 +113,9 @@ function getUrl {
 }
 
 # If exists, delete old Apps directory
-[ -d "/home/ubuntu/environment/appsxx"/ ] && printf '%s\n' "Cleaning up old Apps directory" && rm -rf ../apps 
+[ -d "${APPSDIR}" ] && printf '%s\n' "Cleaning up old Apps directory" 
+rm -rf ${APPSDIR}
+mkdir -p  ../${APPSDIR}
 
 # setupApp
 # set the TREND_AP variables
