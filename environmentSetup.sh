@@ -98,7 +98,7 @@ rm -rf deployC1ASandC1CS
 
 #can I create and C1AS opbject? (validating C1APIkeyb)
 export C1ASRND="test-"$(openssl rand -hex 4)
-export C1ASRND=${C1ASRND^^}
+export C1ASRND=${C1ASRND}
 
 export PAYLOAD="{ \"name\": \"${C1PROJECT^^}-${C1ASRND}\"}"
 printf "%s" "Validating C1API key by creating C1AS Group object ${C1PROJECT^^}-${C1ASRND} in C1AS..."
