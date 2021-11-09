@@ -69,6 +69,7 @@ function setupApp {
   ###   printf '%s\n' "Directory ${APPSDIR}//${dirname} exists.  Not downloading app again"
   ###else
      printf '%s\n' "Cloning ${dirname} from public git"
+     cd ${APPSDIR}
      git clone ${2} 2>/dev/null
      #printf '%s\n' "Deleting ${dirname}/.git directory (.git from github)"
      rm -rf ${dirname}/.git
