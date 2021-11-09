@@ -100,8 +100,8 @@ rm -rf deployC1ASandC1CS
 export C1ASRND="test-"$(openssl rand -hex 4)
 export C1ASRND=${C1ASRND}
 
-export PAYLOAD="{ \"name\": \"${C1PROJECT^^}-${C1ASRND}\"}"
-printf "%s" "Validating C1API key by creating C1AS Group object ${C1PROJECT^^}-${C1ASRND} in C1AS..."
+export PAYLOAD="{ \"name\": \"${C1PROJECT}-${C1ASRND}\"}"
+printf "%s" "Validating C1API key by creating C1AS Group object ${C1PROJECT}-${C1ASRND} in C1AS..."
 export C1ASGROUPCREATERESULT=`\
 curl --silent --location --request POST "${C1ASAPIURL}/accounts/groups/" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1'  --data-raw "${PAYLOAD}" \
 `
@@ -117,8 +117,8 @@ if [[ "$APPSECKEY" == "null"  ]];then
 else
   printf "%s\n" "OK"
   #deleting C1AS test object
-  printf "%s\n" "Deleting test Group object ${C1PROJECT^^}-${C1ASRND} in C1AS"
-  curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1PROJECT^^}-${C1ASRND}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
+  printf "%s\n" "Deleting test Group object ${C1PROJECT}-${C1ASRND} in C1AS"
+  curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1PROJECT}-${C1ASRND}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
 fi
 
 
