@@ -97,7 +97,7 @@ rm -rf deployC1ASandC1CS
 
 
 #can I create and C1AS opbject? (validating C1APIkeyb)
-export C1ASRND="test-"$(openssl rand -hex 4)
+export C1ASRND="test_"$(openssl rand -hex 4)
 export C1ASRND=${C1ASRND}
 
 export PAYLOAD="{ \"name\": \"${C1PROJECT}_${C1ASRND}\"}"
