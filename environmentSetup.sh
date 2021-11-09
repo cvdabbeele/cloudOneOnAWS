@@ -12,7 +12,7 @@ if [ -z "$BASH_VERSION" ]; then
 fi
 
 # Installing packages  
-printf '%s\n'  "Updating Package Manager"t
+printf '%s\n'  "Updating Package Manager"
 if  [ -x "$(command -v apt-get)" ] ; then
   sudo apt-get -qq update 1>/dev/null 2>/dev/null
   sudo apt-get -qq install ca-certificates curl apt-transport-https lsb-release gnupg jq -y
