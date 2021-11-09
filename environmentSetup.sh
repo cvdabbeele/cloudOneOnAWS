@@ -12,7 +12,7 @@ if [ -z "$BASH_VERSION" ]; then
 fi
 
 # Installing packages  
-printf '%s\n'  "Updating Package Manager"
+printf '%s\n'  "Updating Package Manager"t
 if  [ -x "$(command -v apt-get)" ] ; then
   sudo apt-get -qq update 1>/dev/null 2>/dev/null
   sudo apt-get -qq install ca-certificates curl apt-transport-https lsb-release gnupg jq -y
@@ -97,7 +97,7 @@ rm -rf deployC1ASandC1CS
 
 
 #can I create and C1AS opbject? (validating C1APIkeyb)
-export C1ASRND=-"test"$(openssl rand -hex 4)
+export C1ASRND="test-"$(openssl rand -hex 4)
 export PAYLOAD="{ \"name\": \"${C1PROJECT^^}-${C1ASRND}\"}"
 printf "%s" "Validating C1API key by creating C1AS Group object ${C1PROJECT^^}-${C1ASRND} in C1AS..."
 export C1ASGROUPCREATERESULT=`\
