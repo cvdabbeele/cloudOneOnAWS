@@ -158,6 +158,12 @@ fi
 #  AWS specific 
 # ---------------
 export PLATFORM="AWS"
+export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
+export AWS_REGION=`aws configure get region`
+export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
+export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
+
+
 export DSSC_SUBJECTALTNAME="*.${AWS_REGION}.elb.amazonaws.com"
 
 # Installing eksctl
@@ -192,11 +198,6 @@ if [ "$?" != "0" ]; then
   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 fi
 
-
-export ACCOUNT_ID=`aws sts get-caller-identity | jq -r '.Account'`
-export AWS_REGION=`aws configure get region`
-export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id`
-export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
 
 
 # Declaring associative arrays (mind the capital 'A')
