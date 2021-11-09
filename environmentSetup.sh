@@ -107,7 +107,7 @@ curl --silent --location --request POST "${C1ASAPIURL}/accounts/groups/" --heade
 `
 
 [ ${VERBOSE} -eq 1 ] &&  printf "%s" "$C1ASGROUPCREATERESULT"
-APPSECKEY=`printf "%s" "{C1ASGROUPCREATERESULT}" | jq -r ".credentials.key"`
+APPSECKEY=`printf "%s" "${C1ASGROUPCREATERESULT}" | jq -r ".credentials.key"`
 [ ${VERBOSE} -eq 1 ] &&  printf "%s\n" APPSECKEY=$APPSECKEY
 APPSECRET=`printf "%s" "${C1ASGROUPCREATERESULT}" | jq   -r ".credentials.secret"`
 [ ${VERBOSE} -eq 1 ] &&  printf "%s\n" APPSECRET=$APPSECRET
