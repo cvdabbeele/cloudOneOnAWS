@@ -116,7 +116,7 @@ function getUrl {
 # If exists, delete old Apps directory
 [ -d "${APPSDIR}" ] && printf '%s\n' "Cleaning up old Apps directory" 
 rm -rf ${APPSDIR}
-mkdir -p  ../${APPSDIR}
+mkdir -p  ${APPSDIR}
 
 # setupApp
 # set the TREND_AP variables
