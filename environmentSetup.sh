@@ -103,18 +103,19 @@ printf "%s" "Validating C1API key by creating C1AS Group object ${C1PROJECT^^}-$
 export C1ASGROUPCREATERESULT=`\
 curl --silent --location --request POST "${C1ASAPIURL}/accounts/groups/" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1'  --data-raw "${PAYLOAD}" \
 `
+
 [ ${VERBOSE} -eq 1 ] &&  printf "%s" "$C1ASGROUPCREATERESULT"
-APPKEY=`printf "%s" "C1ASGROUPCREATERESULT" | jq   -r ".credentials.key"`
-[ ${VERBOSE} -eq 1 ] &&  printf "%s" APPKEY=$APPKEY
+APPSECKEY=`printf "%s" "C1ASGROUPCREATERESULT" | jq   -r ".credentials.key"`
+[ ${VERBOSE} -eq 1 ] &&  printf "%s\n" APPSECKEY=$APPSECKEY
 APPSECRET=`printf "%s" "$C1ASGROUPCREATERESULT" | jq   -r ".credentials.secret"`
-[ ${VERBOSE} -eq 1 ] &&  printf "%s" APPSECRET= $APPSECRET
-if [[ "$APPKEY" == "null"  ]];then
+[ ${VERBOSE} -eq 1 ] &&  printf "%s\n" APPSECRET=$APPSECRET
+if [[ "$APPSECKEY" == "null"  ]];then
    printf "\n%s\n" "Failed to create group object in C1AS for ${1}"; 
    read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 else
   printf "%s\n" "OK"
   #deleting C1AS test object
-  printf "%s\n" "Deleting test Group object ${C1PROJECT^^}-${C1ASRND} in C1AS"
+  printf "%s\n" "Deleting test Group object ${C1PROJECT^^}-${C1ASRND^^} in C1AS"
   curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1PROJECT^^}-${C1ASRND^^}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
 fi
 
