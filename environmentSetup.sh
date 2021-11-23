@@ -105,8 +105,7 @@ printf "%s" "Validating C1API key by creating C1AS Group object ${C1PROJECT}_${C
 export C1ASGROUPCREATERESULT=`\
 curl --silent --location --request POST "${C1ASAPIURL}/accounts/groups/" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1'  --data-raw "${PAYLOAD}" \
 `
-
-[ ${VERBOSE} -eq 1 ] &&  printf "%s" "$C1ASGROUPCREATERESULT"
+[ ${VERBOSE} -eq 1 ] &&  printf "%s" "C1ASGROUPCREATERESULT=$C1ASGROUPCREATERESULT"
 APPSECKEY=`printf "%s" "${C1ASGROUPCREATERESULT}" | jq -r ".credentials.key"`
 [ ${VERBOSE} -eq 1 ] &&  printf "%s\n" APPSECKEY=$APPSECKEY
 APPSECRET=`printf "%s" "${C1ASGROUPCREATERESULT}" | jq   -r ".credentials.secret"`
@@ -119,40 +118,22 @@ else
   #deleting C1AS test object
   printf "%s\n" "Deleting test Group object ${C1PROJECT}_${C1ASRND} in C1AS"
 
+  readarray -t C1ASGROUPS <<< `curl --silent --location --request GET "${C1ASAPIURL}/accounts/groups" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' | jq -r ".[].name"`
+  readarray -t DUMMYARRAYTOFIXSYNTAXCOLORINGINVSCODE <<< `pwd `
+  echo C1ASGROUPS[@] =  ${C1ASGROUPS[@]}
+  readarray -t C1ASGROUPIDS <<< `curl --silent --location --request GET "${C1ASAPIURL}/accounts/groups" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' | jq -r ".[].group_id"`
+  readarray -t DUMMYARRAYTOFIXSYNTAXCOLORINGINVSCODE <<< `pwd `
 
-
-readarray -t C1ASGROUPS <<< `curl --silent --location --request GET "${C1ASAPIURL}/accounts/groups" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' | jq -r ".[].name"`
-readarray -t DUMMYARRAYTOFIXSYNTAXCOLORINGINVSCODE <<< `pwd `
-echo C1ASGROUPS[@] =  ${C1ASGROUPS[@]}
-readarray -t C1ASGROUPIDS <<< `curl --silent --location --request GET "${C1ASAPIURL}/accounts/groups" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' | jq -r ".[].group_id"`
-readarray -t DUMMYARRAYTOFIXSYNTAXCOLORINGINVSCODE <<< `pwd `
-
-for i in "${!C1ASGROUPS[@]}"
-do
-  #printf "%s\n" "C1AS: found group ${C1ASGROUPS[$i]} with ID ${C1ASGROUPIDS[$i]}"
-  if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT}_${C1ASRND}" ]]; 
-  then
-    printf "%s\n" "Deleting old Group object ${C1PROJECT}_${C1ASRND} in C1AS"
-    curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
-  fi
-  if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT^^}-${APP2^^}" ]]; 
-  then
-    printf "%s\n" "Deleting old Group object ${C1PROJECT^^}-${APP2^^} in C1AS"
-    curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
-  fi
-  if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT^^}-${APP3^^}" ]]; 
-  then
-    printf "%s\n" "Deleting old Group object ${C1PROJECT^^}-${APP3^^} in C1AS"
-    curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
-  fi
-
-done 
-
-
-
+  for i in "${!C1ASGROUPS[@]}"; do
+    [ ${VERBOSE} -eq 1 ] && printf "%s"  "Checking Group ${C1ASGROUPS[$i]}"
+    [ ${VERBOSE} -eq 1 ] && printf "%s\n"  "..with groupID ${C1ASGROUPIDS[$i]}"
+    #printf "%s\n" "C1AS: found group ${C1ASGROUPS[$i]} with ID ${C1ASGROUPIDS[$i]}"
+    if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT^^}_${C1ASRND^^}" ]]; then
+      printf "%s\n" "Deleting old Group object ${C1PROJECT}_${C1ASRND} in C1AS"
+      curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
+    fi
+  done 
 fi
-
-
 
 # ---------------
 #  AWS specific 
