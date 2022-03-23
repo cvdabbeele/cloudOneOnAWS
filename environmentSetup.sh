@@ -98,26 +98,10 @@ git clone https://github.com/cvdabbeele/deployC1CSandC1AS.git
 cp deployC1CSandC1AS/*.sh ./
 rm -rf deployC1CSandC1AS
 
-
-# Pulling/cloning common parts
-#printf "\n%s\n" "Cloning/pulling deploySmartcheck"
-#mkdir -p deploySmartcheck
-#git clone https://github.com/cvdabbeele/deploySmartcheck.git deploySmartcheck
-#cp deploySmartcheck/*.sh ./
-#rm -rf deploySmartcheck
-
-#printf "\n%s\n" "Cloning/pulling deployC1ASandC1CS"
-#mkdir -p deployC1ASandC1CS
-#git clone https://github.com/cvdabbeele/deployC1ASandC1CS.git deployC1ASandC1CS
-#cp deployC1ASandC1CS/*.sh ./
-#rm -rf deployC1ASandC1CS
-
-
 # Can I create and C1AS opbject? (validating C1APIkey)
 export C1ASRND="test_"$(openssl rand -hex 4)
 export C1ASRND=${C1ASRND}
-export TMPGROUP=${C1PROJECT}_${C1ASRND}
-export TMPGROUP=${TMPGROUP^^}
+export TMPGROUP=${C1PROJECT^^}_${C1ASRND^^}
 
 export PAYLOAD="{ \"name\": \"${TMPGROUP}\"}"
 printf "%s" "Validating C1API key by creating C1AS Group object ${TMPGROUP} in C1AS..."
