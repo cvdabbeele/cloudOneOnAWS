@@ -25,7 +25,7 @@ fi
 
 if [ -z "${1}" ];then
   printf '%s\n' "No image name passed in parameters.  Creating array with sample images"
-  IMAGES=("ubuntu" "redhat/ubi8-minimal" "alpine" "wordpress" "busybox" "redis" "node" "python" "django" "centos" "couchbase"  )
+  IMAGES=("ubuntu" "redhat/ubi8-minimal" "alpine" "wordpress" "busybox" "redis" "node" "python" "django" "centos"  )
 else
   IMAGES=(${1})
 fi

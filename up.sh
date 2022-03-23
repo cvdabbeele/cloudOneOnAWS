@@ -12,10 +12,10 @@ MAINSTARTTIME=`date +%s`
 . ./eksCluster.sh
 
 # deploy SmartCheck
-. ./smartcheck.sh
+#. ./smartcheck.sh
 
 # add internal smartcheck repo
-. ./smartcheckInternalRegistry.sh
+#. ./smartcheckInternalRegistry.sh
 
 # create groups in C1AS
 . ./C1AS.sh

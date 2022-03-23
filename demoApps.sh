@@ -88,6 +88,7 @@ function setupApp {
   ###fi
 
   #adding AWS codecommit credential-helper to ~/.gitconfig"
+  #https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-https-unixes.html
   printf '%s\n' "Adding AWS codecommit credential-helper to ~/.gitconfig"
   git config --global credential.helper '!aws codecommit credential-helper $@'
 
