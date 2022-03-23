@@ -6,7 +6,8 @@ printf '%s\n' "Terminating environment"
 printf '%s\n' "----------------------"
 # check for variabels
 #-----------------------
-. 00_define_vars.sh
+. ./00_define_vars.sh
+. ./environmentSetup.sh
 
 varsok=true
 #if  [ -z "${AWS_REGION}" ]; then echo AWS_REGION must be set && varsok=false; fi
@@ -87,9 +88,8 @@ echo C1ASGROUPS[@] =  ${C1ASGROUPS[@]}
 readarray -t C1ASGROUPIDS <<< `curl --silent --location --request GET "${C1ASAPIURL}/accounts/groups" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' | jq -r ".[].group_id"`
 readarray -t DUMMYARRAYTOFIXSYNTAXCOLORINGINVSCODE <<< `pwd `
 
-for i in "${!C1ASGROUPS[@]}"
-do
-  #printf "%s\n" "C1AS: found group ${C1ASGROUPS[$i]} with ID ${C1ASGROUPIDS[$i]}"
+for i in "${!C1ASGROUPS[@]}"; do
+    [ ${VERBOSE} -eq 1 ] && printf "%s\n" "C1AS: found group ${C1ASGROUPS[$i]} with ID ${C1ASGROUPIDS[$i]}"
   if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT^^}-${APP1^^}" ]]; 
   then
     printf "%s\n" "Deleting old Group object ${C1PROJECT^^}-${APP1^^} in C1AS"
@@ -107,6 +107,19 @@ do
   fi
 
 done 
+
+  for i in "${!C1ASGROUPS[@]}"; do
+    [ ${VERBOSE} -eq 1 ] && printf "%s"  "Checking Group ${C1ASGROUPS[$i]}"
+    [ ${VERBOSE} -eq 1 ] && printf "%s\n"  "..with groupID ${C1ASGROUPIDS[$i]}"
+    #printf "%s\n" "C1AS: found group ${C1ASGROUPS[$i]} with ID ${C1ASGROUPIDS[$i]}"
+    if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT^^}_${C1ASRND^^}" ]]; then
+      printf "%s\n" "Deleting old Group object ${C1PROJECT}_${C1ASRND} in C1AS"
+      curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
+    fi
+  done 
+
+
+
 
 
 #remove smartcheck 

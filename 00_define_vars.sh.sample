@@ -48,7 +48,7 @@ export DSSC_AC='xx-xxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx'
 # All objects created by this script will be prepended by this string
 #may only contain LOWERCASE and trailing numbers
 # MAY NOT CONTAIN UPPERCASE, no "-", no "_", nor any special characters.
-export C1PROJECT='c101'    
+export C1PROJECT='c1v01'  # CHANGE THIS --- MAY NOT CONTAIN UPPERCASE, no "-", no "_", nor any special characters.
 
 # Dockerhub account information (required to do "authenticated pulls" from docker to get a higher max-pull limit)
 export DOCKERHUB_USERNAME='your username of your (free) account on hub.docker.com'

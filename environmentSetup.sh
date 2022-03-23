@@ -52,7 +52,13 @@ else
     printf '%s\n'  "Using existing helm.  Version" `helm version  | awk -F',' '{ print $1 }' | awk -F'{' '{ print $2 }' | awk -F':' '{ print $2 }' | sed 's/"//g'`
 fi
 
-# setting additional variables 
+# Checking/Installing docker
+if ! [ -x "$(command -v docker)" ] ; then
+    printf '%s\n'  "installing docker"
+    #curl -fsSL https://get.docker.com | sh
+fi
+
+# Setting additional variables 
 export PROJECTDIR=`pwd` 
 export WORKDIR=${PROJECTDIR}/work
 export APPSDIR=${PROJECTDIR}/apps
@@ -72,7 +78,7 @@ export APP1=`echo ${APP1_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print
 export APP2=`echo ${APP2_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
 export APP3=`echo ${APP3_GIT_URL} | awk -F"/" '{print $NF}' | awk -F"." '{ print $1 }' | tr -cd '[:alnum:]'| awk '{ print tolower($1) }'`
 
-# checking dockerlogin
+# Checking dockerlogin
 printf "%s" "Validating Docker login..."
 DOCKERLOGIN=`docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD 2>/dev/null`
 [ ${VERBOSE} -eq 1 ] && printf "\n%s\n" "DOCKERLOGIN= $DOCKERLOGIN"
@@ -82,26 +88,23 @@ else
   printf "%s\n" "Docker Login Failed.  Please check the Docker Variables in 00_define.var.sh";    
 fi
 
+
 # pulling/cloning common parts
-printf "\n%s\n" "Cloning/pulling deploySmartcheck"
-mkdir -p deploySmartcheck
-git clone https://github.com/cvdabbeele/deploySmartcheck.git deploySmartcheck
-cp deploySmartcheck/*.sh ./
-rm -rf deploySmartcheck
+printf "\n%s\n" "Cloning/pulling deployC1CSandC1AS"
+#mkdir -p deployC1CSandC1AS
+rm -rf deployC1CSandC1AS
+git clone https://github.com/cvdabbeele/deployC1CSandC1AS.git 
+#git clone https://github.com/cvdabbeele/C1CS.git deployC1CSandC1AS
+cp deployC1CSandC1AS/*.sh ./
+rm -rf deployC1CSandC1AS
 
-printf "\n%s\n" "Cloning/pulling deployC1ASandC1CS"
-mkdir -p deployC1ASandC1CS
-git clone https://github.com/cvdabbeele/deployC1ASandC1CS.git deployC1ASandC1CS
-cp deployC1ASandC1CS/*.sh ./
-rm -rf deployC1ASandC1CS
-
-
-#can I create and C1AS opbject? (validating C1APIkeyb)
+# Can I create and C1AS opbject? (validating C1APIkey)
 export C1ASRND="test_"$(openssl rand -hex 4)
 export C1ASRND=${C1ASRND}
+export TMPGROUP=${C1PROJECT^^}_${C1ASRND^^}
 
-export PAYLOAD="{ \"name\": \"${C1PROJECT}_${C1ASRND}\"}"
-printf "%s" "Validating C1API key by creating C1AS Group object ${C1PROJECT}_${C1ASRND} in C1AS..."
+export PAYLOAD="{ \"name\": \"${TMPGROUP}\"}"
+printf "%s" "Validating C1API key by creating C1AS Group object ${TMPGROUP} in C1AS..."
 export C1ASGROUPCREATERESULT=`\
 curl --silent --location --request POST "${C1ASAPIURL}/accounts/groups/" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1'  --data-raw "${PAYLOAD}" \
 `
@@ -117,39 +120,11 @@ if [[ "$APPSECKEY" == "null"  ]];then
 else
   printf "%s\n" "OK"
   #deleting C1AS test object
-  printf "%s\n" "Deleting test Group object ${C1PROJECT}_${C1ASRND} in C1AS"
+  printf "%s\n" "Deleting test Group object ${TMPGROUP} in C1AS"
+  #get groupID of group to be deleted
+  export C1ASGROUPID=`curl --silent --location --request GET  "${C1ASAPIURL}/accounts/groups"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' | jq -r ".[]| select(.name==\"${TMPGROUP}\")|.group_id"`
 
-
-
-readarray -t C1ASGROUPS <<< `curl --silent --location --request GET "${C1ASAPIURL}/accounts/groups" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' | jq -r ".[].name"`
-readarray -t DUMMYARRAYTOFIXSYNTAXCOLORINGINVSCODE <<< `pwd `
-echo C1ASGROUPS[@] =  ${C1ASGROUPS[@]}
-readarray -t C1ASGROUPIDS <<< `curl --silent --location --request GET "${C1ASAPIURL}/accounts/groups" --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' | jq -r ".[].group_id"`
-readarray -t DUMMYARRAYTOFIXSYNTAXCOLORINGINVSCODE <<< `pwd `
-
-for i in "${!C1ASGROUPS[@]}"
-do
-  #printf "%s\n" "C1AS: found group ${C1ASGROUPS[$i]} with ID ${C1ASGROUPIDS[$i]}"
-  if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT}_${C1ASRND}" ]]; 
-  then
-    printf "%s\n" "Deleting old Group object ${C1PROJECT}_${C1ASRND} in C1AS"
-    curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
-  fi
-  if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT^^}-${APP2^^}" ]]; 
-  then
-    printf "%s\n" "Deleting old Group object ${C1PROJECT^^}-${APP2^^} in C1AS"
-    curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
-  fi
-  if [[ "${C1ASGROUPS[$i]}" == "${C1PROJECT^^}-${APP3^^}" ]]; 
-  then
-    printf "%s\n" "Deleting old Group object ${C1PROJECT^^}-${APP3^^} in C1AS"
-    curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPIDS[$i]}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
-  fi
-
-done 
-
-
-
+  curl --silent --location --request DELETE "${C1ASAPIURL}/accounts/groups/${C1ASGROUPID}"   --header 'Content-Type: application/json' --header "${C1AUTHHEADER}" --header 'api-version: v1' 
 fi
 
 
@@ -205,7 +180,7 @@ declare -A VAROK
 declare -A VARFORMAT
 
 # set list of VARS_TO_VALIDATE_BY_FORMAT
-VARS_TO_VALIDATE_BY_FORMAT=(C1REGION C1CS_RUNTIME C1PROJECT DSSC_AC C1APIKEY AWS_EKS_NODES)
+VARS_TO_VALIDATE_BY_FORMAT=(C1REGION C1CS_RUNTIME C1PROJECT DSSC_AC AWS_EKS_NODES)
 # set the expected FORMAT for each variable
 #  ^ is the beginning of the line anchor
 #  [...] is a character class definition
@@ -216,7 +191,6 @@ VARFORMAT[C1REGION]="^(us-1|in-1|gb-1|jp-1|de-1|au-1|ca-1|sg-1|trend-us-1)$"
 VARFORMAT[C1CS_RUNTIME]="^(true|false)$"
 VARFORMAT[C1PROJECT]="^[a-z0-9]*$"
 VARFORMAT[DSSC_AC]='^[A-Z]{2}-[[:alnum:]]{4}-[[:alnum:]]{5}-[[:alnum:]]{5}-[[:alnum:]]{5}-[[:alnum:]]{5}-[[:alnum:]]{5}$'
-VARFORMAT[C1APIKEY]='^[[:alnum:]]{27}:[[:alnum:]]{66}$'
 VARFORMAT[AWS_EKS_NODES]='^[1-5]'
 
 # Check all variables from the VARS_TO_VALIDATE_BY_FORMAT list
