@@ -243,12 +243,14 @@ cp 00_define_vars.sh.sample 00_define_vars.sh
 Edit the `00_define_vars.sh` file with the built in editor  
 >  ![cloud9FileEditor](images/cloud9FileEditor.png)
 
-1. `C1PROJECT` and shared AWS accounts:
+1. Configure all variables untile the line where it says:
+   `below this line are default settings which may be optionally customised`
+2. A note on `C1PROJECT` and shared AWS accounts:
 - If you are sharing an AWS account with someone else, make sure that both of you use a different C1PROJECT name.  
 - Also, one project name **may not be a subset of the other**.  e.g. c1 and c1b would be bad, but c1a and c1b would be good.
 - To make sure that you do not "see" each other's projects, pipelines, clusters, registries etc, it is best to both use a **different AWS region**  
 
-3. Preview of the RUNTIME-protection option of Cloud One Workload Security
+1. Preview of the RUNTIME-protection option of Cloud One Workload Security
 The script assumes that you have access to the C1WS-RUNTIME option.  
 If you do NOT have access to it, then add/uncomment the following line to/in your 00_define_vars.sh:  
 `export C1CS_RUNTIME="false"`
