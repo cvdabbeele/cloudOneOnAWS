@@ -39,8 +39,7 @@ printf '%s\n' "-------------------------------"
 export C1REGION="us-1"
 # export C1APIKEY='your_CloudOne_API_Key. MUST be created in C1S (no longer in C1WS; this API key is different!)
 export C1APIKEY='your_CloudOne_API_Key'
-# for now keep C1CS_RUNTIME to "false".  "true" will be implemented later
-export C1CS_RUNTIME="false"
+
 # Deep Security Smart Check ActivationCode: this is your License Key for SmartCheck, the key you enter in SmartCheck when you set it up
 #export DSSC_AC='xx-xxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx'  #THIS IS NO LONGER NEEDED
 
@@ -63,6 +62,7 @@ export DSSC_PASSWORD='Tr3ndm1cr0!'     #DO CHANGE THIS do NOT use any "\" in the
 #### --------------------------------------------------------------------------------------
 # set verbose output (1=verbose/debug during startup; 0=non-verbose output)
 export VERBOSE=0
+export C1CS_RUNTIME="true"
 # The number of nodes you want your AWS Kubernetes Cluster (EKS) to have:
 export AWS_EKS_NODES='2'
 
