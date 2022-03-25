@@ -30,7 +30,7 @@ MAINSTARTTIME=`date +%s`
 . ./demoApps.sh
 
 # add ECR registry to SmartCheck
-. ./smartCheckAddEcr.sh
+. ./smartCheckAddECR.sh
 
 printf '%s\n'  "You can now kick off sample pipeline-builds of MoneyX"
 printf '%s\n'  " e.g. by running ./pushWithHighSecurityThresholds.sh"
