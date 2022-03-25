@@ -42,7 +42,7 @@ export C1APIKEY='your_CloudOne_API_Key'
 # for now keep C1CS_RUNTIME to "false".  "true" will be implemented later
 export C1CS_RUNTIME="false"
 # Deep Security Smart Check ActivationCode: this is your License Key for SmartCheck, the key you enter in SmartCheck when you set it up
-export DSSC_AC='xx-xxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx'
+#export DSSC_AC='xx-xxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx'  #THIS IS NO LONGER NEEDED
 
 # Script settings
 # All objects created by this script will be prepended by this string

@@ -180,7 +180,8 @@ declare -A VAROK
 declare -A VARFORMAT
 
 # set list of VARS_TO_VALIDATE_BY_FORMAT
-VARS_TO_VALIDATE_BY_FORMAT=(C1REGION C1CS_RUNTIME C1PROJECT DSSC_AC AWS_EKS_NODES)
+#VARS_TO_VALIDATE_BY_FORMAT=(C1REGION C1CS_RUNTIME C1PROJECT DSSC_AC AWS_EKS_NODES)
+VARS_TO_VALIDATE_BY_FORMAT=(C1REGION C1CS_RUNTIME C1PROJECT AWS_EKS_NODES)
 # set the expected FORMAT for each variable
 #  ^ is the beginning of the line anchor
 #  [...] is a character class definition
@@ -190,7 +191,7 @@ VARS_TO_VALIDATE_BY_FORMAT=(C1REGION C1CS_RUNTIME C1PROJECT DSSC_AC AWS_EKS_NODE
 VARFORMAT[C1REGION]="^(us-1|in-1|gb-1|jp-1|de-1|au-1|ca-1|sg-1|trend-us-1)$"
 VARFORMAT[C1CS_RUNTIME]="^(true|false)$"
 VARFORMAT[C1PROJECT]="^[a-z0-9]*$"
-VARFORMAT[DSSC_AC]='^[A-Z]{2}-[[:alnum:]]{4}-[[:alnum:]]{5}-[[:alnum:]]{5}-[[:alnum:]]{5}-[[:alnum:]]{5}-[[:alnum:]]{5}$'
+#VARFORMAT[DSSC_AC]='^[A-Z]{2}-[[:alnum:]]{4}-[[:alnum:]]{5}-[[:alnum:]]{5}-[[:alnum:]]{5}-[[:alnum:]]{5}-[[:alnum:]]{5}$'
 VARFORMAT[AWS_EKS_NODES]='^[1-5]'
 
 # Check all variables from the VARS_TO_VALIDATE_BY_FORMAT list

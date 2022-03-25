@@ -243,16 +243,7 @@ cp 00_define_vars.sh.sample 00_define_vars.sh
 Edit the `00_define_vars.sh` file with the built in editor  
 >  ![cloud9FileEditor](images/cloud9FileEditor.png)
 
-
-1. Update the following variables:
-- `DSSC_AC`           # your SmartCheck activation key
-- `TREND_AP_KEY`      # your AP key created in C1AS by adding a "group" for MoneyX 
-- `TREND_AP_SECRET`   # your AP secret created in C1AS by adding a "group" for MoneyX 
-- `C1API_KEY`         # API key created in C1WS (Role= Full Access)
-- `DOCKERHUB_USERNAME`
-- `DOCKERHUB_PASSWORD`
-
-2. `C1PROJECT` and shared AWS accounts:
+1. `C1PROJECT` and shared AWS accounts:
 - If you are sharing an AWS account with someone else, make sure that both of you use a different C1PROJECT name.  
 - Also, one project name **may not be a subset of the other**.  e.g. c1 and c1b would be bad, but c1a and c1b would be good.
 - To make sure that you do not "see" each other's projects, pipelines, clusters, registries etc, it is best to both use a **different AWS region**  
