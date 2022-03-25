@@ -20,7 +20,7 @@ if [[ -z "${DSSC_BEARERTOKEN}"  ]];then
    read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
 fi
 #printf "Bearer Token = ${DSSC_BEARERTOKEN} \n"
-  
+     
 #adding ECR registry
 #-------------------
 export DSSC_ECR_FILTER='*'
