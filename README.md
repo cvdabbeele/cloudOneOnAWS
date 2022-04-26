@@ -14,7 +14,12 @@ Many parts are intentionally vurlnerable and should be kept fom running for a lo
 
 ## UPDATES 
 If this is your first time here, you can skip the "updates" section.  
-If you are a repeat visitor, then please check the updates below.  New veriable settings in `00_define_vars.sh.sample` may be required.  
+If you are a repeat visitor, then please check the updates below.  New veriable settings in `00_define_vars.sh.sample` may be required. 
+### 20220428
+Re-enabled Malware Scanning in SmartCheck  
+As indicated here: https://github.com/deep-security/smartcheck-helm/releases/tag/1.2.76 ,  Malwware Scanning is now disabled by default when installing SmartCheck.   In this update of this demo script, changes are made to re-enable it when setting up this demo.  
+The changes are made in the repo https://github.com/cvdabbeele/deployC1CSandC1AS.git which is being cloned and pulled-in by this script at runtime.  (see `git clone` in `environmentSetup.sh)   
+
 ### 202110
 Changes in required variables.  Check the `00_define_vars.sh.sample` file for details (important!)  
 The script now uses the new CloudOne Datacenters, which support regional instances.    
@@ -75,6 +80,7 @@ Checkout the [howToDemo.md](howToDemo.md) for demo scenarios.
 
 - [Overview](#overview)
   - [UPDATES](#updates)
+    - [20220428](#20220428)
     - [202110](#202110)
     - [202105](#202105)
     - [20210505](#20210505)
