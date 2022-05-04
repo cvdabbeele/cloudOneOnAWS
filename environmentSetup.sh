@@ -37,10 +37,18 @@ else
 fi
 
 # Installing kubectl
-printf '%s\n' "Installing/upgrading kubectl...."
-sudo curl --silent -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-sudo chmod +x /usr/local/bin/kubectl
+#printf '%s\n' "Installing/upgrading kubectl...."
+#sudo curl --silent -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+#sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+#sudo chmod +x /usr/local/bin/kubectl
+
+# temp fix 20220504 Installing kubectl 2.22 as a workaround for issues with v1alpha5 that is used by eksctl when adding the authentication information to ~/.kube/config
+printf '%s\n' "Installing kubectl 1.22...."
+curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.22.0/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+
+
 
 # Installing helm
 if ! [ -x "$(command -v helm)" ] ; then

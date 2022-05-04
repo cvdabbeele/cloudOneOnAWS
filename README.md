@@ -15,6 +15,11 @@ Many parts are intentionally vurlnerable and should be kept fom running for a lo
 ## UPDATES 
 If this is your first time here, you can skip the "updates" section.  
 If you are a repeat visitor, then please check the updates below.  New veriable settings in `00_define_vars.sh.sample` may be required. 
+
+### 20220504
+The current kubectl client 1.24 seems to be incompatible with API v1alpha5 which is used by eksctl when adding the authentication information to ~/.kube/config.  
+As a temp fix, `kubectl 1.22` is now used.  
+
 ### 20220428
 Re-enabled Malware Scanning in SmartCheck  
 As indicated here: https://github.com/deep-security/smartcheck-helm/releases/tag/1.2.76 ,  Malwware Scanning is now disabled by default when installing SmartCheck.   In this update of this demo script, changes are made to re-enable it when setting up this demo.  
@@ -80,6 +85,7 @@ Checkout the [howToDemo.md](howToDemo.md) for demo scenarios.
 
 - [Overview](#overview)
   - [UPDATES](#updates)
+    - [20220504](#20220504)
     - [20220428](#20220428)
     - [202110](#202110)
     - [202105](#202105)
