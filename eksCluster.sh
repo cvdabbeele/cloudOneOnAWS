@@ -67,3 +67,4 @@ EOF
       eksctl get clusters
     fi
   fi
+aws eks update-kubeconfig --region ${AWS_REGION}  --name ${C1PROJECT}

@@ -43,11 +43,12 @@ fi
 #sudo chmod +x /usr/local/bin/kubectl
 
 # temp fix 20220504 Installing kubectl 2.22 as a workaround for issues with v1alpha5 that is used by eksctl when adding the authentication information to ~/.kube/config
-printf '%s\n' "Installing kubectl 1.22...."
-curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.22.0/bin/linux/amd64/kubectl
+#printf '%s\n' "Installing kubectl 1.22...."
+printf '%s\n' "Installing latest version of kubectl...."
+#curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.22.0/bin/linux/amd64/kubectl
+curl --silent -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 chmod +x ./kubectl
 sudo mv ./kubectl /usr/local/bin/kubectl
-
 
 
 # Installing helm
@@ -149,6 +150,13 @@ export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key`
 
 export DSSC_SUBJECTALTNAME="*.${AWS_REGION}.elb.amazonaws.com"
 
+# installing awscli
+printf '%s\n' "Installing latest version of awscliv2...."
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip -o awscliv2.zip >/dev/null
+sudo ./aws/install
+
+
 # Installing eksctl
 if ! [ -x "$(command -v eksctl)" ] ; then
     printf '%s\n'  "installing eksctl...."
@@ -159,14 +167,19 @@ else
 fi
 
 # Installing aws authenticator
-if ! [ -x "$(command -v aws-iam-authenticator)" ] ; then
-    printf '%s\n'  "installing AWS authenticator...."
-    curl -s -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
-    chmod +x ./aws-iam-authenticator
-    mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-else
-    printf '%s\n'  "Using existing AWS authenticator. Version `aws-iam-authenticator version | jq -r '.Version'  2>/dev/null`"
-fi
+#aws iam authenticator is unneccessary in modern EKS login. The aws cli can be used directly now. That is also what aws eks update-kubeconfig generates. This is an issue, because it directly fails inside the eksctl create command, because when eksctl then calls kubectl itself, for example to install addons.
+#https://github.com/weaveworks/eksctl/issues/5240
+
+#printf '%s\n' "Installing latest AWS authenticator 1.21.2...."
+#if ! [ -x "$(command -v aws-iam-authenticator)" ] ; then
+#    printf '%s\n'  "installing AWS authenticator...."
+#    curl -s -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticatorcurl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+#    curl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+#    chmod +x ./aws-iam-authenticator
+#    mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+#else
+#    printf '%s\n'  "Using existing AWS authenticator. Version `aws-iam-authenticator version | jq -r '.Version'  2>/dev/null`"
+#fi
 
 # Validate aws keys 
 DUMMY=`aws s3 ls`
@@ -314,3 +327,4 @@ else
   printf "%s\n" "OK"
 fi
 
+ #  read -p "AT THE END OF ENVIRONMENTSETUP Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"
