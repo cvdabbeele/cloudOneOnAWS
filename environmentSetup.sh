@@ -152,7 +152,7 @@ export DSSC_SUBJECTALTNAME="*.${AWS_REGION}.elb.amazonaws.com"
 
 # installing awscli
 printf '%s\n' "Installing latest version of awscliv2...."
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+curl --silent "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip -o awscliv2.zip >/dev/null
 sudo ./aws/install
 
@@ -232,7 +232,8 @@ for i in "${VARS_TO_VALIDATE_BY_FORMAT[@]}"; do
 done
 
 if [[ ${INPUTISVALID} == "true" ]]; then
-  echo "All variables checked out ok"
+  # echo "All variables checked out ok"
+  echo '.'
 else
   echo "Please correct the above-mentioned variables"
   read -p "Press CTRL-C to exit script, or Enter to continue anyway (script will fail)"

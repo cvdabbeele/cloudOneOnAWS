@@ -1,3 +1,4 @@
+# This project has been deprecated in June 2022
 # Overview
 
 This is a set of pretty quick-and-dirty shelscripts that will deploy a demo/test environment for Trend Micro 
@@ -83,6 +84,7 @@ Then it will:
 This README.md describes how to deploy the demo environment.  
 Checkout the [howToDemo.md](howToDemo.md) for demo scenarios.
 
+- [This project has been deprecated in June 2022](#this-project-has-been-deprecated-in-june-2022)
 - [Overview](#overview)
   - [UPDATES](#updates)
     - [20220504](#20220504)
